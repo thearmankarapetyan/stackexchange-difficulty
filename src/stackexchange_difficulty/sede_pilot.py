@@ -191,6 +191,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
         pilot_date=config.pilot_date,
         raw_export=raw_export,
         raw_hash=raw_hash,
+        root=root,
     )
     write_provenance_json(provenance, provenance_path)
 
@@ -252,6 +253,9 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
     )
 
     finalized_provenance = finalize_processed_hashes(provenance, processed_manifest)
+    finalized_provenance["processed_hash_manifest"] = _display_path(
+        processed_manifest, root
+    )
     write_provenance_json(finalized_provenance, provenance_path)
     write_provenance_json(finalized_provenance, processed_dir / "provenance.json")
 
@@ -394,6 +398,7 @@ def _build_pilot_provenance(
     pilot_date: str,
     raw_export: Path,
     raw_hash: str,
+    root: Path,
 ) -> dict[str, Any]:
     record = load_provenance(template_path)
     record["dataset_version"] = f"sede-pilot-{pilot_date}"
@@ -402,7 +407,7 @@ def _build_pilot_provenance(
     record["query_or_dump_file"] = (
         "reports/datasets/stackexchange-difficulty/sede_pilot_query.sql"
     )
-    record["export_identifier"] = str(raw_export)
+    record["export_identifier"] = _display_path(raw_export, root)
     record["access_date"] = pilot_date
     record["official_source_checked_at"] = pilot_date
     record["source_url_checked_at"] = {
@@ -527,8 +532,8 @@ def _build_audit(
             "- Source: Stack Overflow SEDE.",
             "- Query file: "
             "`reports/datasets/stackexchange-difficulty/sede_pilot_query.sql`.",
-            f"- Raw export: `{raw_export}`.",
-            f"- Provenance file: `{provenance_path}`.",
+            f"- Raw export: `{_display_path(raw_export, root)}`.",
+            f"- Provenance file: `{_display_path(provenance_path, root)}`.",
             f"- Raw export hash: `sha256:{raw_hash}`.",
             "- No API crawling, HTML scraping, Data Dump download, credential "
             "handling, or real corpus release was performed for this pilot.",
@@ -570,7 +575,8 @@ def _build_audit(
             f"{'yes' if derived_dir else 'no'}.",
             f"- `derived_thread_indicators.tsv` produced: {_exists_text(derived_indicators)}.",
             f"- `threads.jsonl` produced: {_exists_text(derived_jsonl)}.",
-            f"- Derived output hash summary: `{derived_hash or 'not produced'}`.",
+            "- Derived output hash summary: "
+            f"`{_display_path(derived_hash, root) if derived_hash else 'not produced'}`.",
             "",
             "## Manual Inspection",
             "",
@@ -648,3 +654,10 @@ def _git_ignore_text(path: Path | None, root: Path) -> str:
         check=False,
     )
     return "yes" if result.returncode == 0 else "no"
+
+
+def _display_path(path: Path, root: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(root.resolve()))
+    except ValueError:
+        return str(path)

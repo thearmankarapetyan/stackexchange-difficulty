@@ -331,3 +331,30 @@ Fix:
   the final row count without reducing the expensive ranking step.
 - Added static tests to prevent reintroducing the full-table ranking pattern
   and to verify the expected export columns remain present.
+
+## 2026-05-12 First SEDE pilot run
+
+Ran the first Stack Overflow SEDE pilot through the local `run-sede-pilot`
+pipeline after the corrected query returned 5,000 rows in SEDE.
+
+Results:
+
+- Raw export copied to the ignored raw-data path.
+- Raw export hash recorded in the dated provenance file.
+- Preflight accepted the export columns and row count.
+- Normalized outputs were written under ignored processed-data paths.
+- Derived indicators and JSONL were generated under ignored processed-data
+  paths.
+- The tracked aggregate audit reports 5,000 question rows, 3,551 answer rows,
+  zero duplicate-question failures, zero artificial-ID failures, zero
+  accepted-answer consistency failures, and zero missing-column failures.
+- Comment rows are absent in this pilot because the current SEDE export is
+  question/answer centered.
+- Manual inspection of at least 100 local records remains required before using
+  the pilot as a larger Data Dump planning decision.
+
+Content-safety note:
+
+- No raw Stack Exchange titles, bodies, answers, comments, code snippets,
+  usernames, or credentials were copied into the tracked audit.
+- The generated audit and provenance use repository-relative paths.

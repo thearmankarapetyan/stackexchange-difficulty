@@ -167,12 +167,22 @@ def test_run_sede_pilot_export_path_completes_pipeline_without_pending_provenanc
     assert payload["ok"] is True
     provenance = json.loads(Path(payload["provenance"]).read_text(encoding="utf-8"))
     assert "pending" not in provenance["output_hash"]
+    assert provenance["export_identifier"] == (
+        "data/raw/stackexchange-difficulty/sede-pilot-2026-05-12.tsv"
+    )
+    assert provenance["processed_hash_manifest"] == (
+        "data/processed/stackexchange-difficulty/pilot-2026-05-12/"
+        "processed-output.sha256"
+    )
 
     threads_path = (
         project_root
         / "data/processed/stackexchange-difficulty/pilot-2026-05-12-derived/threads.jsonl"
     )
-    rows = [json.loads(line) for line in threads_path.read_text(encoding="utf-8").splitlines()]
+    rows = [
+        json.loads(line)
+        for line in threads_path.read_text(encoding="utf-8").splitlines()
+    ]
     assert len(rows) == 2
     assert rows[0]["indicators"]["has_answer"] is True
     assert rows[0]["indicators"]["has_accepted_answer"] is True
@@ -186,6 +196,7 @@ def test_run_sede_pilot_export_path_completes_pipeline_without_pending_provenanc
     assert "Synthetic SEDE CSV parsing" not in audit_text
     assert "Use a parser fixture" not in audit_text
     assert "No API crawling" in audit_text
+    assert str(project_root) not in audit_text
 
 
 def test_run_sede_pilot_missing_required_columns_fails_before_ingestion(tmp_path):

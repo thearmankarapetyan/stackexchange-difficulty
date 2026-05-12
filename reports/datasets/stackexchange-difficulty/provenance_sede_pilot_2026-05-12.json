@@ -1,0 +1,29 @@
+{
+  "dataset_name": "stackexchange-difficulty",
+  "dataset_version": "sede-pilot-2026-05-12",
+  "source_method": "sede_pilot_export",
+  "source_version": "SEDE snapshot visible at export time",
+  "query_or_dump_file": "reports/datasets/stackexchange-difficulty/sede_pilot_query.sql",
+  "export_identifier": "data/raw/stackexchange-difficulty/sede-pilot-2026-05-12.csv",
+  "access_date": "2026-05-12",
+  "official_source_checked_at": "2026-05-12",
+  "source_url_checked_at": {
+    "stack_exchange_api_docs": "2026-05-12",
+    "stack_exchange_data_dump_help": "2026-05-12",
+    "stack_exchange_licensing_help": "2026-05-12",
+    "stack_exchange_schema_meta": "2026-05-12",
+    "stack_exchange_sede_help": "2026-05-12"
+  },
+  "license": "CC BY-SA, version determined by each exported post ContentLicense",
+  "transformation_steps": [
+    "exported Stack Overflow pilot rows manually through SEDE",
+    "stored raw export unchanged under data/raw/stackexchange-difficulty/",
+    "normalized local export with stackexchange-difficulty ingest-sede",
+    "derived indicators and JSONL with stackexchange-difficulty derive"
+  ],
+  "raw_export_hash": "sha256:fa827890fc13a069f83d58f6fbc8431df7a855930ee6e5162edc655c6eebe205",
+  "processed_output_hash": "sha256:5060bcffcb1a22d7cf259da32161ed35419b168c4800abfd6db2d355993e51ad",
+  "output_hash": "sha256:5060bcffcb1a22d7cf259da32161ed35419b168c4800abfd6db2d355993e51ad",
+  "script_version": "0.1.0",
+  "processed_hash_manifest": "data/processed/stackexchange-difficulty/pilot-2026-05-12/processed-output.sha256"
+}
