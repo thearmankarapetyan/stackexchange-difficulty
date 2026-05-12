@@ -15,6 +15,7 @@ from stackexchange_difficulty import sede_pilot
 from stackexchange_difficulty.sede import validate_sede_export
 from stackexchange_difficulty.sede_pilot import (
     SedePilotError,
+    copy_to_clipboard,
     prepare_browser_session,
     wait_for_sede_export,
 )
@@ -132,6 +133,43 @@ def test_prepare_browser_session_uses_mocked_browser(monkeypatch):
     assert result["clipboard"] is True
     assert result["opened"] is True
     assert opened == ["https://example.test/query"]
+
+
+def test_copy_to_clipboard_uses_tkinter_fallback(monkeypatch):
+    copied: list[str] = []
+
+    def fail_osc52(text: str) -> bool:
+        raise AssertionError(f"unexpected OSC52 fallback for {text}")
+
+    monkeypatch.setattr(sede_pilot, "_copy_with_external_tool", lambda text: False)
+    monkeypatch.setattr(sede_pilot, "_copy_with_tkinter", lambda text: copied.append(text) is None)
+    monkeypatch.setattr(sede_pilot, "_copy_with_osc52", fail_osc52)
+
+    assert copy_to_clipboard("select 1") is True
+    assert copied == ["select 1"]
+
+
+def test_osc52_clipboard_fallback_writes_terminal_escape(monkeypatch):
+    class FakeStderr:
+        def __init__(self) -> None:
+            self.data = ""
+
+        def isatty(self) -> bool:
+            return True
+
+        def write(self, value: str) -> None:
+            self.data += value
+
+        def flush(self) -> None:
+            return None
+
+    stream = FakeStderr()
+    monkeypatch.setattr(sede_pilot.sys, "stderr", stream)
+    monkeypatch.setenv("TERM", "xterm-256color")
+
+    assert sede_pilot._copy_with_osc52("select 1") is True
+    assert stream.data.startswith("\033]52;c;")
+    assert stream.data.endswith("\a")
 
 
 def test_run_sede_pilot_export_path_completes_pipeline_without_pending_provenance(tmp_path):

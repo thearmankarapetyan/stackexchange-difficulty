@@ -134,8 +134,9 @@ stackexchange-difficulty run-sede-pilot \
 ```
 
 This opens the Stack Overflow SEDE query page and copies the query to the
-clipboard when a local clipboard tool is available. The user still completes
-login, Cloudflare verification, query execution, and CSV/TSV export manually.
+clipboard through a local clipboard command, Python/Tk, or terminal OSC52 when
+available. The user still completes login, Cloudflare verification, query
+execution, and CSV/TSV export manually.
 After the export appears, the command copies it unchanged into
 `data/raw/stackexchange-difficulty/`, hashes it, preflights the row and schema
 gate, creates dated JSON provenance, ingests normalized local tables, finalizes

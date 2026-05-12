@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import base64
 import csv
+import os
 import shutil
 import subprocess
+import sys
 import time
 import webbrowser
 from collections import Counter
@@ -101,11 +104,20 @@ def prepare_browser_session(
 
 
 def copy_to_clipboard(text: str) -> bool:
+    if _copy_with_external_tool(text):
+        return True
+    if _copy_with_tkinter(text):
+        return True
+    return _copy_with_osc52(text)
+
+
+def _copy_with_external_tool(text: str) -> bool:
     commands = (
         ("wl-copy",),
         ("xclip", "-selection", "clipboard"),
         ("xsel", "--clipboard", "--input"),
         ("pbcopy",),
+        ("clip.exe",),
     )
     for command in commands:
         if shutil.which(command[0]) is None:
@@ -120,6 +132,33 @@ def copy_to_clipboard(text: str) -> bool:
         if result.returncode == 0:
             return True
     return False
+
+
+def _copy_with_tkinter(text: str) -> bool:
+    try:
+        import tkinter as tk
+
+        root = tk.Tk()
+        root.withdraw()
+        root.clipboard_clear()
+        root.clipboard_append(text)
+        root.update()
+        root.destroy()
+    except Exception:
+        return False
+    return True
+
+
+def _copy_with_osc52(text: str) -> bool:
+    stream = sys.stderr
+    if not hasattr(stream, "isatty") or not stream.isatty():
+        return False
+    if os.environ.get("TERM") in {"", "dumb"}:
+        return False
+    payload = base64.b64encode(text.encode("utf-8")).decode("ascii")
+    stream.write(f"\033]52;c;{payload}\a")
+    stream.flush()
+    return True
 
 
 def wait_for_sede_export(
@@ -381,7 +420,9 @@ def _resolve_source_export(config: SedePilotConfig, query_path: Path) -> Path:
         raise SedePilotError("run-sede-pilot requires --export or --open-browser")
     query_text = query_path.read_text(encoding="utf-8")
     session = prepare_browser_session(query_text=query_text, query_url=config.query_url)
-    if not session["clipboard"]:
+    if session["clipboard"]:
+        print("Copied SEDE query to clipboard.")
+    else:
         print(f"Clipboard copy unavailable. Paste the query from: {query_path}")
     print(f"Opened SEDE query page: {config.query_url}")
     download_dir = config.download_dir or Path.home() / "Downloads"

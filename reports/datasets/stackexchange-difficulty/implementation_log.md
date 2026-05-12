@@ -243,3 +243,28 @@ Verification results:
 - `git check-ignore dist/huggingface/stackexchange-difficulty-2026-05-12/README.md`:
   passed.
 - Known-leak credential scan found no matches.
+
+## 2026-05-12 Clipboard fallback fix
+
+Fixed the `run-sede-pilot --open-browser` clipboard preparation path after the
+Stage environment reported:
+
+```text
+Clipboard copy unavailable. Paste the query from: /home/stage/Stage/projects/stackexchange-difficulty/reports/datasets/stackexchange-difficulty/sede_pilot_query.sql
+```
+
+Cause:
+
+- The implementation only tried external clipboard utilities such as
+  `wl-copy`, `xclip`, `xsel`, and `pbcopy`.
+- Those utilities were not installed in the Stage environment.
+- Python/Tk clipboard access worked with the available `DISPLAY`.
+
+Fix:
+
+- Kept external clipboard utilities as the first path.
+- Added `clip.exe` support for WSL-style environments.
+- Added Python/Tk clipboard fallback.
+- Added OSC52 terminal fallback when stderr is a real terminal and `TERM` is not
+  `dumb`.
+- Added tests for Tk fallback routing and OSC52 escape generation.
