@@ -166,6 +166,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
                 provenance_path=provenance_path,
                 raw_hash=raw_hash,
                 rows=len(export.rows),
+                export_rows=export.rows,
                 processed_dir=None,
                 derived_dir=None,
                 validation_report=None,
@@ -217,6 +218,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
                 provenance_path=provenance_path,
                 raw_hash=raw_hash,
                 rows=len(export.rows),
+                export_rows=export.rows,
                 processed_dir=processed_dir,
                 derived_dir=None,
                 validation_report=validation_report.to_dict(),
@@ -280,6 +282,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
                 provenance_path=provenance_path,
                 raw_hash=raw_hash,
                 rows=len(export.rows),
+                export_rows=export.rows,
                 processed_dir=processed_dir,
                 derived_dir=derived_dir,
                 validation_report=finalized_report.to_dict(),
@@ -331,6 +334,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
             provenance_path=provenance_path,
             raw_hash=raw_hash,
             rows=len(export.rows),
+            export_rows=export.rows,
             processed_dir=processed_dir,
             derived_dir=derived_dir,
             validation_report=finalized_report.to_dict(),
@@ -489,6 +493,7 @@ def _build_audit(
     provenance_path: Path,
     raw_hash: str,
     rows: int,
+    export_rows: list[dict[str, Any]],
     processed_dir: Path | None,
     derived_dir: Path | None,
     validation_report: dict[str, Any] | None,
@@ -514,6 +519,7 @@ def _build_audit(
         all_issue_counts["provenance_missing_required_key"]
         + all_issue_counts["provenance_missing_source_identifier"]
     )
+    source_distributions = _source_distribution_summary(export_rows)
     distributions = _distribution_summary(derived_rows)
     processed_questions = processed_dir / "questions.tsv" if processed_dir else None
     derived_jsonl = derived_dir / "threads.jsonl" if derived_dir else None
@@ -566,7 +572,9 @@ def _build_audit(
             f"- Accepted/no-accepted balance: {distributions['accepted']}.",
             f"- Closure coverage: {distributions['closed']}.",
             f"- Duplicate coverage: {distributions['duplicate']}.",
+            f"- Tag-family distribution: {source_distributions['tag_family']}.",
             f"- Tag-popularity buckets: {distributions['tag_buckets']}.",
+            f"- Time-period distribution: {source_distributions['time_period']}.",
             f"- Timing coverage: {distributions['timing']}.",
             "",
             "## Derived Outputs",
@@ -595,6 +603,22 @@ def _build_audit(
             "",
         ]
     )
+
+
+def _source_distribution_summary(rows: list[dict[str, Any]]) -> dict[str, str]:
+    if not rows:
+        return {
+            "tag_family": "not produced",
+            "time_period": "not produced",
+        }
+    return {
+        "tag_family": _format_counter(
+            Counter(str(row.get("tag_family", "") or "missing") for row in rows)
+        ),
+        "time_period": _format_counter(
+            Counter(str(row.get("time_period", "") or "missing") for row in rows)
+        ),
+    }
 
 
 def _distribution_summary(rows: list[dict[str, Any]]) -> dict[str, str]:

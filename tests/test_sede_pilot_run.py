@@ -196,6 +196,8 @@ def test_run_sede_pilot_export_path_completes_pipeline_without_pending_provenanc
     assert "Synthetic SEDE CSV parsing" not in audit_text
     assert "Use a parser fixture" not in audit_text
     assert "No API crawling" in audit_text
+    assert "Tag-family distribution: javascript=1, python=1" in audit_text
+    assert "Time-period distribution: recent=2" in audit_text
     assert str(project_root) not in audit_text
 
 

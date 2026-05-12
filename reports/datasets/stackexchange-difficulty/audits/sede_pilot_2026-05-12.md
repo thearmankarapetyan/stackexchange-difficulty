@@ -38,7 +38,9 @@ Pilot date: `2026-05-12`
 - Accepted/no-accepted balance: false=3356, true=1644.
 - Closure coverage: false=3243, true=1757.
 - Duplicate coverage: false=4254, true=746.
+- Tag-family distribution: csharp=754, java=744, javascript=812, other=1765, python=925.
 - Tag-popularity buckets: high=4863, low=76, medium=61.
+- Time-period distribution: recent=5000.
 - Timing coverage: 3331/5000 with first-answer timing.
 
 ## Derived Outputs

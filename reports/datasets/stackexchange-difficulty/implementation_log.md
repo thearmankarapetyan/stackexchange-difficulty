@@ -348,6 +348,8 @@ Results:
 - The tracked aggregate audit reports 5,000 question rows, 3,551 answer rows,
   zero duplicate-question failures, zero artificial-ID failures, zero
   accepted-answer consistency failures, and zero missing-column failures.
+- The audit records aggregate tag-family, tag-popularity, and time-period
+  distributions without including post content.
 - Comment rows are absent in this pilot because the current SEDE export is
   question/answer centered.
 - Manual inspection of at least 100 local records remains required before using
