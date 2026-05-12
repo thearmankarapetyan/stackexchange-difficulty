@@ -4,6 +4,9 @@ import csv
 from pathlib import Path
 
 QUERY_PATH = Path("reports/datasets/stackexchange-difficulty/sede_pilot_query.sql")
+NON_CODE_QUERY_PATH = Path(
+    "reports/datasets/stackexchange-difficulty/sede_pilot_query_non_code_questions.sql"
+)
 EXPECTED_COLUMNS_PATH = Path(
     "reports/datasets/stackexchange-difficulty/sede_expected_columns.tsv"
 )
@@ -29,6 +32,21 @@ def test_sede_pilot_query_avoids_full_table_stratum_parameter():
 
 def test_sede_pilot_query_selects_expected_export_columns():
     query = QUERY_PATH.read_text(encoding="utf-8")
+    assert_expected_columns_present(query)
+
+
+def test_non_code_question_query_filters_rendered_code_markup():
+    query = NON_CODE_QUERY_PATH.read_text(encoding="utf-8")
+
+    assert "q.Body NOT LIKE '%<code>%'" in query
+    assert "SELECT TOP 60000" in query
+    assert "SELECT TOP 5000" in query
+    assert "FROM selected_questions AS sq" in query
+    assert query.index("FROM selected_questions AS sq") < query.index("OUTER APPLY")
+    assert_expected_columns_present(query)
+
+
+def assert_expected_columns_present(query: str) -> None:
     with EXPECTED_COLUMNS_PATH.open(encoding="utf-8", newline="") as handle:
         rows = csv.DictReader(handle, delimiter="\t")
         expected_columns = [row["column"] for row in rows]

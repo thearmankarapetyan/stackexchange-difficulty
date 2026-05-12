@@ -21,7 +21,7 @@ from stackexchange_difficulty.validation import read_table
 
 
 def test_wait_for_sede_export_detects_new_csv(tmp_path):
-    start = time.time()
+    start = time.time() - 1
     export = tmp_path / "query-results.csv"
     export.write_text("question_id,title\n1,Example\n", encoding="utf-8")
 
@@ -37,7 +37,7 @@ def test_wait_for_sede_export_detects_new_csv(tmp_path):
 
 
 def test_wait_for_sede_export_detects_new_tsv(tmp_path):
-    start = time.time()
+    start = time.time() - 1
     export = tmp_path / "query-results.tsv"
     export.write_text("question_id\ttitle\n1\tExample\n", encoding="utf-8")
 
@@ -53,7 +53,7 @@ def test_wait_for_sede_export_detects_new_tsv(tmp_path):
 
 
 def test_wait_for_sede_export_ignores_partial_download_then_finds_csv(tmp_path):
-    start = time.time()
+    start = time.time() - 1
     partial = tmp_path / "query-results.csv.crdownload"
     partial.write_text("partial", encoding="utf-8")
     final = tmp_path / "query-results.csv"
@@ -101,7 +101,7 @@ def test_wait_for_sede_export_fails_when_download_directory_is_missing(tmp_path)
 
 
 def test_wait_for_sede_export_fails_on_multiple_candidates(tmp_path):
-    start = time.time()
+    start = time.time() - 1
     (tmp_path / "one.csv").write_text("a\n", encoding="utf-8")
     (tmp_path / "two.tsv").write_text("a\n", encoding="utf-8")
 
@@ -116,7 +116,7 @@ def test_wait_for_sede_export_fails_on_multiple_candidates(tmp_path):
 
 
 def test_wait_for_sede_export_fails_on_unsupported_suffix(tmp_path):
-    start = time.time()
+    start = time.time() - 1
     (tmp_path / "query-results.xlsx").write_text("not a csv", encoding="utf-8")
 
     with pytest.raises(SedePilotError, match="unsupported suffix"):
