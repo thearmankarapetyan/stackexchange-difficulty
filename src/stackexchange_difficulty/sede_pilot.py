@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-import base64
 import csv
-import html
-import os
 import shutil
 import subprocess
-import sys
 import time
 import webbrowser
 from collections import Counter
@@ -91,175 +87,14 @@ def resolve_pilot_date(value: str) -> str:
 
 def prepare_browser_session(
     *,
-    query_text: str,
     query_url: str = SEDE_QUERY_URL,
     opener: Callable[[str], bool] = webbrowser.open,
-    clipboard_helper_path: Path | None = None,
-    query_path: Path | None = None,
 ) -> dict[str, Any]:
-    copied = copy_to_clipboard(query_text)
-    helper_path = None
-    helper_opened = False
-    if not copied and clipboard_helper_path:
-        helper_path = write_clipboard_helper(
-            query_text=query_text,
-            helper_path=clipboard_helper_path,
-            query_path=query_path,
-        )
-        helper_opened = bool(opener(helper_path.as_uri()))
     opened = opener(query_url)
     return {
         "opened": bool(opened),
         "query_url": query_url,
-        "clipboard": copied,
-        "clipboard_helper": str(helper_path) if helper_path else None,
-        "clipboard_helper_opened": helper_opened,
     }
-
-
-def copy_to_clipboard(text: str) -> bool:
-    if _copy_with_external_tool(text):
-        return True
-    if _copy_with_tkinter(text):
-        return True
-    return _copy_with_osc52(text)
-
-
-def _copy_with_external_tool(text: str) -> bool:
-    commands = (
-        ("wl-copy",),
-        ("xclip", "-selection", "clipboard"),
-        ("xsel", "--clipboard", "--input"),
-        ("pbcopy",),
-        ("clip.exe",),
-    )
-    for command in commands:
-        if shutil.which(command[0]) is None:
-            continue
-        result = subprocess.run(
-            list(command),
-            input=text,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        if result.returncode == 0:
-            return True
-    return False
-
-
-def _copy_with_tkinter(text: str) -> bool:
-    return _set_tkinter_clipboard(text) and _verify_tkinter_clipboard(text)
-
-
-def _set_tkinter_clipboard(text: str) -> bool:
-    try:
-        import tkinter as tk
-
-        root = tk.Tk()
-        root.withdraw()
-        root.clipboard_clear()
-        root.clipboard_append(text)
-        root.update()
-        root.destroy()
-    except Exception:
-        return False
-    return True
-
-
-def _verify_tkinter_clipboard(text: str) -> bool:
-    script = """
-import sys
-try:
-    import tkinter as tk
-    expected = sys.stdin.read()
-    root = tk.Tk()
-    root.withdraw()
-    actual = root.clipboard_get()
-    root.destroy()
-except Exception:
-    raise SystemExit(1)
-raise SystemExit(0 if actual == expected else 1)
-"""
-    try:
-        result = subprocess.run(
-            [sys.executable, "-c", script],
-            input=text,
-            text=True,
-            capture_output=True,
-            timeout=3,
-            check=False,
-        )
-    except Exception:
-        return False
-    return result.returncode == 0
-
-
-def _copy_with_osc52(text: str) -> bool:
-    stream = sys.stderr
-    if not hasattr(stream, "isatty") or not stream.isatty():
-        return False
-    if os.environ.get("TERM") in {"", "dumb"}:
-        return False
-    payload = base64.b64encode(text.encode("utf-8")).decode("ascii")
-    stream.write(f"\033]52;c;{payload}\a")
-    stream.flush()
-    return True
-
-
-def write_clipboard_helper(
-    *,
-    query_text: str,
-    helper_path: Path,
-    query_path: Path | None = None,
-) -> Path:
-    helper_path.parent.mkdir(parents=True, exist_ok=True)
-    source = html.escape(str(query_path)) if query_path else "generated query text"
-    query = html.escape(query_text)
-    helper_path.write_text(
-        f"""<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>SEDE Query Clipboard Helper</title>
-  <style>
-    body {{ font-family: sans-serif; margin: 2rem; max-width: 72rem; }}
-    textarea {{ box-sizing: border-box; font-family: monospace; width: 100%; }}
-    button {{ font-size: 1rem; padding: 0.5rem 0.75rem; }}
-    .status {{ margin-left: 0.75rem; }}
-  </style>
-</head>
-<body>
-  <h1>SEDE Query Clipboard Helper</h1>
-  <p>Source: <code>{source}</code></p>
-  <p>Click the button below, then paste the query into the SEDE editor.</p>
-  <button id="copy">Copy query</button>
-  <span class="status" id="status"></span>
-  <p><textarea id="query" rows="28" spellcheck="false">{query}</textarea></p>
-  <script>
-    const query = document.getElementById("query");
-    const status = document.getElementById("status");
-    async function copyQuery() {{
-      query.focus();
-      query.select();
-      try {{
-        await navigator.clipboard.writeText(query.value);
-        status.textContent = "Copied.";
-      }} catch (error) {{
-        const ok = document.execCommand("copy");
-        status.textContent = ok ? "Copied." : "Press Ctrl+C after selecting text.";
-      }}
-    }}
-    document.getElementById("copy").addEventListener("click", copyQuery);
-    query.focus();
-    query.select();
-  </script>
-</body>
-</html>
-""",
-        encoding="utf-8",
-    )
-    return helper_path
 
 
 def wait_for_sede_export(
@@ -311,7 +146,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
         f"provenance_sede_pilot_{config.pilot_date}.json"
     )
 
-    source_export = _resolve_source_export(config, query_path, root)
+    source_export = _resolve_source_export(config, query_path)
     raw_export = _copy_raw_export(source_export, root, config.pilot_date)
     raw_hash = sha256_file(raw_export)
     _write_hash_manifest(raw_export.with_name(f"{raw_export.name}.sha256"), [raw_export])
@@ -516,27 +351,16 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
     )
 
 
-def _resolve_source_export(config: SedePilotConfig, query_path: Path, root: Path) -> Path:
+def _resolve_source_export(config: SedePilotConfig, query_path: Path) -> Path:
     if config.export_path:
         return config.export_path
     if not config.open_browser:
         raise SedePilotError("run-sede-pilot requires --export or --open-browser")
-    query_text = query_path.read_text(encoding="utf-8")
-    helper_path = root / "reports/run-logs/sede-query-clipboard.html"
-    session = prepare_browser_session(
-        query_text=query_text,
+    prepare_browser_session(
         query_url=config.query_url,
-        clipboard_helper_path=helper_path,
-        query_path=query_path,
     )
-    if session["clipboard"]:
-        print("Copied SEDE query to clipboard.")
-    else:
-        print(
-            "Clipboard copy unavailable from the terminal. "
-            f"Opened browser copy helper: {session['clipboard_helper']}"
-        )
-        print(f"If the helper did not open, paste the query from: {query_path}")
+    print(f"SEDE query file: {query_path}")
+    print("Paste the SQL from that file into the SEDE editor after the page opens.")
     print(f"Opened SEDE query page: {config.query_url}")
     download_dir = config.download_dir or Path.home() / "Downloads"
     return wait_for_sede_export(

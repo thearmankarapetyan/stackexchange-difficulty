@@ -295,3 +295,16 @@ Fix:
   cross-process Tk verification failure.
 - Converted missing download directories from raw `FileNotFoundError` into a
   clear `SedePilotError`.
+
+## 2026-05-12 Manual query-location workflow
+
+Simplified the `run-sede-pilot --open-browser` setup after user feedback that
+automatic clipboard behavior was not needed.
+
+Changes:
+
+- Removed automatic clipboard copying from the browser-assisted SEDE path.
+- Removed the browser helper page generation from that path.
+- Kept the SEDE page opening behavior.
+- The command now prints the exact local query-file location and tells the user
+  to paste the SQL from that file into the SEDE editor manually.

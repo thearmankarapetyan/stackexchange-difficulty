@@ -11,14 +11,11 @@ from pathlib import Path
 
 import pytest
 
-from stackexchange_difficulty import sede_pilot
 from stackexchange_difficulty.sede import validate_sede_export
 from stackexchange_difficulty.sede_pilot import (
     SedePilotError,
-    copy_to_clipboard,
     prepare_browser_session,
     wait_for_sede_export,
-    write_clipboard_helper,
 )
 from stackexchange_difficulty.validation import read_table
 
@@ -132,98 +129,17 @@ def test_wait_for_sede_export_fails_on_unsupported_suffix(tmp_path):
         )
 
 
-def test_prepare_browser_session_uses_mocked_browser(monkeypatch):
+def test_prepare_browser_session_opens_query_page():
     opened: list[str] = []
-    monkeypatch.setattr(sede_pilot, "copy_to_clipboard", lambda text: text == "select 1")
 
     result = prepare_browser_session(
-        query_text="select 1",
         query_url="https://example.test/query",
         opener=lambda url: opened.append(url) is None,
     )
 
-    assert result["clipboard"] is True
     assert result["opened"] is True
+    assert result["query_url"] == "https://example.test/query"
     assert opened == ["https://example.test/query"]
-
-
-def test_prepare_browser_session_opens_helper_when_clipboard_fails(tmp_path, monkeypatch):
-    opened: list[str] = []
-    helper = tmp_path / "helper.html"
-    monkeypatch.setattr(sede_pilot, "copy_to_clipboard", lambda text: False)
-
-    result = prepare_browser_session(
-        query_text="select <one>",
-        query_url="https://example.test/query",
-        opener=lambda url: opened.append(url) is None,
-        clipboard_helper_path=helper,
-        query_path=tmp_path / "query.sql",
-    )
-
-    assert result["clipboard"] is False
-    assert result["clipboard_helper"] == str(helper)
-    assert result["clipboard_helper_opened"] is True
-    assert opened == [helper.as_uri(), "https://example.test/query"]
-    helper_text = helper.read_text(encoding="utf-8")
-    assert "SEDE Query Clipboard Helper" in helper_text
-    assert "select &lt;one&gt;" in helper_text
-
-
-def test_copy_to_clipboard_uses_tkinter_fallback(monkeypatch):
-    copied: list[str] = []
-
-    def fail_osc52(text: str) -> bool:
-        raise AssertionError(f"unexpected OSC52 fallback for {text}")
-
-    monkeypatch.setattr(sede_pilot, "_copy_with_external_tool", lambda text: False)
-    monkeypatch.setattr(sede_pilot, "_copy_with_tkinter", lambda text: copied.append(text) is None)
-    monkeypatch.setattr(sede_pilot, "_copy_with_osc52", fail_osc52)
-
-    assert copy_to_clipboard("select 1") is True
-    assert copied == ["select 1"]
-
-
-def test_tkinter_clipboard_requires_cross_process_verification(monkeypatch):
-    monkeypatch.setattr(sede_pilot, "_set_tkinter_clipboard", lambda text: True)
-    monkeypatch.setattr(sede_pilot, "_verify_tkinter_clipboard", lambda text: False)
-
-    assert sede_pilot._copy_with_tkinter("select 1") is False
-
-
-def test_osc52_clipboard_fallback_writes_terminal_escape(monkeypatch):
-    class FakeStderr:
-        def __init__(self) -> None:
-            self.data = ""
-
-        def isatty(self) -> bool:
-            return True
-
-        def write(self, value: str) -> None:
-            self.data += value
-
-        def flush(self) -> None:
-            return None
-
-    stream = FakeStderr()
-    monkeypatch.setattr(sede_pilot.sys, "stderr", stream)
-    monkeypatch.setenv("TERM", "xterm-256color")
-
-    assert sede_pilot._copy_with_osc52("select 1") is True
-    assert stream.data.startswith("\033]52;c;")
-    assert stream.data.endswith("\a")
-
-
-def test_write_clipboard_helper_creates_browser_copy_page(tmp_path):
-    helper = write_clipboard_helper(
-        query_text="select '<x>';",
-        helper_path=tmp_path / "helper.html",
-        query_path=tmp_path / "query.sql",
-    )
-
-    text = helper.read_text(encoding="utf-8")
-    assert "Copy query" in text
-    assert "select &#x27;&lt;x&gt;&#x27;;" in text
-    assert "navigator.clipboard.writeText" in text
 
 
 def test_run_sede_pilot_export_path_completes_pipeline_without_pending_provenance(tmp_path):
