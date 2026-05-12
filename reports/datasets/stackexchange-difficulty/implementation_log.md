@@ -70,3 +70,39 @@ Verification results:
 
 No live API smoke check, SEDE export, Data Dump download, HTML scraping, or real
 corpus collection was run during this hardening step.
+
+## 2026-05-12 Corrected pilot-plan implementation
+
+Implemented the corrected next-step safeguards without running a real SEDE
+export:
+
+- Kept the existing `v0.1.0-scaffold` baseline unchanged; no new tag was
+  created.
+- Fixed the lightweight YAML provenance loader so the repository template can
+  parse block-style lists and one-level nested mappings.
+- Added a JSON provenance template for the first real SEDE pilot to avoid
+  relying on YAML during the pilot run.
+- Added tracked pilot-audit templates that require aggregate findings only and
+  forbid committing question titles, post bodies, answer text, code snippets,
+  comments, or user profile content.
+- Updated the SEDE export checklist to cover raw hashing, `DECLARE` fallback,
+  row-count gating, explicit derivation after ingestion, and the current absence
+  of comment text from the pilot export path.
+
+Verification results:
+
+- `python -m pip install -e .` was not runnable in this shell because `python`
+  is not on `PATH`.
+- `/home/stage/venvs/stage/bin/python -m pip install -e .`: passed.
+- `/home/stage/venvs/stage/bin/python -m pytest`: passed, 20 tests.
+- `/home/stage/venvs/stage/bin/python -m ruff check .`: passed.
+- `/home/stage/venvs/stage/bin/stackexchange-difficulty --help`: passed.
+- `/home/stage/venvs/stage/bin/stackexchange-difficulty ingest-sede --help`:
+  passed.
+- Installed-script synthetic SEDE ingestion followed by installed-script
+  derivation: passed, producing two synthetic JSONL threads under `/tmp`.
+- `git check-ignore` confirmed dated raw pilot exports and processed pilot
+  tables remain ignored by Git.
+
+No live API smoke check, SEDE export, Data Dump download, HTML scraping, or real
+corpus collection was run during this corrected-plan implementation.

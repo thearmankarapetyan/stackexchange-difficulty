@@ -62,10 +62,25 @@ Ingest a local SEDE pilot export after the query and provenance file are ready:
 
 ```bash
 stackexchange-difficulty ingest-sede \
-  --export data/raw/stackexchange-difficulty/sede-pilot.tsv \
-  --provenance reports/datasets/stackexchange-difficulty/provenance.yml \
-  --out-dir data/processed/stackexchange-difficulty/pilot
+  --export data/raw/stackexchange-difficulty/sede-pilot-YYYY-MM-DD.tsv \
+  --provenance reports/datasets/stackexchange-difficulty/provenance_sede_pilot_YYYY-MM-DD.json \
+  --out-dir data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD
 ```
+
+Then derive indicators and JSONL from the normalized local outputs:
+
+```bash
+stackexchange-difficulty derive \
+  --questions data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD/questions.tsv \
+  --answers data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD/answers.tsv \
+  --comments data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD/comments.tsv \
+  --provenance data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD/provenance.json \
+  --out-dir data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD-derived
+```
+
+Use `provenance_sede_pilot_template.json` as the starting point for real pilot
+metadata. The first real SEDE pilot uses JSON provenance; YAML remains available
+for repository templates and synthetic fixtures.
 
 For source-tree development without installation, the module form remains
 available with `PYTHONPATH=src python -m stackexchange_difficulty ...`.

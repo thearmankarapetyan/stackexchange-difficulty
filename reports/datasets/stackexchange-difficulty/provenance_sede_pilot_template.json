@@ -1,0 +1,21 @@
+{
+  "dataset_name": "stackexchange-difficulty",
+  "dataset_version": "sede-pilot-YYYY-MM-DD",
+  "source_method": "sede_pilot_export",
+  "source_version": "SEDE snapshot visible at export time",
+  "query_or_dump_file": "reports/datasets/stackexchange-difficulty/sede_pilot_query.sql",
+  "export_identifier": "data/raw/stackexchange-difficulty/sede-pilot-YYYY-MM-DD.tsv",
+  "access_date": "YYYY-MM-DD",
+  "official_source_checked_at": "YYYY-MM-DD",
+  "license": "CC BY-SA, version determined by each exported post ContentLicense",
+  "transformation_steps": [
+    "exported Stack Overflow pilot rows manually through SEDE",
+    "stored raw export unchanged under data/raw/stackexchange-difficulty/",
+    "normalized local export with stackexchange-difficulty ingest-sede",
+    "derived indicators and JSONL with stackexchange-difficulty derive"
+  ],
+  "raw_export_hash": "sha256:<raw export hash>",
+  "processed_output_hash": "sha256:<processed output hash summary recorded in audit>",
+  "output_hash": "sha256:<nonblank hash placeholder before derivation, then processed hash>",
+  "script_version": "0.1.0"
+}

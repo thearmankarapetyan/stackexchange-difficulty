@@ -52,29 +52,46 @@ def _load_simple_yaml(text: str) -> dict[str, Any]:
     """Parse simple key/value YAML without requiring PyYAML at runtime.
 
     This parser covers the repository templates: scalar keys, quoted strings,
-    and top-level lists. It deliberately does not try to implement full YAML.
+    top-level lists, and one-level nested mappings. It deliberately does not
+    try to implement full YAML.
     """
     data: dict[str, Any] = {}
-    current_list_key: str | None = None
+    current_key: str | None = None
     for raw_line in text.splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#"):
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
             continue
-        if line.startswith("- ") and current_list_key:
-            data.setdefault(current_list_key, []).append(_clean_scalar(line[2:]))
+
+        is_nested = raw_line[:1].isspace()
+        if is_nested and current_key:
+            if stripped.startswith("- "):
+                if not isinstance(data.get(current_key), list):
+                    data[current_key] = []
+                data[current_key].append(_clean_scalar(stripped[2:]))
+                continue
+            if ":" in stripped:
+                if not isinstance(data.get(current_key), dict):
+                    data[current_key] = {}
+                nested_key, nested_value = stripped.split(":", 1)
+                nested_key = nested_key.strip()
+                nested_value = nested_value.strip()
+                data[current_key][nested_key] = (
+                    _clean_scalar(nested_value) if nested_value else {}
+                )
+                continue
+
+        current_key = None
+        if ":" not in stripped:
             continue
-        current_list_key = None
-        if ":" not in line:
-            continue
-        key, value = line.split(":", 1)
+        key, value = stripped.split(":", 1)
         key = key.strip()
         value = value.strip()
         if not value:
-            data[key] = {}
+            data[key] = None
+            current_key = key
             continue
         if value == "[]":
             data[key] = []
-            current_list_key = key
         else:
             data[key] = _clean_scalar(value)
     return data

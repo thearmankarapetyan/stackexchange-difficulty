@@ -118,6 +118,43 @@ def test_ingest_sede_cli_writes_normalized_outputs(tmp_path):
     assert json.loads((out_dir / "validation_report.json").read_text(encoding="utf-8"))["ok"]
 
 
+def test_ingest_sede_outputs_can_feed_derive_cli(tmp_path):
+    out_dir = tmp_path / "out"
+    derived_dir = tmp_path / "derived"
+
+    ingest_result = run_cli(
+        [
+            "ingest-sede",
+            "--export",
+            "tests/fixtures/sede_pilot_export.tsv",
+            "--provenance",
+            "tests/fixtures/sede_provenance.json",
+            "--out-dir",
+            str(out_dir),
+        ]
+    )
+    derive_result = run_cli(
+        [
+            "derive",
+            "--questions",
+            str(out_dir / "questions.tsv"),
+            "--answers",
+            str(out_dir / "answers.tsv"),
+            "--comments",
+            str(out_dir / "comments.tsv"),
+            "--provenance",
+            str(out_dir / "provenance.json"),
+            "--out-dir",
+            str(derived_dir),
+        ]
+    )
+
+    assert ingest_result.returncode == 0
+    assert derive_result.returncode == 0
+    assert (derived_dir / "derived_thread_indicators.tsv").exists()
+    assert (derived_dir / "threads.jsonl").exists()
+
+
 def write_rows(path: Path, rows: list[dict[str, str]]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]), delimiter="\t")

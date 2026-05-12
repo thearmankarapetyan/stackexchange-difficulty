@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 from stackexchange_difficulty.provenance import load_provenance
-from stackexchange_difficulty.validation import Table, read_table, validate_dataset
+from stackexchange_difficulty.validation import (
+    Table,
+    read_table,
+    validate_dataset,
+    validate_provenance_file,
+)
 
 
 def fixture_table(name: str):
@@ -88,3 +93,18 @@ def test_incomplete_provenance_rejected():
     codes = {issue.code for issue in report.issues}
     assert "provenance_missing_required_key" in codes
     assert "provenance_missing_source_identifier" in codes
+
+
+def test_repository_yaml_provenance_template_parses_block_lists():
+    provenance = load_provenance(
+        "reports/datasets/stackexchange-difficulty/provenance.yml"
+    )
+
+    assert provenance["transformation_steps"] == [
+        "created minimal synthetic records",
+        "validated fixture links",
+    ]
+    assert provenance["source_url_checked_at"]["stack_exchange_api_docs"] == "2026-05-11"
+    assert validate_provenance_file(
+        "reports/datasets/stackexchange-difficulty/provenance.yml"
+    ) == []

@@ -27,5 +27,13 @@ comparison is attempted.
 ## Manual Inspection
 
 At least 100 records in a future real pilot must be inspected for readability,
-field linking, code/error preservation, duplicate-link usefulness, comment
-context, and record-level provenance.
+field linking, code/error preservation, duplicate-link usefulness, and
+record-level provenance.
+
+The current SEDE pilot export path is question/answer centered and does not
+include comment text. Comment context is inspected only if a separate comment
+export or enrichment step is explicitly added and documented.
+
+Tracked audit notes must report aggregate findings only. Do not copy question
+titles, post bodies, answer text, code snippets, comments, or user profile
+content into Git.

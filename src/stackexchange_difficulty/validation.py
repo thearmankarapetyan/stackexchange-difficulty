@@ -57,14 +57,17 @@ def read_table(path: str | Path, name: str | None = None) -> Table:
             for line in source.read_text(encoding="utf-8").splitlines()
             if line
         ]
+        columns = tuple(rows[0].keys()) if rows else ()
     elif suffix == ".json":
         loaded = json.loads(source.read_text(encoding="utf-8"))
         rows = loaded if isinstance(loaded, list) else loaded.get("rows", [])
+        columns = tuple(rows[0].keys()) if rows else ()
     else:
         delimiter = "\t" if suffix in {".tsv", ".tab"} else ","
         with source.open("r", encoding="utf-8", newline="") as handle:
-            rows = list(csv.DictReader(handle, delimiter=delimiter))
-    columns = tuple(rows[0].keys()) if rows else ()
+            reader = csv.DictReader(handle, delimiter=delimiter)
+            rows = list(reader)
+            columns = tuple(reader.fieldnames or ())
     return Table(name=table_name, rows=rows, columns=columns)
 
 
