@@ -4,6 +4,9 @@ import csv
 from pathlib import Path
 
 QUERY_PATH = Path("reports/datasets/stackexchange-difficulty/sede_pilot_query.sql")
+SITE_GENERIC_QUERY_PATH = Path(
+    "reports/datasets/stackexchange-difficulty/sede_pilot_query_site_generic.sql"
+)
 NON_CODE_QUERY_PATH = Path(
     "reports/datasets/stackexchange-difficulty/sede_pilot_query_non_code_questions.sql"
 )
@@ -35,6 +38,20 @@ def test_sede_pilot_query_avoids_full_table_stratum_parameter():
 
 def test_sede_pilot_query_selects_expected_export_columns():
     query = QUERY_PATH.read_text(encoding="utf-8")
+    assert_expected_columns_present(query)
+
+
+def test_site_generic_query_uses_selected_site_and_generic_tag_family():
+    query = SITE_GENERIC_QUERY_PATH.read_text(encoding="utf-8")
+
+    assert "Stack Exchange SEDE site-generic" in query
+    assert "CHARINDEX('><', q.tags)" in query
+    assert "LOWER(SUBSTRING(q.tags" in query
+    assert "q.Tags LIKE '%<python>%'" not in query
+    assert "SELECT TOP 20000" in query
+    assert "SELECT TOP 5000" in query
+    assert "FROM selected_questions AS sq" in query
+    assert query.index("FROM selected_questions AS sq") < query.index("OUTER APPLY")
     assert_expected_columns_present(query)
 
 
