@@ -9,6 +9,8 @@ This checklist must be completed before a real SEDE pilot export is processed.
 - Confirm the export target is 5,000-10,000 question rows.
 - Confirm the expected columns match `sede_expected_columns.tsv`.
 - Do not edit downloaded raw exports manually.
+- Do not paste, store, script, or commit credentials. Login and Cloudflare
+  verification are browser-only manual steps.
 - If SEDE rejects `DECLARE @RowsPerStratum`, replace the variable with a
   literal value in the query template and record that change before export.
 
@@ -32,6 +34,19 @@ export PILOT_RAW="data/raw/stackexchange-difficulty/sede-pilot-${PILOT_DATE}.${P
 
 stackexchange-difficulty preflight-sede --export "$PILOT_RAW"
 ```
+
+For browser-assisted automation, run:
+
+```bash
+stackexchange-difficulty run-sede-pilot \
+  --pilot-date auto \
+  --download-dir "$HOME/Downloads" \
+  --open-browser \
+  --timeout-seconds 1800
+```
+
+The command opens SEDE and watches for the exported CSV/TSV, but the user must
+complete login, Cloudflare verification, query execution, and export manually.
 
 ## Processing Rule
 

@@ -25,6 +25,10 @@ reports/run-logs/
 reports/terminal-sessions/
 reports/notebook-runs/
 reports/latest.txt
+downloads/
+*.crdownload
+*.part
+*.download
 *.log
 *.tmp
 
@@ -32,4 +36,3 @@ reports/latest.txt
 .DS_Store
 .idea/
 .vscode/
-

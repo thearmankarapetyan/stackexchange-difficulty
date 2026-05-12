@@ -37,6 +37,12 @@ Verify the installed console script:
 stackexchange-difficulty --help
 ```
 
+Credential safety: never paste, store, script, or commit Stack Exchange,
+university, or browser credentials in this project. If SEDE requires login or
+Cloudflare verification, complete that step manually in the browser. The tooling
+only prepares the query, watches for the exported file, and processes local
+files after the manual export.
+
 Validate synthetic fixture data:
 
 ```bash
@@ -117,9 +123,70 @@ stackexchange-difficulty derive \
   --out-dir "$PILOT_DERIVED"
 ```
 
+Run the browser-assisted SEDE pilot pipeline after manual browser export:
+
+```bash
+stackexchange-difficulty run-sede-pilot \
+  --pilot-date auto \
+  --download-dir "$HOME/Downloads" \
+  --open-browser \
+  --timeout-seconds 1800
+```
+
+This opens the Stack Overflow SEDE query page and copies the query to the
+clipboard when a local clipboard tool is available. The user still completes
+login, Cloudflare verification, query execution, and CSV/TSV export manually.
+After the export appears, the command copies it unchanged into
+`data/raw/stackexchange-difficulty/`, hashes it, preflights the row and schema
+gate, creates dated JSON provenance, ingests normalized local tables, finalizes
+processed hashes before derivation, writes JSONL, and creates an aggregate audit
+without post text.
+
+If the export already exists locally, skip browser watching:
+
+```bash
+stackexchange-difficulty run-sede-pilot \
+  --export "data/raw/stackexchange-difficulty/sede-pilot-${PILOT_DATE}.csv" \
+  --pilot-date "$PILOT_DATE"
+```
+
 Use `provenance_sede_pilot_template.json` as the starting point for real pilot
 metadata. The first real SEDE pilot uses JSON provenance; YAML remains available
 for repository templates and synthetic fixtures.
+
+Prepare a metadata-only Hugging Face dataset release folder after a dated pilot
+provenance file and aggregate audit exist:
+
+```bash
+stackexchange-difficulty prepare-hf-release \
+  --pilot-date "$PILOT_DATE" \
+  --repo-id "NAMESPACE/stackexchange-difficulty" \
+  --out-dir "dist/huggingface/stackexchange-difficulty-${PILOT_DATE}"
+```
+
+The release folder contains only safe metadata: the dataset card, release
+manifest, data dictionary, dated provenance, aggregate audit, protocol docs, and
+the methodology report. It does not stage raw SEDE exports, processed Stack
+Exchange post text, JSONL thread records, browser downloads, or credentials.
+`dist/` remains ignored by Git.
+
+Preview Hugging Face upload commands without network access:
+
+```bash
+stackexchange-difficulty upload-hf-release \
+  --release-dir "dist/huggingface/stackexchange-difficulty-${PILOT_DATE}" \
+  --repo-id "NAMESPACE/stackexchange-difficulty"
+```
+
+Apply the upload only after local review and authentication through `hf auth
+login` or `HF_TOKEN`; the command verifies access with `hf auth whoami`:
+
+```bash
+stackexchange-difficulty upload-hf-release \
+  --release-dir "dist/huggingface/stackexchange-difficulty-${PILOT_DATE}" \
+  --repo-id "NAMESPACE/stackexchange-difficulty" \
+  --apply
+```
 
 For source-tree development without installation, the module form remains
 available with `PYTHONPATH=src python -m stackexchange_difficulty ...`.

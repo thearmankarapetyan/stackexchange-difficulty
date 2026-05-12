@@ -5,11 +5,20 @@ from __future__ import annotations
 from typing import Any
 
 from stackexchange_difficulty.schema import COMMENT_REQUIRED_COLUMNS, SEDE_PILOT_REQUIRED_COLUMNS
-from stackexchange_difficulty.validation import Table, ValidationIssue, validate_required_columns
+from stackexchange_difficulty.validation import (
+    Table,
+    ValidationIssue,
+    validate_dataset,
+    validate_required_columns,
+)
 
 
 def validate_sede_export(table: Table) -> list[ValidationIssue]:
-    return validate_required_columns(table, SEDE_PILOT_REQUIRED_COLUMNS)
+    issues = validate_required_columns(table, SEDE_PILOT_REQUIRED_COLUMNS)
+    if issues:
+        return issues
+    questions, answers, comments = normalize_sede_export(table)
+    return validate_dataset(questions, answers=answers, comments=comments).issues
 
 
 def normalize_sede_export(table: Table) -> tuple[Table, Table, Table]:
@@ -39,26 +48,30 @@ def normalize_sede_export(table: Table) -> tuple[Table, Table, Table]:
             }
         )
 
+        first_answer_id = _clean(row.get("first_answer_id"))
         _append_answer(
             answers,
             seen_answers,
-            answer_id=_clean(row.get("first_answer_id")),
+            answer_id=first_answer_id,
             question_id=question_id,
             body_html=_clean(row.get("first_answer_body_html")),
             score=_clean(row.get("first_answer_score")),
             creation_date=_clean(row.get("first_answer_creation_date")),
-            is_accepted=_clean(row.get("first_answer_id")) == accepted_answer_id,
+            is_accepted=first_answer_id == accepted_answer_id,
         )
-        _append_answer(
-            answers,
-            seen_answers,
-            answer_id=accepted_answer_id,
-            question_id=question_id,
-            body_html=_clean(row.get("accepted_answer_body_html")),
-            score=_clean(row.get("accepted_answer_score")),
-            creation_date=_clean(row.get("accepted_answer_creation_date")),
-            is_accepted=bool(accepted_answer_id),
-        )
+        accepted_body = _clean(row.get("accepted_answer_body_html"))
+        accepted_created = _clean(row.get("accepted_answer_creation_date"))
+        if accepted_answer_id == first_answer_id or accepted_body or accepted_created:
+            _append_answer(
+                answers,
+                seen_answers,
+                answer_id=accepted_answer_id,
+                question_id=question_id,
+                body_html=accepted_body,
+                score=_clean(row.get("accepted_answer_score")),
+                creation_date=accepted_created,
+                is_accepted=bool(accepted_answer_id),
+            )
 
     return (
         Table(name="questions", rows=questions, columns=tuple(questions[0]) if questions else ()),

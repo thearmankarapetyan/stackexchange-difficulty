@@ -28,7 +28,11 @@ The first real SEDE pilot is ready for review only when:
 - A raw export has been saved under `data/raw/stackexchange-difficulty/` and is
   ignored by Git.
 - `stackexchange-difficulty preflight-sede` has confirmed required columns,
-  the 5,000-10,000 row target, and the raw export hash.
+  the 5,000-10,000 row target, duplicate IDs, artificial-ID exclusion,
+  accepted-answer consistency, and the raw export hash.
+- If `stackexchange-difficulty run-sede-pilot` is used, browser login and
+  Cloudflare verification remain manual and no credentials are handled by the
+  project tooling.
 - A dated JSON provenance file has been created from
   `provenance_sede_pilot_template.json`.
 - `stackexchange-difficulty ingest-sede` has produced normalized local tables.
@@ -38,3 +42,23 @@ The first real SEDE pilot is ready for review only when:
 - The tracked audit under `audits/` contains aggregate validation results,
   processed-file hashes, and the manual-inspection summary.
 - No real Stack Exchange post content has been committed.
+
+## Hugging Face Metadata Release Gate
+
+A private Hugging Face metadata release is ready only when:
+
+- A dated pilot provenance JSON file exists under
+  `reports/datasets/stackexchange-difficulty/`.
+- A dated aggregate pilot audit exists under
+  `reports/datasets/stackexchange-difficulty/audits/`.
+- `stackexchange-difficulty prepare-hf-release` creates a release folder under
+  ignored `dist/` with a dataset card, manifest, data dictionary, protocol docs,
+  provenance, audit, and methodology report.
+- The generated manifest includes SHA-256 hashes for every staged file.
+- The staged files contain no credential-like markers.
+- The staged files do not include raw SEDE exports, processed Stack Exchange
+  post text, JSONL thread records, comments, usernames, browser downloads, or
+  local raw/processed data outputs.
+- `stackexchange-difficulty upload-hf-release` is reviewed in dry-run mode
+  before any `--apply` upload.
+- Any applied upload uses `hf auth whoami` and a private dataset repository.

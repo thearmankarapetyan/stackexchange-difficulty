@@ -10,6 +10,11 @@ from typing import Any
 
 from stackexchange_difficulty.api import run_api_smoke
 from stackexchange_difficulty.derive import derive_indicators
+from stackexchange_difficulty.hf_release import (
+    HuggingFaceReleaseError,
+    prepare_hf_release,
+    upload_hf_release,
+)
 from stackexchange_difficulty.jsonl import build_threads, write_jsonl
 from stackexchange_difficulty.provenance import (
     finalize_processed_hashes,
@@ -18,6 +23,13 @@ from stackexchange_difficulty.provenance import (
     write_provenance_json,
 )
 from stackexchange_difficulty.sede import normalize_sede_export, validate_sede_export
+from stackexchange_difficulty.sede_pilot import (
+    SEDE_QUERY_URL,
+    SedePilotConfig,
+    SedePilotError,
+    resolve_pilot_date,
+    run_sede_pilot,
+)
 from stackexchange_difficulty.validation import (
     read_table,
     validate_dataset,
@@ -69,6 +81,44 @@ def build_parser() -> argparse.ArgumentParser:
     ingest_sede.add_argument("--provenance", required=True)
     ingest_sede.add_argument("--out-dir", required=True)
     ingest_sede.set_defaults(func=cmd_ingest_sede)
+
+    run_sede = subparsers.add_parser(
+        "run-sede-pilot",
+        help="Run the safe browser-assisted SEDE pilot pipeline.",
+    )
+    run_sede.add_argument("--export", help="Already downloaded local SEDE CSV/TSV export.")
+    run_sede.add_argument("--pilot-date", default="auto")
+    run_sede.add_argument("--download-dir", default=str(Path.home() / "Downloads"))
+    run_sede.add_argument("--open-browser", action="store_true")
+    run_sede.add_argument("--timeout-seconds", type=float, default=1800)
+    run_sede.add_argument("--min-rows", type=int, default=5000)
+    run_sede.add_argument("--max-rows", type=int, default=10000)
+    run_sede.add_argument("--query-url", default=SEDE_QUERY_URL)
+    run_sede.add_argument("--project-root", default=".")
+    run_sede.set_defaults(func=cmd_run_sede_pilot)
+
+    prepare_hf = subparsers.add_parser(
+        "prepare-hf-release",
+        help="Prepare a metadata-only Hugging Face dataset release folder.",
+    )
+    prepare_hf.add_argument("--pilot-date", required=True)
+    prepare_hf.add_argument("--repo-id", required=True)
+    prepare_hf.add_argument("--out-dir", required=True)
+    prepare_hf.add_argument("--project-root", default=".")
+    prepare_hf.set_defaults(func=cmd_prepare_hf_release)
+
+    upload_hf = subparsers.add_parser(
+        "upload-hf-release",
+        help="Dry-run or apply a metadata-only Hugging Face dataset upload.",
+    )
+    upload_hf.add_argument("--release-dir", required=True)
+    upload_hf.add_argument("--repo-id", required=True)
+    upload_hf.add_argument("--apply", action="store_true")
+    upload_hf.add_argument(
+        "--commit-message",
+        default="Publish metadata-only Stack Exchange difficulty release",
+    )
+    upload_hf.set_defaults(func=cmd_upload_hf_release)
 
     finalize_provenance = subparsers.add_parser(
         "finalize-provenance",
@@ -221,6 +271,59 @@ def cmd_finalize_provenance(args: argparse.Namespace) -> int:
             sort_keys=True,
         )
     )
+    return 0
+
+
+def cmd_run_sede_pilot(args: argparse.Namespace) -> int:
+    try:
+        pilot_date = resolve_pilot_date(args.pilot_date)
+        result = run_sede_pilot(
+            SedePilotConfig(
+                project_root=Path(args.project_root),
+                pilot_date=pilot_date,
+                export_path=Path(args.export) if args.export else None,
+                download_dir=Path(args.download_dir) if args.download_dir else None,
+                open_browser=args.open_browser,
+                timeout_seconds=args.timeout_seconds,
+                min_rows=args.min_rows,
+                max_rows=args.max_rows,
+                query_url=args.query_url,
+            )
+        )
+    except SedePilotError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0 if result.ok else 1
+
+
+def cmd_prepare_hf_release(args: argparse.Namespace) -> int:
+    try:
+        result = prepare_hf_release(
+            project_root=Path(args.project_root),
+            pilot_date=args.pilot_date,
+            repo_id=args.repo_id,
+            out_dir=Path(args.out_dir),
+        )
+    except HuggingFaceReleaseError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0
+
+
+def cmd_upload_hf_release(args: argparse.Namespace) -> int:
+    try:
+        result = upload_hf_release(
+            release_dir=Path(args.release_dir),
+            repo_id=args.repo_id,
+            apply=args.apply,
+            commit_message=args.commit_message,
+        )
+    except HuggingFaceReleaseError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
     return 0
 
 

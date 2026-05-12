@@ -139,3 +139,107 @@ Verification results:
 No live API smoke check, SEDE export, Data Dump download, HTML scraping, or real
 corpus collection was run during this implementation because no real local SEDE
 export was present.
+
+## 2026-05-12 Browser-assisted SEDE pilot automation implementation
+
+Implemented safe automation for the non-API SEDE pilot path without handling
+credentials or bypassing browser verification:
+
+- Added `stackexchange-difficulty run-sede-pilot` with two paths: an
+  already-downloaded `--export` path and a browser-assisted `--open-browser`
+  path that watches for a new CSV/TSV export.
+- Kept login, Cloudflare verification, query execution, and export confirmation
+  as manual browser actions; credentials must never be pasted, stored, scripted,
+  logged, or committed in this project.
+- Added local raw-copy, hashing, preflight, dated JSON provenance creation,
+  ingestion, processed-hash finalization before derivation, JSONL derivation,
+  derived hash writing, and aggregate audit generation.
+- Strengthened SEDE export validation so preflight catches duplicate question
+  IDs, artificial post IDs, and accepted-answer consistency failures before
+  processed outputs are accepted.
+- Added tests for download detection, partial downloads, unsupported suffixes,
+  mocked browser opening, synthetic full-pipeline execution, finalized
+  provenance inside JSONL, and Git ignore protection for real-data paths.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 34 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `source ~/venvs/stage/bin/activate && stackexchange-difficulty --help`:
+  passed.
+- `source ~/venvs/stage/bin/activate && stackexchange-difficulty run-sede-pilot --help`:
+  passed.
+- Installed-script synthetic `run-sede-pilot --export` with custom row bounds:
+  passed in a temporary project root and wrote raw, processed, derived,
+  provenance, and aggregate audit outputs outside the repository.
+- `git check-ignore` confirmed the dated raw export, processed question table,
+  derived JSONL, and browser partial-download paths remain ignored by Git.
+
+No live SEDE export, API crawl, Data Dump download, HTML scraping, credential
+use, or real corpus collection was run during this implementation.
+
+## 2026-05-12 Hugging Face metadata-release implementation
+
+Implemented a private-first, metadata-only Hugging Face release layer without
+uploading any data:
+
+- Added `stackexchange-difficulty prepare-hf-release` to stage a local release
+  folder under ignored `dist/` from safe project metadata only.
+- Added `stackexchange-difficulty upload-hf-release` with dry-run output by
+  default and opt-in `--apply` execution through the `hf` CLI.
+- Added release safety checks for missing dated audit/provenance files, raw or
+  processed data paths, and credential-like markers.
+- Added a generated Hugging Face dataset card, release manifest, and license
+  and attribution notes.
+- Added `huggingface_release_checklist.md` documenting private repository use,
+  authentication boundaries, and the ban on real post-text upload in v1.
+- Added tests for release packaging, manifest hashes, dry-run upload behavior,
+  missing `hf`, failed `hf auth whoami`, mocked apply-mode CLI calls, ignored
+  `dist/` paths, and credential-marker rejection.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 43 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `source ~/venvs/stage/bin/activate && stackexchange-difficulty --help`:
+  passed.
+- `source ~/venvs/stage/bin/activate && stackexchange-difficulty prepare-hf-release --help`:
+  passed.
+- `source ~/venvs/stage/bin/activate && stackexchange-difficulty upload-hf-release --help`:
+  passed.
+- `git check-ignore dist/huggingface/stackexchange-difficulty-2026-05-12/README.md`:
+  passed.
+- Credential scan for the previously exposed password, university email, and
+  Hugging Face token patterns found no real leaked credentials in the project;
+  the only password-like match was a synthetic test string used to verify the
+  release safety gate.
+
+No Hugging Face upload, live API smoke check, SEDE export, Data Dump download,
+HTML scraping, credential use, or real corpus collection was run during this
+implementation.
+
+## 2026-05-12 Tooling checkpoint before first pilot
+
+Prepared the current SEDE pilot automation and Hugging Face metadata-release
+tooling for publication to `main`:
+
+- Extended GitHub Actions to verify `run-sede-pilot`, `prepare-hf-release`, and
+  `upload-hf-release` help output in addition to tests, Ruff, and base CLI help.
+- Confirmed the implementation includes current tracked edits and untracked
+  feature files for SEDE browser-assisted automation and metadata-only HF
+  release packaging.
+- Adjusted the credential-marker test fixture so the project safety scanner is
+  still tested without matching the known leaked credential patterns.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 43 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `stackexchange-difficulty --help`: passed.
+- `stackexchange-difficulty run-sede-pilot --help`: passed.
+- `stackexchange-difficulty prepare-hf-release --help`: passed.
+- `stackexchange-difficulty upload-hf-release --help`: passed.
+- `git diff --check`: passed.
+- `git check-ignore dist/huggingface/stackexchange-difficulty-2026-05-12/README.md`:
+  passed.
+- Known-leak credential scan found no matches.
