@@ -1,0 +1,9 @@
+{
+  "source_method": "synthetic_fixture",
+  "source_version": "fixture-v1",
+  "access_date": "2026-05-12",
+  "license": "CC0-1.0 for synthetic test data",
+  "transformation_steps": ["created minimal synthetic records", "validated fixture links"],
+  "output_hash": "sha256:synthetic-placeholder"
+}
+

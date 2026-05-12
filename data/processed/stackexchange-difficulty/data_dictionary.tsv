@@ -1,0 +1,39 @@
+table	field	description
+questions	question_id	Stack Exchange question identifier.
+questions	title	Question title from the source platform.
+questions	body_html	Rendered HTML from Posts.Body.
+questions	tags	Source tag string or normalized tag list.
+questions	creation_date	Question creation timestamp.
+questions	score	Question score.
+questions	view_count	Question view count.
+questions	answer_count	Number of answers recorded for the question.
+questions	comment_count	Number of comments recorded for the question.
+questions	closed_date	Closure timestamp when present.
+questions	accepted_answer_id	Accepted answer identifier when present.
+questions	is_duplicate	Derived or source duplicate flag.
+questions	content_license	Content license recorded by the source.
+answers	answer_id	Answer identifier.
+answers	question_id	Parent question identifier.
+answers	body_html	Rendered answer HTML.
+answers	score	Answer score.
+answers	creation_date	Answer creation timestamp.
+answers	is_accepted	Whether this answer is the accepted answer.
+comments	comment_id	Comment identifier.
+comments	post_id	Parent question or answer identifier.
+comments	text	Public comment text.
+comments	score	Comment score.
+comments	creation_date	Comment creation timestamp.
+derived_thread_indicators	has_answer	Whether the thread has at least one answer.
+derived_thread_indicators	has_accepted_answer	Whether the thread has an accepted answer.
+derived_thread_indicators	is_unanswered	Whether the thread has zero answers under this implementation.
+derived_thread_indicators	is_closed	Whether the question has a closure timestamp.
+derived_thread_indicators	is_duplicate	Whether the thread is marked as duplicate.
+derived_thread_indicators	time_to_first_answer_hours	Hours from question creation to first answer.
+derived_thread_indicators	time_to_accepted_answer_hours	Hours from question creation to accepted answer.
+derived_thread_indicators	comment_count_before_first_answer	Question comments before first answer.
+derived_thread_indicators	tag_popularity_bucket	Low, medium, high, or none within the current sample.
+derived_thread_indicators	rare_tag_flag	Whether all question tags occur once in the current sample.
+derived_thread_indicators	question_length	Plain-text word count derived from rendered HTML.
+derived_thread_indicators	code_block_count	Count of HTML or markdown code block markers.
+derived_thread_indicators	contains_error_message	Heuristic error/exception wording flag.
+

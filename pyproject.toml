@@ -1,0 +1,23 @@
+[project]
+name = "stackexchange-difficulty"
+version = "0.1.0"
+description = "Scaffold for Stack Exchange technical question difficulty corpus construction."
+requires-python = ">=3.12"
+dependencies = [
+  "requests>=2.31",
+]
+
+[project.scripts]
+stackexchange-difficulty = "stackexchange_difficulty.cli:main"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+

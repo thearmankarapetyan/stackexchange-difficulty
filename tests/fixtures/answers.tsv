@@ -1,0 +1,4 @@
+answer_id	question_id	body_html	score	creation_date	is_accepted
+201	101	<p>Convert the value after validating the CSV cell.</p>	4	2026-01-01T12:00:00+00:00	true
+202	103	<p>Use the standard date formatting API for this case.</p>	2	2026-01-03T10:30:00+00:00	false
+

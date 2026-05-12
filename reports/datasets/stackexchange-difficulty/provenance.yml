@@ -1,0 +1,22 @@
+# Provenance template for future Stack Exchange difficulty datasets.
+dataset_name: "stackexchange-difficulty"
+dataset_version: "scaffold-v1"
+source_method: "synthetic_fixture"
+source_version: "fixture-v1"
+query_or_dump_file: "tests/fixtures/questions.tsv"
+access_date: "2026-05-12"
+official_source_checked_at: "2026-05-11"
+source_url_checked_at:
+  stack_exchange_api_docs: "2026-05-11"
+  stack_exchange_data_dump_help: "2026-05-11"
+  stack_exchange_licensing_help: "2026-05-11"
+  stack_exchange_schema_meta: "2026-05-11"
+license: "CC0-1.0 for synthetic test data"
+transformation_steps:
+  - "created minimal synthetic records"
+  - "validated fixture links"
+raw_export_hash: "sha256:not-applicable-for-scaffold"
+processed_output_hash: "sha256:not-applicable-for-scaffold"
+output_hash: "sha256:not-applicable-for-scaffold"
+script_version: "0.1.0"
+

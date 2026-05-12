@@ -1,0 +1,4 @@
+comment_id	post_id	text	score	creation_date
+301	101	Which CSV library are you using?	1	2026-01-01T11:00:00+00:00
+302	201	This answer fixed the synthetic fixture.	0	2026-01-01T13:00:00+00:00
+

@@ -1,0 +1,35 @@
+# Python caches and environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# Local build artifacts
+build/
+dist/
+*.egg-info/
+
+# Raw and generated data are local by default.
+data/raw/stackexchange-difficulty/*
+!data/raw/stackexchange-difficulty/README.md
+data/processed/stackexchange-difficulty/*
+!data/processed/stackexchange-difficulty/README.md
+!data/processed/stackexchange-difficulty/data_dictionary.tsv
+
+# Local run outputs
+reports/run-logs/
+reports/terminal-sessions/
+reports/notebook-runs/
+reports/latest.txt
+*.log
+*.tmp
+
+# Editor and OS noise
+.DS_Store
+.idea/
+.vscode/
+
