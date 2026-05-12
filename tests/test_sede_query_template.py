@@ -7,6 +7,9 @@ QUERY_PATH = Path("reports/datasets/stackexchange-difficulty/sede_pilot_query.sq
 NON_CODE_QUERY_PATH = Path(
     "reports/datasets/stackexchange-difficulty/sede_pilot_query_non_code_questions.sql"
 )
+NON_CODING_QUERY_PATH = Path(
+    "reports/datasets/stackexchange-difficulty/sede_pilot_query_non_coding_questions.sql"
+)
 EXPECTED_COLUMNS_PATH = Path(
     "reports/datasets/stackexchange-difficulty/sede_expected_columns.tsv"
 )
@@ -40,6 +43,23 @@ def test_non_code_question_query_filters_rendered_code_markup():
 
     assert "q.Body NOT LIKE '%<code>%'" in query
     assert "SELECT TOP 60000" in query
+    assert "SELECT TOP 5000" in query
+    assert "FROM selected_questions AS sq" in query
+    assert query.index("FROM selected_questions AS sq") < query.index("OUTER APPLY")
+    assert_expected_columns_present(query)
+
+
+def test_non_coding_question_query_filters_code_and_debugging_signals():
+    query = NON_CODING_QUERY_PATH.read_text(encoding="utf-8")
+
+    assert "q.Body NOT LIKE '%<code>%'" in query
+    assert "q.Tags LIKE '%<algorithm>%'" in query
+    assert "q.Tags LIKE '%<design-patterns>%'" in query
+    assert "q.Tags NOT LIKE '%<python>%'" in query
+    assert "q.Tags NOT LIKE '%<javascript>%'" in query
+    assert "q.Title NOT LIKE '%error%'" in query
+    assert "q.Body NOT LIKE '%exception%'" in query
+    assert "SELECT TOP 200000" in query
     assert "SELECT TOP 5000" in query
     assert "FROM selected_questions AS sq" in query
     assert query.index("FROM selected_questions AS sq") < query.index("OUTER APPLY")
