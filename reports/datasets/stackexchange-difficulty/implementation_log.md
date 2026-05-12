@@ -268,3 +268,30 @@ Fix:
 - Added OSC52 terminal fallback when stderr is a real terminal and `TERM` is not
   `dumb`.
 - Added tests for Tk fallback routing and OSC52 escape generation.
+
+## 2026-05-12 Clipboard verification and browser-helper fix
+
+Fixed a second clipboard problem where `run-sede-pilot` reported successful
+copying, but the query was not available in the user's paste buffer.
+
+Cause:
+
+- The Python/Tk fallback can accept clipboard text and return success even when
+  no clipboard manager persists the selection after the process exits.
+- A separate Python process could not read back the value, which matched the
+  user's observed paste failure.
+
+Fix:
+
+- Python/Tk clipboard copying now succeeds only if a separate process can read
+  the same clipboard value back.
+- If terminal clipboard copying is unavailable, `run-sede-pilot --open-browser`
+  writes an ignored local browser helper page under `reports/run-logs/` and
+  opens it before the SEDE editor.
+- The helper page contains the SQL in a textarea plus a browser-local copy
+  button using `navigator.clipboard.writeText` with `document.execCommand`
+  fallback.
+- Added tests for helper-page creation, helper opening, HTML escaping, and
+  cross-process Tk verification failure.
+- Converted missing download directories from raw `FileNotFoundError` into a
+  clear `SedePilotError`.
