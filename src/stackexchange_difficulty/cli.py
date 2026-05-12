@@ -12,6 +12,7 @@ from stackexchange_difficulty.api import run_api_smoke
 from stackexchange_difficulty.derive import derive_indicators
 from stackexchange_difficulty.jsonl import build_threads, write_jsonl
 from stackexchange_difficulty.provenance import load_provenance
+from stackexchange_difficulty.sede import normalize_sede_export, validate_sede_export
 from stackexchange_difficulty.validation import (
     read_table,
     validate_dataset,
@@ -47,6 +48,12 @@ def build_parser() -> argparse.ArgumentParser:
     derive.add_argument("--provenance")
     derive.add_argument("--out-dir", required=True)
     derive.set_defaults(func=cmd_derive)
+
+    ingest_sede = subparsers.add_parser("ingest-sede", help="Normalize a local SEDE pilot export.")
+    ingest_sede.add_argument("--export", required=True)
+    ingest_sede.add_argument("--provenance", required=True)
+    ingest_sede.add_argument("--out-dir", required=True)
+    ingest_sede.set_defaults(func=cmd_ingest_sede)
 
     api_smoke = subparsers.add_parser("api-smoke", help="Run opt-in API v2.3 metadata smoke.")
     api_smoke.add_argument("--live", action="store_true")
@@ -89,6 +96,59 @@ def cmd_derive(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_ingest_sede(args: argparse.Namespace) -> int:
+    export = read_table(args.export, name="sede_export")
+    provenance = load_provenance(args.provenance)
+    export_issues = validate_sede_export(export)
+    out_dir = Path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    if export_issues:
+        report = {
+            "ok": False,
+            "issues": [issue.__dict__ for issue in export_issues],
+            "row_counts": {"sede_export": len(export.rows)},
+        }
+        (out_dir / "validation_report.json").write_text(
+            json.dumps(report, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        print(json.dumps({"ok": False, "issues": len(export_issues)}, sort_keys=True))
+        return 1
+
+    questions, answers, comments = normalize_sede_export(export)
+    report = validate_dataset(
+        questions,
+        answers=answers,
+        comments=comments,
+        provenance=provenance,
+    )
+    write_validation_report(report, out_dir / "validation_report.json")
+    if not report.ok:
+        print(json.dumps({"ok": False, "issues": len(report.issues)}, sort_keys=True))
+        return 1
+
+    write_tsv(questions.rows, out_dir / "questions.tsv", fieldnames=list(questions.columns))
+    write_tsv(answers.rows, out_dir / "answers.tsv", fieldnames=list(answers.columns))
+    write_tsv(comments.rows, out_dir / "comments.tsv", fieldnames=list(comments.columns))
+    (out_dir / "provenance.json").write_text(
+        json.dumps(provenance, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(
+        json.dumps(
+            {
+                "ok": True,
+                "questions": len(questions.rows),
+                "answers": len(answers.rows),
+                "comments": len(comments.rows),
+            },
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
 def cmd_api_smoke(args: argparse.Namespace) -> int:
     try:
         metadata = run_api_smoke(live=args.live, site=args.site, out=args.out)
@@ -99,14 +159,19 @@ def cmd_api_smoke(args: argparse.Namespace) -> int:
     return 0
 
 
-def write_tsv(rows: list[dict[str, Any]], path: str | Path) -> None:
+def write_tsv(
+    rows: list[dict[str, Any]],
+    path: str | Path,
+    fieldnames: list[str] | None = None,
+) -> None:
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
-    if not rows:
+    if not rows and not fieldnames:
         target.write_text("", encoding="utf-8")
         return
+    fieldnames = fieldnames or list(rows[0])
     with target.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), delimiter="\t")
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, delimiter="\t")
         writer.writeheader()
         writer.writerows(rows)
 

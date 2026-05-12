@@ -67,3 +67,25 @@ PROVENANCE_IDENTIFIER_KEYS = (
     "export_identifier",
 )
 
+SEDE_PILOT_REQUIRED_COLUMNS = (
+    "question_id",
+    "title",
+    "body_html",
+    "tags",
+    "creation_date",
+    "score",
+    "view_count",
+    "answer_count",
+    "comment_count",
+    "closed_date",
+    "accepted_answer_id",
+    "is_duplicate",
+    "content_license",
+    "first_answer_id",
+    "first_answer_body_html",
+    "first_answer_score",
+    "first_answer_creation_date",
+    "accepted_answer_body_html",
+    "accepted_answer_score",
+    "accepted_answer_creation_date",
+)

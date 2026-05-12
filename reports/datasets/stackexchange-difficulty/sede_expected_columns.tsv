@@ -1,0 +1,26 @@
+column	required	purpose
+question_id	yes	Question identifier used as the thread key.
+title	yes	Question title.
+body_html	yes	Rendered question body HTML.
+tags	yes	Source tag string.
+creation_date	yes	Question creation timestamp.
+score	yes	Question score.
+view_count	yes	Question view count.
+answer_count	yes	Question answer count.
+comment_count	yes	Question comment count.
+closed_date	yes	Question closure timestamp when present.
+accepted_answer_id	yes	Accepted answer identifier when present.
+is_duplicate	yes	Duplicate flag from PostLinks.
+content_license	yes	Source content license.
+first_answer_id	yes	First answer identifier when present.
+first_answer_body_html	yes	First answer rendered HTML when present.
+first_answer_score	yes	First answer score when present.
+first_answer_creation_date	yes	First answer creation timestamp when present.
+accepted_answer_body_html	yes	Accepted answer rendered HTML when present.
+accepted_answer_score	yes	Accepted answer score when present.
+accepted_answer_creation_date	yes	Accepted answer creation timestamp when present.
+answer_status	no	Stratum label for answered/unanswered state.
+accepted_status	no	Stratum label for accepted/no-accepted state.
+closure_status	no	Stratum label for open/closed state.
+tag_family	no	Coarse tag-family stratum.
+time_period	no	Temporal stratum.

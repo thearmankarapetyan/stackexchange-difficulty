@@ -1,0 +1,8 @@
+{
+  "source_method": "sede_pilot_export",
+  "query_or_dump_file": "reports/datasets/stackexchange-difficulty/sede_pilot_query.sql",
+  "access_date": "2026-05-12",
+  "license": "CC BY-SA 4.0 for future Stack Exchange exports; synthetic fixture is CC0-1.0",
+  "transformation_steps": ["normalized synthetic SEDE-shaped export"],
+  "output_hash": "sha256:synthetic-sede-placeholder"
+}

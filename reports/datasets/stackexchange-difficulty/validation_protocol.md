@@ -13,6 +13,8 @@ comparison is attempted.
 - Verify that every `accepted_answer_id` points to an existing answer for the
   same question.
 - Check provenance completeness before processed outputs are accepted.
+- For SEDE pilot ingestion, require the export columns listed in
+  `sede_expected_columns.tsv` before writing normalized processed tables.
 
 ## Distribution Checks
 
@@ -27,4 +29,3 @@ comparison is attempted.
 At least 100 records in a future real pilot must be inspected for readability,
 field linking, code/error preservation, duplicate-link usefulness, comment
 context, and record-level provenance.
-

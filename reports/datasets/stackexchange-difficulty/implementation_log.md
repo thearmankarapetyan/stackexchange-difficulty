@@ -37,3 +37,36 @@ Verification results:
 
 No live API smoke check, SEDE export, Data Dump download, HTML scraping, or real
 corpus collection was run during scaffold implementation.
+
+## 2026-05-12 Next-step hardening
+
+Implemented reproducibility hardening before any real SEDE export:
+
+- Added GitHub Actions CI for Python 3.12 with package installation, tests,
+  Ruff, and console-script help.
+- Added editable-install documentation and verified
+  `stackexchange-difficulty --help` from a clean virtual environment.
+- Added a documented SEDE pilot query template, expected-column file, and export
+  checklist.
+- Added `ingest-sede` for local SEDE CSV/TSV normalization into canonical
+  question, answer, comment, provenance, and validation outputs.
+- Added synthetic SEDE-shaped fixtures only; no real Stack Exchange content was
+  committed.
+
+Verification results:
+
+- `python -m pytest`: passed, 18 tests.
+- `python -m ruff check .`: passed.
+- `stackexchange-difficulty --help` after editable install: passed.
+- Installed-script fixture validation: passed and wrote
+  `/tmp/stackexchange-validation.json`.
+- Installed-script fixture derivation: passed and wrote
+  `/tmp/stackexchange-derived/derived_thread_indicators.tsv`,
+  `/tmp/stackexchange-derived/threads.jsonl`, and
+  `/tmp/stackexchange-derived/validation_report.json`.
+- Installed-script synthetic SEDE ingestion: passed and wrote normalized
+  outputs under `/tmp/stackexchange-sede-ingest`.
+- API smoke without `--live`: refused network access and wrote no output file.
+
+No live API smoke check, SEDE export, Data Dump download, HTML scraping, or real
+corpus collection was run during this hardening step.
