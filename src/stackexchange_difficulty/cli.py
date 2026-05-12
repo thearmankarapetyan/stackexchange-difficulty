@@ -11,7 +11,12 @@ from typing import Any
 from stackexchange_difficulty.api import run_api_smoke
 from stackexchange_difficulty.derive import derive_indicators
 from stackexchange_difficulty.jsonl import build_threads, write_jsonl
-from stackexchange_difficulty.provenance import load_provenance
+from stackexchange_difficulty.provenance import (
+    finalize_processed_hashes,
+    load_provenance,
+    sha256_file,
+    write_provenance_json,
+)
 from stackexchange_difficulty.sede import normalize_sede_export, validate_sede_export
 from stackexchange_difficulty.validation import (
     read_table,
@@ -49,11 +54,30 @@ def build_parser() -> argparse.ArgumentParser:
     derive.add_argument("--out-dir", required=True)
     derive.set_defaults(func=cmd_derive)
 
+    preflight_sede = subparsers.add_parser(
+        "preflight-sede",
+        help="Validate a local SEDE pilot export before ingestion.",
+    )
+    preflight_sede.add_argument("--export", required=True)
+    preflight_sede.add_argument("--min-rows", type=int, default=5000)
+    preflight_sede.add_argument("--max-rows", type=int, default=10000)
+    preflight_sede.add_argument("--hash-out")
+    preflight_sede.set_defaults(func=cmd_preflight_sede)
+
     ingest_sede = subparsers.add_parser("ingest-sede", help="Normalize a local SEDE pilot export.")
     ingest_sede.add_argument("--export", required=True)
     ingest_sede.add_argument("--provenance", required=True)
     ingest_sede.add_argument("--out-dir", required=True)
     ingest_sede.set_defaults(func=cmd_ingest_sede)
+
+    finalize_provenance = subparsers.add_parser(
+        "finalize-provenance",
+        help="Replace pending provenance output hashes from a hash manifest.",
+    )
+    finalize_provenance.add_argument("--provenance", required=True)
+    finalize_provenance.add_argument("--hash-file", required=True)
+    finalize_provenance.add_argument("--out", required=True)
+    finalize_provenance.set_defaults(func=cmd_finalize_provenance)
 
     api_smoke = subparsers.add_parser("api-smoke", help="Run opt-in API v2.3 metadata smoke.")
     api_smoke.add_argument("--live", action="store_true")
@@ -94,6 +118,40 @@ def cmd_derive(args: argparse.Namespace) -> int:
     write_jsonl(threads, out_dir / "threads.jsonl")
     print(json.dumps({"ok": True, "threads": len(threads)}, sort_keys=True))
     return 0
+
+
+def cmd_preflight_sede(args: argparse.Namespace) -> int:
+    export_path = Path(args.export)
+    digest = sha256_file(export_path)
+    hash_out = Path(args.hash_out) if args.hash_out else Path(f"{export_path}.sha256")
+    hash_out.parent.mkdir(parents=True, exist_ok=True)
+    hash_out.write_text(f"{digest}  {export_path}\n", encoding="utf-8")
+
+    export = read_table(export_path, name="sede_export")
+    issues = validate_sede_export(export)
+    row_count_ok = args.min_rows <= len(export.rows) <= args.max_rows
+    ok = not issues and row_count_ok
+    payload = {
+        "ok": ok,
+        "rows": len(export.rows),
+        "columns": list(export.columns),
+        "sha256": digest,
+        "hash_out": str(hash_out),
+        "issues": [issue.__dict__ for issue in issues],
+    }
+    if not row_count_ok:
+        payload["issues"].append(
+            {
+                "code": "row_count_out_of_range",
+                "message": (
+                    f"SEDE export row count {len(export.rows)} is outside "
+                    f"{args.min_rows}-{args.max_rows}."
+                ),
+                "row_id": None,
+            }
+        )
+    print(json.dumps(payload, sort_keys=True))
+    return 0 if ok else 1
 
 
 def cmd_ingest_sede(args: argparse.Namespace) -> int:
@@ -142,6 +200,23 @@ def cmd_ingest_sede(args: argparse.Namespace) -> int:
                 "questions": len(questions.rows),
                 "answers": len(answers.rows),
                 "comments": len(comments.rows),
+            },
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def cmd_finalize_provenance(args: argparse.Namespace) -> int:
+    provenance = load_provenance(args.provenance)
+    finalized = finalize_processed_hashes(provenance, args.hash_file)
+    write_provenance_json(finalized, args.out)
+    print(
+        json.dumps(
+            {
+                "ok": True,
+                "output_hash": finalized["output_hash"],
+                "out": args.out,
             },
             sort_keys=True,
         )

@@ -7,6 +7,13 @@
   "export_identifier": "data/raw/stackexchange-difficulty/sede-pilot-YYYY-MM-DD.tsv",
   "access_date": "YYYY-MM-DD",
   "official_source_checked_at": "YYYY-MM-DD",
+  "source_url_checked_at": {
+    "stack_exchange_api_docs": "YYYY-MM-DD",
+    "stack_exchange_data_dump_help": "YYYY-MM-DD",
+    "stack_exchange_licensing_help": "YYYY-MM-DD",
+    "stack_exchange_schema_meta": "YYYY-MM-DD",
+    "stack_exchange_sede_help": "YYYY-MM-DD"
+  },
   "license": "CC BY-SA, version determined by each exported post ContentLicense",
   "transformation_steps": [
     "exported Stack Overflow pilot rows manually through SEDE",

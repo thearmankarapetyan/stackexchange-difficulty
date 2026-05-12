@@ -46,6 +46,52 @@ def test_sede_export_missing_required_columns_fails():
     assert "body_html" in issues[0].message
 
 
+def test_preflight_sede_cli_writes_hash_and_accepts_custom_row_bounds(tmp_path):
+    hash_out = tmp_path / "sede.tsv.sha256"
+
+    result = run_cli(
+        [
+            "preflight-sede",
+            "--export",
+            "tests/fixtures/sede_pilot_export.tsv",
+            "--min-rows",
+            "1",
+            "--max-rows",
+            "10",
+            "--hash-out",
+            str(hash_out),
+        ]
+    )
+
+    payload = json.loads(result.stdout)
+    assert result.returncode == 0
+    assert payload["ok"] is True
+    assert payload["rows"] == 2
+    assert payload["hash_out"] == str(hash_out)
+    assert hash_out.exists()
+
+
+def test_preflight_sede_cli_rejects_out_of_range_row_count(tmp_path):
+    result = run_cli(
+        [
+            "preflight-sede",
+            "--export",
+            "tests/fixtures/sede_pilot_export.tsv",
+            "--min-rows",
+            "5000",
+            "--max-rows",
+            "10000",
+            "--hash-out",
+            str(tmp_path / "sede.tsv.sha256"),
+        ]
+    )
+
+    payload = json.loads(result.stdout)
+    assert result.returncode == 1
+    assert payload["ok"] is False
+    assert any(issue["code"] == "row_count_out_of_range" for issue in payload["issues"])
+
+
 def test_ingest_sede_cli_rejects_artificial_ids(tmp_path):
     export_path = tmp_path / "sede.tsv"
     with Path("tests/fixtures/sede_pilot_export.tsv").open(encoding="utf-8") as handle:
@@ -153,6 +199,36 @@ def test_ingest_sede_outputs_can_feed_derive_cli(tmp_path):
     assert derive_result.returncode == 0
     assert (derived_dir / "derived_thread_indicators.tsv").exists()
     assert (derived_dir / "threads.jsonl").exists()
+
+
+def test_finalize_provenance_cli_replaces_pending_output_hash(tmp_path):
+    provenance_path = tmp_path / "provenance.json"
+    hash_manifest = tmp_path / "processed-output.sha256"
+    out_path = tmp_path / "finalized.json"
+    provenance = load_provenance("tests/fixtures/sede_provenance.json")
+    provenance["processed_output_hash"] = "sha256:pending-before-processing"
+    provenance["output_hash"] = "sha256:pending-before-processing"
+    provenance_path.write_text(json.dumps(provenance), encoding="utf-8")
+    hash_manifest.write_text("abc123  questions.tsv\n", encoding="utf-8")
+
+    result = run_cli(
+        [
+            "finalize-provenance",
+            "--provenance",
+            str(provenance_path),
+            "--hash-file",
+            str(hash_manifest),
+            "--out",
+            str(out_path),
+        ]
+    )
+
+    finalized = json.loads(out_path.read_text(encoding="utf-8"))
+    assert result.returncode == 0
+    assert finalized["processed_output_hash"].startswith("sha256:")
+    assert finalized["processed_output_hash"] == finalized["output_hash"]
+    assert "pending" not in finalized["output_hash"]
+    assert finalized["processed_hash_manifest"] == str(hash_manifest)
 
 
 def write_rows(path: Path, rows: list[dict[str, str]]) -> None:

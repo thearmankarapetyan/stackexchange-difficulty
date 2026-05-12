@@ -48,6 +48,24 @@ def load_provenance(path: str | Path) -> dict[str, Any]:
     return _load_simple_yaml(text)
 
 
+def write_provenance_json(record: dict[str, Any], path: str | Path) -> None:
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+
+
+def finalize_processed_hashes(
+    record: dict[str, Any],
+    hash_manifest: str | Path,
+) -> dict[str, Any]:
+    digest = f"sha256:{sha256_file(hash_manifest)}"
+    finalized = dict(record)
+    finalized["processed_hash_manifest"] = str(hash_manifest)
+    finalized["processed_output_hash"] = digest
+    finalized["output_hash"] = digest
+    return finalized
+
+
 def _load_simple_yaml(text: str) -> dict[str, Any]:
     """Parse simple key/value YAML without requiring PyYAML at runtime.
 

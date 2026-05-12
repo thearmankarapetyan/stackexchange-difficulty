@@ -106,3 +106,36 @@ Verification results:
 
 No live API smoke check, SEDE export, Data Dump download, HTML scraping, or real
 corpus collection was run during this corrected-plan implementation.
+
+## 2026-05-12 Safer SEDE pilot preflight implementation
+
+Implemented the safer preflight workflow without running a real SEDE export:
+
+- Added `stackexchange-difficulty preflight-sede` to hash a local SEDE export,
+  validate expected export columns, and enforce the 5,000-10,000 pilot row-count
+  gate through the project reader rather than `wc -l`.
+- Added `stackexchange-difficulty finalize-provenance` to replace pending
+  `processed_output_hash` and `output_hash` values from a processed hash
+  manifest before derived JSONL is generated.
+- Updated pilot documentation to activate `~/venvs/stage`, keep the real export
+  suffix from SEDE, use date-derived paths, and avoid committing raw or
+  processed Stack Exchange content.
+- Extended the SEDE pilot audit and provenance templates to track preflight,
+  finalized provenance, and source-documentation check dates.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 23 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `source ~/venvs/stage/bin/activate && stackexchange-difficulty --help`:
+  passed.
+- Installed-script synthetic SEDE preflight with custom row bounds: passed and
+  wrote a SHA-256 manifest under `/tmp`.
+- Installed-script provenance finalization: passed and replaced pending output
+  hashes in a temporary provenance file.
+- `git check-ignore` confirmed the date-derived raw export, processed question
+  table, and derived JSONL paths remain ignored by Git.
+
+No live API smoke check, SEDE export, Data Dump download, HTML scraping, or real
+corpus collection was run during this implementation because no real local SEDE
+export was present.

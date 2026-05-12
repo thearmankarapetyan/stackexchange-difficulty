@@ -15,6 +15,8 @@ Pilot date: `YYYY-MM-DD`
 
 ## Preflight
 
+- Raw export suffix matched the actual delimiter from SEDE: yes/no.
+- `stackexchange-difficulty preflight-sede` completed: yes/no.
 - Expected columns matched `sede_expected_columns.tsv`: yes/no.
 - Row count was inside the 5,000-10,000 target: yes/no.
 - `DECLARE` syntax accepted by SEDE, or literal fallback recorded: yes/no.
@@ -43,6 +45,7 @@ Pilot date: `YYYY-MM-DD`
 
 ## Derived Outputs
 
+- Pending provenance output hashes were finalized before derivation: yes/no.
 - `derived_thread_indicators.tsv` produced: yes/no.
 - `threads.jsonl` produced: yes/no.
 - Derived output hash summary:

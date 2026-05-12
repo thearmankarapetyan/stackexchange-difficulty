@@ -27,9 +27,13 @@ The first real SEDE pilot is ready for review only when:
 
 - A raw export has been saved under `data/raw/stackexchange-difficulty/` and is
   ignored by Git.
+- `stackexchange-difficulty preflight-sede` has confirmed required columns,
+  the 5,000-10,000 row target, and the raw export hash.
 - A dated JSON provenance file has been created from
   `provenance_sede_pilot_template.json`.
 - `stackexchange-difficulty ingest-sede` has produced normalized local tables.
+- `stackexchange-difficulty finalize-provenance` has replaced pending output
+  hashes before derived JSONL is generated.
 - `stackexchange-difficulty derive` has produced indicators and JSONL.
 - The tracked audit under `audits/` contains aggregate validation results,
   processed-file hashes, and the manual-inspection summary.

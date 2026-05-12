@@ -20,6 +20,7 @@ question, answer, comment, or user content from Stack Exchange.
 Install the package for local development:
 
 ```bash
+source ~/venvs/stage/bin/activate
 python -m pip install -e .
 ```
 
@@ -58,24 +59,62 @@ stackexchange-difficulty derive \
   --out-dir /tmp/stackexchange-derived
 ```
 
-Ingest a local SEDE pilot export after the query and provenance file are ready:
+Preflight a local SEDE pilot export before ingestion. Keep the real suffix from
+SEDE, usually `.csv`, unless the export is actually tab-delimited:
 
 ```bash
+export PILOT_DATE=$(date +%F)
+export PILOT_EXT=csv
+export PILOT_RAW="data/raw/stackexchange-difficulty/sede-pilot-${PILOT_DATE}.${PILOT_EXT}"
+
+stackexchange-difficulty preflight-sede \
+  --export "$PILOT_RAW"
+```
+
+Ingest the local export after preflight and JSON provenance are ready:
+
+```bash
+export PILOT_PROV="reports/datasets/stackexchange-difficulty/provenance_sede_pilot_${PILOT_DATE}.json"
+export PILOT_OUT="data/processed/stackexchange-difficulty/pilot-${PILOT_DATE}"
+
 stackexchange-difficulty ingest-sede \
-  --export data/raw/stackexchange-difficulty/sede-pilot-YYYY-MM-DD.tsv \
-  --provenance reports/datasets/stackexchange-difficulty/provenance_sede_pilot_YYYY-MM-DD.json \
-  --out-dir data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD
+  --export "$PILOT_RAW" \
+  --provenance "$PILOT_PROV" \
+  --out-dir "$PILOT_OUT"
+```
+
+Hash processed outputs and finalize provenance before deriving JSONL:
+
+```bash
+sha256sum \
+  "$PILOT_OUT/questions.tsv" \
+  "$PILOT_OUT/answers.tsv" \
+  "$PILOT_OUT/comments.tsv" \
+  "$PILOT_OUT/validation_report.json" \
+  > "$PILOT_OUT/processed-output.sha256"
+
+stackexchange-difficulty finalize-provenance \
+  --provenance "$PILOT_PROV" \
+  --hash-file "$PILOT_OUT/processed-output.sha256" \
+  --out "$PILOT_PROV"
+
+stackexchange-difficulty finalize-provenance \
+  --provenance "$PILOT_OUT/provenance.json" \
+  --hash-file "$PILOT_OUT/processed-output.sha256" \
+  --out "$PILOT_OUT/provenance.json"
 ```
 
 Then derive indicators and JSONL from the normalized local outputs:
 
 ```bash
+export PILOT_DERIVED="data/processed/stackexchange-difficulty/pilot-${PILOT_DATE}-derived"
+
 stackexchange-difficulty derive \
-  --questions data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD/questions.tsv \
-  --answers data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD/answers.tsv \
-  --comments data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD/comments.tsv \
-  --provenance data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD/provenance.json \
-  --out-dir data/processed/stackexchange-difficulty/pilot-YYYY-MM-DD-derived
+  --questions "$PILOT_OUT/questions.tsv" \
+  --answers "$PILOT_OUT/answers.tsv" \
+  --comments "$PILOT_OUT/comments.tsv" \
+  --provenance "$PILOT_OUT/provenance.json" \
+  --out-dir "$PILOT_DERIVED"
 ```
 
 Use `provenance_sede_pilot_template.json` as the starting point for real pilot
