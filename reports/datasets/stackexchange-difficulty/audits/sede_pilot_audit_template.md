@@ -19,7 +19,8 @@ Pilot date: `YYYY-MM-DD`
 - `stackexchange-difficulty preflight-sede` completed: yes/no.
 - Expected columns matched `sede_expected_columns.tsv`: yes/no.
 - Row count was inside the 5,000-10,000 target: yes/no.
-- `DECLARE` syntax accepted by SEDE, or literal fallback recorded: yes/no.
+- Timeout mitigation needed: yes/no.
+- If timeout mitigation was needed, seed-size change recorded: yes/no/not applicable.
 - Raw export and processed tables are ignored by Git: yes/no.
 
 ## Validation Summary

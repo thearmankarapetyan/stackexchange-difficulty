@@ -308,3 +308,26 @@ Changes:
 - Kept the SEDE page opening behavior.
 - The command now prints the exact local query-file location and tells the user
   to paste the SQL from that file into the SEDE editor manually.
+
+## 2026-05-12 SEDE timeout query correction
+
+Reworked the committed SEDE pilot query after SEDE timed out before returning
+even a small final result set.
+
+Cause:
+
+- The previous query ranked the full Stack Overflow question table and joined
+  first/accepted answer bodies before the final output limit.
+- Changing only the final `SELECT TOP` did not reduce the expensive upstream
+  work, so SEDE still timed out.
+
+Fix:
+
+- The query now first limits to a bounded seed set of recent question IDs.
+- It ranks only that bounded seed set.
+- It joins first-answer and accepted-answer bodies only after selecting the
+  pilot rows.
+- Removed the `@RowsPerStratum` parameter path because it encouraged changing
+  the final row count without reducing the expensive ranking step.
+- Added static tests to prevent reintroducing the full-table ranking pattern
+  and to verify the expected export columns remain present.

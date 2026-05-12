@@ -11,8 +11,11 @@ This checklist must be completed before a real SEDE pilot export is processed.
 - Do not edit downloaded raw exports manually.
 - Do not paste, store, script, or commit credentials. Login and Cloudflare
   verification are browser-only manual steps.
-- If SEDE rejects `DECLARE @RowsPerStratum`, replace the variable with a
-  literal value in the query template and record that change before export.
+- The committed query limits candidate questions before ranking and answer-body
+  joins. If SEDE still times out, reduce the `SELECT TOP 20000` seed size first,
+  then rerun before changing output columns.
+- Do not try to diagnose timeout by changing only the final output size; the
+  expensive part is the work done before export rows are returned.
 
 ## Record With Raw Export
 
