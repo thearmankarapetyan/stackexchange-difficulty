@@ -235,10 +235,174 @@ def test_summarize_inspection_updates_audit_with_aggregate_counts_only(tmp_path)
     assert result.inspected == 2
     assert "## Inspection Summary" in text
     assert "Labeling method: llm_assisted" in text
+    assert "Decision profile: standard" in text
     assert "Suitable records: yes=1, no=1, uncertain=0" in text
     assert "Top reason codes: good=1, needs_comments=1" in text
     assert "Do not leak this title" not in text
     assert "Another copied note" not in text
+
+
+def test_standard_inspection_profile_preserves_larger_design_recommendation(tmp_path):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(labels_path, rows=5, suitable_yes=4, answerability_yes=5, notation_yes=5)
+    audit = write_pending_audit(tmp_path)
+
+    result = summarize_inspection_labels(
+        labels=read_table(labels_path, name="inspection_labels"),
+        audit_path=audit,
+    )
+
+    text = audit.read_text(encoding="utf-8")
+    assert result.recommendation == "go_for_larger_design"
+    assert "Decision profile: standard" in text
+    assert "Recommendation: go_for_larger_design" in text
+
+
+def test_answerable_pilot_profile_returns_ready_when_thresholds_pass(tmp_path):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(
+        labels_path,
+        rows=100,
+        suitable_yes=93,
+        answerability_yes=95,
+        notation_yes=100,
+        needs_comments_yes=4,
+        copied_note="Do not leak this formula or answer text",
+    )
+    audit = write_pending_audit(tmp_path)
+
+    result = summarize_inspection_labels(
+        labels=read_table(labels_path, name="inspection_labels"),
+        audit_path=audit,
+        labeler="llm_assisted",
+        decision_profile="answerable_pilot",
+    )
+
+    text = audit.read_text(encoding="utf-8")
+    assert result.inspected == 100
+    assert result.recommendation == "ready_for_data_dump_design"
+    assert "Labeling method: llm_assisted" in text
+    assert "Decision profile: answerable_pilot" in text
+    assert "Suitable records: yes=93, no=7, uncertain=0" in text
+    assert "Answerability clear: yes=95, no=5, uncertain=0" in text
+    assert "Math notation readable: yes=100, no=0, uncertain=0" in text
+    assert "Needs comments: yes=4, no=96, uncertain=0" in text
+    assert "Recommendation: ready_for_data_dump_design" in text
+    assert "Decision: ready_for_data_dump_design" in text
+    assert "Do not leak this formula" not in text
+
+
+def test_answerable_pilot_profile_requires_100_records(tmp_path):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(labels_path, rows=99, suitable_yes=99, answerability_yes=99, notation_yes=99)
+    audit = write_pending_audit(tmp_path)
+
+    result = summarize_inspection_labels(
+        labels=read_table(labels_path, name="inspection_labels"),
+        audit_path=audit,
+        decision_profile="answerable_pilot",
+    )
+
+    assert result.recommendation == "inspection_review_required"
+
+
+def test_answerable_pilot_profile_requests_comment_enrichment(tmp_path):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(
+        labels_path,
+        rows=100,
+        suitable_yes=100,
+        answerability_yes=100,
+        notation_yes=100,
+        needs_comments_yes=11,
+    )
+    audit = write_pending_audit(tmp_path)
+
+    result = summarize_inspection_labels(
+        labels=read_table(labels_path, name="inspection_labels"),
+        audit_path=audit,
+        decision_profile="answerable_pilot",
+    )
+
+    assert result.recommendation == "needs_comment_enrichment"
+
+
+@pytest.mark.parametrize(
+    ("suitable_yes", "answerability_yes", "notation_yes"),
+    [
+        (79, 100, 100),
+        (100, 79, 100),
+        (100, 100, 94),
+    ],
+)
+def test_answerable_pilot_profile_revises_query_when_thresholds_fail(
+    tmp_path,
+    suitable_yes,
+    answerability_yes,
+    notation_yes,
+):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(
+        labels_path,
+        rows=100,
+        suitable_yes=suitable_yes,
+        answerability_yes=answerability_yes,
+        notation_yes=notation_yes,
+    )
+    audit = write_pending_audit(tmp_path)
+
+    result = summarize_inspection_labels(
+        labels=read_table(labels_path, name="inspection_labels"),
+        audit_path=audit,
+        decision_profile="answerable_pilot",
+    )
+
+    assert result.recommendation == "revise_sede_query"
+
+
+def test_summarize_inspection_rejects_unknown_decision_profile(tmp_path):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(labels_path, rows=1)
+    audit = write_pending_audit(tmp_path)
+
+    with pytest.raises(InspectionError, match="unknown decision profile"):
+        summarize_inspection_labels(
+            labels=read_table(labels_path, name="inspection_labels"),
+            audit_path=audit,
+            decision_profile="broad_pilot",
+        )
+
+
+def test_summarize_inspection_cli_accepts_answerable_profile(tmp_path):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(
+        labels_path,
+        rows=100,
+        suitable_yes=100,
+        answerability_yes=100,
+        notation_yes=100,
+    )
+    audit = write_pending_audit(tmp_path)
+
+    result = run_cli(
+        [
+            "summarize-inspection",
+            "--labels",
+            str(labels_path),
+            "--audit",
+            str(audit),
+            "--labeler",
+            "llm_assisted",
+            "--decision-profile",
+            "answerable_pilot",
+        ]
+    )
+
+    payload = json.loads(result.stdout)
+    text = audit.read_text(encoding="utf-8")
+    assert result.returncode == 0
+    assert payload["recommendation"] == "ready_for_data_dump_design"
+    assert "Decision profile: answerable_pilot" in text
 
 
 def test_summarize_inspection_missing_columns_fails(tmp_path):
@@ -605,6 +769,72 @@ def write_table(path: Path, table: Table) -> None:
         writer = csv.DictWriter(handle, fieldnames=list(table.columns), delimiter="\t")
         writer.writeheader()
         writer.writerows(table.rows)
+
+
+LABEL_FIELDNAMES = [
+    "record_index",
+    "sample_stratum",
+    "suitable",
+    "answerability_clear",
+    "math_notation_readable",
+    "needs_comments",
+    "reason_code",
+    "notes",
+]
+
+
+def write_labels(
+    path: Path,
+    *,
+    rows: int,
+    suitable_yes: int | None = None,
+    answerability_yes: int | None = None,
+    notation_yes: int | None = None,
+    needs_comments_yes: int = 0,
+    copied_note: str = "",
+) -> None:
+    suitable_cutoff = rows if suitable_yes is None else suitable_yes
+    answerability_cutoff = rows if answerability_yes is None else answerability_yes
+    notation_cutoff = rows if notation_yes is None else notation_yes
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=LABEL_FIELDNAMES, delimiter="\t")
+        writer.writeheader()
+        for index in range(1, rows + 1):
+            suitable = "yes" if index <= suitable_cutoff else "no"
+            answerability = "yes" if index <= answerability_cutoff else "no"
+            notation = "yes" if index <= notation_cutoff else "no"
+            needs_comments = "yes" if index <= needs_comments_yes else "no"
+            if needs_comments == "yes":
+                reason = "still_missing_context"
+            elif suitable == "no":
+                reason = "unsuitable"
+            elif answerability == "no":
+                reason = "unclear_answerability"
+            elif notation == "no":
+                reason = "notation_issue"
+            else:
+                reason = "good"
+            writer.writerow(
+                {
+                    "record_index": str(index),
+                    "sample_stratum": "answered",
+                    "suitable": suitable,
+                    "answerability_clear": answerability,
+                    "math_notation_readable": notation,
+                    "needs_comments": needs_comments,
+                    "reason_code": reason,
+                    "notes": copied_note if index == 1 else "",
+                }
+            )
+
+
+def write_pending_audit(tmp_path: Path) -> Path:
+    audit = tmp_path / "audit.md"
+    audit.write_text(
+        "# SEDE Pilot Audit\n\n## Decision\n\n- Decision: pending.\n",
+        encoding="utf-8",
+    )
+    return audit
 
 
 def run_cli(args: list[str]) -> subprocess.CompletedProcess[str]:

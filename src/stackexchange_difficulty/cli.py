@@ -232,6 +232,11 @@ def build_parser() -> argparse.ArgumentParser:
         default="manual",
         help="Aggregate label source recorded in the audit, for example manual or llm_assisted.",
     )
+    summarize_inspection.add_argument(
+        "--decision-profile",
+        default="standard",
+        help="Decision policy for aggregate inspection results: standard or answerable_pilot.",
+    )
     summarize_inspection.set_defaults(func=cmd_summarize_inspection)
 
     prepare_reinspection = subparsers.add_parser(
@@ -524,6 +529,7 @@ def cmd_summarize_inspection(args: argparse.Namespace) -> int:
             labels=read_table(args.labels, name="inspection_labels"),
             audit_path=Path(args.audit),
             labeler=args.labeler,
+            decision_profile=args.decision_profile,
         )
     except InspectionError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))

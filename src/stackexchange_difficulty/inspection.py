@@ -55,6 +55,10 @@ INSPECTION_SECTION_HEADING = "## Inspection Summary"
 LEGACY_INSPECTION_SECTION_HEADING = "## Manual Inspection Summary"
 COMMENT_REINSPECTION_SECTION_HEADING = "## Comment-Enriched LLM Reinspection"
 COMMENT_ENRICHED_DECISION_HEADING = "## Comment-Enriched Decision"
+FINAL_DECISION_HEADING = "## Decision"
+STANDARD_DECISION_PROFILE = "standard"
+ANSWERABLE_DECISION_PROFILE = "answerable_pilot"
+DECISION_PROFILES = {STANDARD_DECISION_PROFILE, ANSWERABLE_DECISION_PROFILE}
 REASON_CODE_PATTERN = re.compile(r"^[a-z0-9_-]+$")
 
 
@@ -273,11 +277,13 @@ def summarize_inspection_labels(
     labels: Table,
     audit_path: Path,
     labeler: str = "manual",
+    decision_profile: str = STANDARD_DECISION_PROFILE,
 ) -> InspectionSummaryResult:
     missing = [column for column in LABEL_COLUMNS if column not in labels.columns]
     if missing:
         raise InspectionError(f"inspection labels missing required columns: {', '.join(missing)}")
     safe_labeler = _safe_labeler(labeler)
+    safe_decision_profile = _safe_decision_profile(decision_profile)
 
     rows = labels.rows
     reason_counts: Counter[str] = Counter()
@@ -299,11 +305,15 @@ def summarize_inspection_labels(
     recommendation = _recommendation(
         inspected=len(rows),
         suitable=suitable,
+        answerability=answerability,
+        notation=notation,
         needs_comments=needs_comments,
+        decision_profile=safe_decision_profile,
     )
     summary = _summary_markdown(
         inspected=len(rows),
         labeler=safe_labeler,
+        decision_profile=safe_decision_profile,
         suitable=suitable,
         answerability=answerability,
         notation=notation,
@@ -312,7 +322,15 @@ def summarize_inspection_labels(
         recommendation=recommendation,
     )
     audit_text = audit_path.read_text(encoding="utf-8")
-    audit_path.write_text(_upsert_summary_section(audit_text, summary), encoding="utf-8")
+    updated_audit = _upsert_summary_section(audit_text, summary)
+    if safe_decision_profile == ANSWERABLE_DECISION_PROFILE:
+        updated_audit = _replace_or_insert_section(
+            updated_audit,
+            heading=FINAL_DECISION_HEADING,
+            section=_final_decision_markdown(recommendation),
+            insert_before=(),
+        )
+    audit_path.write_text(updated_audit, encoding="utf-8")
     return InspectionSummaryResult(
         audit_path=audit_path,
         inspected=len(rows),
@@ -644,6 +662,7 @@ def _summary_markdown(
     *,
     inspected: int,
     labeler: str,
+    decision_profile: str,
     suitable: Counter[str],
     answerability: Counter[str],
     notation: Counter[str],
@@ -658,6 +677,7 @@ def _summary_markdown(
             "- Inspection source: local ignored label file under "
             "`data/processed/stackexchange-difficulty/`.",
             f"- Labeling method: {labeler}.",
+            f"- Decision profile: {decision_profile}.",
             f"- Inspected records: {inspected}.",
             f"- Suitable records: {_format_judgments(suitable)}.",
             f"- Answerability clear: {_format_judgments(answerability)}.",
@@ -707,6 +727,17 @@ def _comment_enriched_decision_markdown(decision: str) -> str:
     return "\n".join(
         [
             COMMENT_ENRICHED_DECISION_HEADING,
+            "",
+            f"- Decision: {decision}.",
+            "",
+        ]
+    )
+
+
+def _final_decision_markdown(decision: str) -> str:
+    return "\n".join(
+        [
+            FINAL_DECISION_HEADING,
             "",
             f"- Decision: {decision}.",
             "",
@@ -787,8 +818,21 @@ def _recommendation(
     *,
     inspected: int,
     suitable: Counter[str],
+    answerability: Counter[str],
+    notation: Counter[str],
     needs_comments: Counter[str],
+    decision_profile: str,
 ) -> str:
+    if decision_profile == ANSWERABLE_DECISION_PROFILE:
+        return _answerable_pilot_recommendation(
+            inspected=inspected,
+            suitable=suitable,
+            answerability=answerability,
+            notation=notation,
+            needs_comments=needs_comments,
+        )
+    if decision_profile != STANDARD_DECISION_PROFILE:
+        raise InspectionError(f"unknown decision profile: {decision_profile}")
     if inspected == 0:
         return "inspection_incomplete"
     unsuitable_or_uncertain = suitable["no"] + suitable["uncertain"]
@@ -799,6 +843,27 @@ def _recommendation(
     if suitable["yes"] / inspected >= 0.80:
         return "go_for_larger_design"
     return "inspection_review_required"
+
+
+def _answerable_pilot_recommendation(
+    *,
+    inspected: int,
+    suitable: Counter[str],
+    answerability: Counter[str],
+    notation: Counter[str],
+    needs_comments: Counter[str],
+) -> str:
+    if inspected < 100:
+        return "inspection_review_required"
+    if needs_comments["yes"] > 10:
+        return "needs_comment_enrichment"
+    if suitable["yes"] < 80:
+        return "revise_sede_query"
+    if answerability["yes"] < 80:
+        return "revise_sede_query"
+    if notation["yes"] < 95:
+        return "revise_sede_query"
+    return "ready_for_data_dump_design"
 
 
 def _comment_reinspection_recommendation(
@@ -829,6 +894,14 @@ def _safe_labeler(value: str) -> str:
         raise InspectionError(
             "labeler must use only lowercase letters, digits, hyphens, and underscores"
         )
+    return text
+
+
+def _safe_decision_profile(value: str) -> str:
+    text = value.strip()
+    if text not in DECISION_PROFILES:
+        allowed = ", ".join(sorted(DECISION_PROFILES))
+        raise InspectionError(f"unknown decision profile: {value}; expected one of: {allowed}")
     return text
 
 

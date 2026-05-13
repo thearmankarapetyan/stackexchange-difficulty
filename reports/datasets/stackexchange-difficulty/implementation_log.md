@@ -678,3 +678,38 @@ Verification results:
   passed, 30 tests.
 - `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 99 tests.
 - `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+
+## 2026-05-13 Answerable Mathematics inspection finalization
+
+Finalized the LLM-assisted inspection summary for
+`pilot_slug=math-answerable`:
+
+- Confirmed the cleaner Mathematics pilot processed successfully with 5,000
+  questions, 5,751 answers, 0 comments, and 0 validation issues.
+- Merged five ignored batch label files into the ignored master
+  `labels.tsv` using parsed TSV rows rather than physical line counts.
+- Validated exactly 100 labeled records, 100 unique `record_index` values, no
+  blank controlled label fields, and controlled label values only.
+- Added an explicit `answerable_pilot` decision profile for the cleaner second
+  Mathematics pilot while preserving the existing `standard` inspection
+  recommendation behavior.
+- Summarized the aggregate inspection with `labeler=llm_assisted` and
+  `decision_profile=answerable_pilot`.
+- Final aggregate counts were: suitable yes=93, answerability clear yes=95,
+  math notation readable yes=100, and needs comments yes=4.
+- The finalized recommendation is `ready_for_data_dump_design`.
+- No raw exports, processed tables, review rows, labels, titles, bodies,
+  formulas, answers, comments, usernames, URLs, or copied notes were added to
+  tracked files.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest tests/test_inspection.py`:
+  passed, 22 tests.
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 108 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `git diff --check`: passed.
+- Known-leak credential scan found no matches.
+- `git check-ignore` confirmed the answerable pilot raw export, processed
+  questions table, derived JSONL, inspection review file, and merged label file
+  are ignored by Git.
