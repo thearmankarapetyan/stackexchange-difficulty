@@ -1,0 +1,34 @@
+{
+  "dataset_name": "stackexchange-difficulty",
+  "dataset_version": "sede-pilot-math-2026-05-13",
+  "source_method": "sede_pilot_export",
+  "source_version": "SEDE snapshot visible at export time",
+  "source_site_slug": "math",
+  "source_site_name": "Mathematics",
+  "query_url": "https://data.stackexchange.com/math/query/new",
+  "query_or_dump_file": "reports/datasets/stackexchange-difficulty/sede_pilot_query_site_generic.sql",
+  "export_identifier": "data/raw/stackexchange-difficulty/sede-pilot-math-2026-05-13.csv",
+  "access_date": "2026-05-13",
+  "official_source_checked_at": "2026-05-13",
+  "source_url_checked_at": {
+    "stack_exchange_api_docs": "2026-05-13",
+    "stack_exchange_data_dump_help": "2026-05-13",
+    "stack_exchange_licensing_help": "2026-05-13",
+    "stack_exchange_schema_meta": "2026-05-13",
+    "stack_exchange_sede_help": "2026-05-13"
+  },
+  "license": "CC BY-SA, version determined by each exported post ContentLicense",
+  "transformation_steps": [
+    "exported Mathematics pilot rows manually through SEDE",
+    "stored raw export unchanged under data/raw/stackexchange-difficulty/",
+    "normalized SEDE rows into question, answer, and empty comment tables",
+    "validated required fields, answer links, artificial IDs, and provenance",
+    "derived thread indicators and JSONL from finalized provenance",
+    "wrote aggregate audit without copied Stack Exchange post content"
+  ],
+  "raw_export_hash": "sha256:6b2800cc53654c0ce3653e713dddead873653382757f62ff8992128d0bcb9788",
+  "processed_output_hash": "sha256:f23cb57ec6aff2e48518d4d3ad68760aa0f302266cf786a75807dda8814911ea",
+  "output_hash": "sha256:f23cb57ec6aff2e48518d4d3ad68760aa0f302266cf786a75807dda8814911ea",
+  "script_version": "0.1.0",
+  "processed_hash_manifest": "data/processed/stackexchange-difficulty/pilot-math-2026-05-13/processed-output.sha256"
+}

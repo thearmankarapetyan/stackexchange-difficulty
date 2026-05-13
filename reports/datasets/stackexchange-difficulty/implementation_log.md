@@ -423,3 +423,33 @@ Verification:
 - `python -m ruff check .` passed.
 - From `/home/stage/Stage`, `resolve_project_root()` returned
   `/home/stage/Stage/projects/stackexchange-difficulty`.
+
+## 2026-05-13 Mathematics SEDE pilot run
+
+Processed the Mathematics SEDE pilot export downloaded by the browser under
+`/home/stage/Téléchargements/QueryResults (1).csv`.
+
+Results:
+
+- Raw export copied to the ignored raw-data path as
+  `data/raw/stackexchange-difficulty/sede-pilot-math-2026-05-13.csv`.
+- Dated provenance written to
+  `reports/datasets/stackexchange-difficulty/provenance_sede_pilot_math_2026-05-13.json`.
+- Aggregate audit written to
+  `reports/datasets/stackexchange-difficulty/audits/sede_pilot_math_2026-05-13.md`.
+- Preflight accepted 5,000 Mathematics rows.
+- Normalized outputs contain 5,000 question rows, 3,386 answer rows, and 0
+  comment rows.
+- Validation found zero duplicate-question failures, zero artificial-ID
+  failures, zero accepted-answer consistency failures, zero missing-column
+  failures, and zero provenance failures.
+- Derived indicators and JSONL were generated under ignored processed-data
+  paths.
+
+Content-safety note:
+
+- The tracked audit contains aggregate counts and distributions only.
+- Raw export, processed TSV files, derived JSONL, and hash manifests under
+  `data/` remain ignored by Git.
+- Comment usefulness remains deferred because this SEDE export path does not
+  include comment text.
