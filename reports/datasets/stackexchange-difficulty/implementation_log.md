@@ -657,3 +657,24 @@ Verification results:
   tables, answerable derived JSONL, generated comment queries, comment-enriched
   tables, and Hugging Face `dist/` staging files remain ignored.
 - Known-leak credential scan found no matches.
+
+## 2026-05-13 Download-directory auto resolution fix
+
+Fixed a browser-assisted pilot bug found during the cleaner Mathematics pilot
+run:
+
+- `run-sede-pilot --download-dir auto` previously treated `auto` as a literal
+  directory and failed with `download directory does not exist: auto`.
+- Added the same safe download-directory discovery used by comment enrichment:
+  XDG download directory first, then `Downloads`, `Téléchargements`, and
+  `Telechargements`.
+- Kept browser login, Cloudflare verification, query execution, and export
+  clicking as manual steps.
+- Added regression tests for XDG and localized download-directory resolution.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest tests/test_sede_pilot_run.py`:
+  passed, 30 tests.
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 99 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.

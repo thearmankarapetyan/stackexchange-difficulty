@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import os
 import re
 import shutil
 import subprocess
@@ -37,6 +38,7 @@ DEFAULT_QUERY_FILE = Path(
 SUPPORTED_EXPORT_SUFFIXES = {".csv", ".tsv"}
 PARTIAL_EXPORT_SUFFIXES = {".crdownload", ".part", ".tmp", ".download"}
 SITE_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+DOWNLOAD_DIR_NAMES = ("Downloads", "T\u00e9l\u00e9chargements", "Telechargements")
 
 
 class SedePilotError(RuntimeError):
@@ -48,7 +50,7 @@ class SedePilotConfig:
     project_root: Path
     pilot_date: str
     export_path: Path | None = None
-    download_dir: Path | None = None
+    download_dir: Path | str | None = None
     open_browser: bool = False
     timeout_seconds: float = 1800
     min_rows: int = 5000
@@ -235,6 +237,22 @@ def wait_for_sede_export(
             raise SedePilotError(f"new download has unsupported suffix: {names}")
         time.sleep(poll_interval)
     raise SedePilotError("timed out waiting for a SEDE CSV/TSV export")
+
+
+def resolve_download_dir(value: str | Path | None) -> Path:
+    if value is None:
+        return Path.home() / "Downloads"
+    if str(value) != "auto":
+        return Path(value).expanduser()
+
+    candidates = _xdg_download_candidates()
+    home = Path.home()
+    candidates.extend(home / name for name in DOWNLOAD_DIR_NAMES)
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+    names = ", ".join(str(candidate) for candidate in candidates)
+    raise SedePilotError(f"no download directory found; checked: {names}")
 
 
 def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
@@ -500,7 +518,7 @@ def _resolve_source_export(config: SedePilotConfig, context: SedePilotContext) -
     print(f"SEDE query file: {context.query_file}")
     print("Paste the SQL from that file into the SEDE editor after the page opens.")
     print(f"Opened SEDE query page: {context.query_url}")
-    download_dir = config.download_dir or Path.home() / "Downloads"
+    download_dir = resolve_download_dir(config.download_dir)
     return wait_for_sede_export(
         download_dir,
         start_time=time.time(),
@@ -611,6 +629,23 @@ def _stable_download_candidates(
         else:
             unsupported.append(path)
     return sorted(supported), sorted(unsupported)
+
+
+def _xdg_download_candidates() -> list[Path]:
+    candidates: list[Path] = []
+    env_path = os.environ.get("XDG_DOWNLOAD_DIR")
+    if env_path:
+        candidates.append(Path(os.path.expandvars(env_path)).expanduser())
+    config = Path.home() / ".config/user-dirs.dirs"
+    if config.is_file():
+        match = re.search(
+            r'^XDG_DOWNLOAD_DIR="?([^"\n]+)"?',
+            config.read_text(encoding="utf-8", errors="ignore"),
+            flags=re.MULTILINE,
+        )
+        if match:
+            candidates.append(Path(os.path.expandvars(match.group(1))).expanduser())
+    return candidates
 
 
 def _write_hash_manifest(path: Path, files: list[Path]) -> None:

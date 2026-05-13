@@ -22,6 +22,7 @@ from stackexchange_difficulty.sede_pilot import (
     normalize_pilot_slug,
     normalize_site_slug,
     prepare_browser_session,
+    resolve_download_dir,
     run_sede_pilot,
     wait_for_sede_export,
 )
@@ -148,6 +149,24 @@ def test_prepare_browser_session_opens_query_page():
     assert result["opened"] is True
     assert result["query_url"] == "https://example.test/query"
     assert opened == ["https://example.test/query"]
+
+
+def test_resolve_download_dir_auto_checks_localized_directory(tmp_path, monkeypatch):
+    home = tmp_path / "home"
+    downloads = home / "T\u00e9l\u00e9chargements"
+    downloads.mkdir(parents=True)
+    monkeypatch.setattr(Path, "home", lambda: home)
+    monkeypatch.delenv("XDG_DOWNLOAD_DIR", raising=False)
+
+    assert resolve_download_dir("auto") == downloads
+
+
+def test_resolve_download_dir_auto_checks_xdg_directory(tmp_path, monkeypatch):
+    downloads = tmp_path / "xdg-downloads"
+    downloads.mkdir()
+    monkeypatch.setenv("XDG_DOWNLOAD_DIR", str(downloads))
+
+    assert resolve_download_dir("auto") == downloads
 
 
 def test_format_counter_compacts_long_distribution():

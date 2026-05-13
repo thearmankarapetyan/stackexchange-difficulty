@@ -435,7 +435,7 @@ def cmd_run_sede_pilot(args: argparse.Namespace) -> int:
                 project_root=resolve_project_root(args.project_root),
                 pilot_date=pilot_date,
                 export_path=Path(args.export) if args.export else None,
-                download_dir=Path(args.download_dir) if args.download_dir else None,
+                download_dir=args.download_dir,
                 open_browser=args.open_browser,
                 timeout_seconds=args.timeout_seconds,
                 min_rows=args.min_rows,
