@@ -60,6 +60,23 @@ CREDENTIAL_PATTERNS = (
     re.compile(r"(?i)\b(password|passwd|secret|api[_-]?key|hf_token)\s*[:=]\s*\S+"),
     re.compile(r"\bhf_[A-Za-z0-9]{20,}\b"),
 )
+SITE_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+
+
+def pilot_artifact_suffix(*, pilot_date: str, site_slug: str | None = None) -> str:
+    if not site_slug:
+        return pilot_date
+    return f"{normalize_release_site_slug(site_slug)}_{pilot_date}"
+
+
+def normalize_release_site_slug(value: str) -> str:
+    slug = value.strip().lower()
+    if not SITE_SLUG_PATTERN.fullmatch(slug) or ".." in slug:
+        raise HuggingFaceReleaseError(
+            "site slug must contain only letters, digits, and hyphens; "
+            "spaces, slashes, dots, and path traversal are not allowed"
+        )
+    return slug
 
 
 def prepare_hf_release(
@@ -68,6 +85,7 @@ def prepare_hf_release(
     pilot_date: str,
     repo_id: str,
     out_dir: Path,
+    site_slug: str | None = None,
     scanner: CredentialScanner | None = None,
 ) -> HuggingFaceReleaseResult:
     if "/" not in repo_id:
@@ -76,10 +94,18 @@ def prepare_hf_release(
     root = project_root.resolve()
     release_dir = out_dir.resolve()
     dataset_dir = root / "reports/datasets/stackexchange-difficulty"
-    provenance = dataset_dir / f"provenance_sede_pilot_{pilot_date}.json"
-    audit = dataset_dir / "audits" / f"sede_pilot_{pilot_date}.md"
+    artifact_suffix = pilot_artifact_suffix(pilot_date=pilot_date, site_slug=site_slug)
+    provenance = dataset_dir / f"provenance_sede_pilot_{artifact_suffix}.json"
+    audit = dataset_dir / "audits" / f"sede_pilot_{artifact_suffix}.md"
     _require_file(provenance, "dated pilot provenance")
     _require_file(audit, "dated pilot audit")
+    provenance_record = json.loads(provenance.read_text(encoding="utf-8"))
+    source_site_slug = provenance_record.get("source_site_slug") or (
+        normalize_release_site_slug(site_slug) if site_slug else "stackoverflow"
+    )
+    source_site_name = provenance_record.get("source_site_name") or (
+        "Stack Overflow" if not site_slug else source_site_slug
+    )
 
     files = [
         ReleaseFile(
@@ -141,7 +167,11 @@ def prepare_hf_release(
 
     card_path = release_dir / "README.md"
     card_path.write_text(
-        build_dataset_card(repo_id=repo_id, pilot_date=pilot_date),
+        build_dataset_card(
+            repo_id=repo_id,
+            pilot_date=pilot_date,
+            source_site_name=source_site_name,
+        ),
         encoding="utf-8",
     )
     scanner(card_path)
@@ -168,6 +198,8 @@ def prepare_hf_release(
     manifest = build_release_manifest(
         repo_id=repo_id,
         pilot_date=pilot_date,
+        source_site_slug=source_site_slug,
+        source_site_name=source_site_name,
         release_dir=release_dir,
         release_files=release_files,
         project_root=root,
@@ -233,7 +265,12 @@ def upload_hf_release(
     return HuggingFaceUploadResult(ok=True, dry_run=False, commands=commands)
 
 
-def build_dataset_card(*, repo_id: str, pilot_date: str) -> str:
+def build_dataset_card(
+    *,
+    repo_id: str,
+    pilot_date: str,
+    source_site_name: str = "Stack Overflow",
+) -> str:
     return f"""---
 license: other
 pretty_name: Stack Exchange Difficulty Corpus Metadata Release
@@ -248,8 +285,8 @@ tags:
 # Stack Exchange Difficulty Corpus Metadata Release
 
 This private-first dataset repository package documents a Stack Exchange
-difficulty corpus pilot for `{repo_id}`. It is a metadata-only release for pilot
-date `{pilot_date}`.
+difficulty corpus pilot for `{repo_id}`. It is a metadata-only release for the
+{source_site_name} pilot dated `{pilot_date}`.
 
 ## Contents
 
@@ -260,10 +297,10 @@ records, comments, usernames, credentials, or browser-download artifacts.
 
 ## Methodology
 
-The project follows the report protocol: a Stack Overflow SEDE pilot validates
-field availability, sampling strata, provenance, and audit checks before any
-larger Data Dump planning. API access remains enrichment-only, and HTML scraping
-is excluded by default.
+The project follows the report protocol: a {source_site_name} SEDE pilot
+validates field availability, sampling strata, provenance, and audit checks
+before any larger Data Dump planning. API access remains enrichment-only, and
+HTML scraping is excluded by default.
 
 ## Licensing And Attribution
 
@@ -304,6 +341,8 @@ def build_release_manifest(
     *,
     repo_id: str,
     pilot_date: str,
+    source_site_slug: str,
+    source_site_name: str,
     release_dir: Path,
     release_files: list[ReleaseFile],
     project_root: Path,
@@ -323,6 +362,8 @@ def build_release_manifest(
     return {
         "repo_id": repo_id,
         "pilot_date": pilot_date,
+        "source_site_slug": source_site_slug,
+        "source_site_name": source_site_name,
         "created_at": utc_now_iso(),
         "package_version": __version__,
         "git_commit": current_git_commit(project_root),

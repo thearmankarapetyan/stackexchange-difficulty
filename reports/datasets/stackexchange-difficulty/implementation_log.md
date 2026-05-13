@@ -360,3 +360,37 @@ Content-safety note:
 - No raw Stack Exchange titles, bodies, answers, comments, code snippets,
   usernames, or credentials were copied into the tracked audit.
 - The generated audit and provenance use repository-relative paths.
+
+## 2026-05-13 Site-aware SEDE pilot workflow
+
+Implemented the site-aware path needed for non-Stack Overflow pilots such as
+Mathematics while preserving the historical Stack Overflow filenames when no
+site slug is passed.
+
+Changes:
+
+- Added `--site-slug`, `--site-name`, and `--query-file` to
+  `run-sede-pilot`.
+- Derived the SEDE query URL from `--site-slug` when `--query-url` is not
+  provided, for example `https://data.stackexchange.com/math/query/new`.
+- Added site-specific raw, processed, derived, provenance, and audit naming for
+  site-selected pilots.
+- Added site/query metadata to generated provenance and audits.
+- Added slug validation so spaces, slashes, dots, and path traversal are
+  rejected before paths are constructed.
+- Extended `prepare-hf-release --site-slug` so metadata packages can find
+  site-specific provenance and audit files.
+- Updated the SEDE export checklist to prefer
+  `sede_pilot_query_site_generic.sql` for site-selected pilots and to keep
+  Stack Overflow filter queries as optional experiments.
+
+Verification:
+
+- `python -m pytest` passed with 58 tests.
+- `python -m ruff check .` passed.
+- `stackexchange-difficulty --help`,
+  `stackexchange-difficulty run-sede-pilot --help`, and
+  `stackexchange-difficulty prepare-hf-release --help` passed.
+- `git diff --check` passed.
+- `git check-ignore` confirmed the Mathematics raw export, processed question
+  table, and derived JSONL paths are ignored.

@@ -24,7 +24,6 @@ from stackexchange_difficulty.provenance import (
 )
 from stackexchange_difficulty.sede import normalize_sede_export, validate_sede_export
 from stackexchange_difficulty.sede_pilot import (
-    SEDE_QUERY_URL,
     SedePilotConfig,
     SedePilotError,
     resolve_pilot_date,
@@ -93,7 +92,29 @@ def build_parser() -> argparse.ArgumentParser:
     run_sede.add_argument("--timeout-seconds", type=float, default=1800)
     run_sede.add_argument("--min-rows", type=int, default=5000)
     run_sede.add_argument("--max-rows", type=int, default=10000)
-    run_sede.add_argument("--query-url", default=SEDE_QUERY_URL)
+    run_sede.add_argument(
+        "--query-url",
+        help=(
+            "Explicit SEDE query URL. Defaults to the Stack Overflow query page, "
+            "or to https://data.stackexchange.com/{site-slug}/query/new when "
+            "--site-slug is set."
+        ),
+    )
+    run_sede.add_argument(
+        "--site-slug",
+        help="SEDE site slug used for site-specific names, for example math.",
+    )
+    run_sede.add_argument(
+        "--site-name",
+        help="Human-readable site name for provenance and audits, for example Mathematics.",
+    )
+    run_sede.add_argument(
+        "--query-file",
+        help=(
+            "Repository-relative or absolute SQL file to use for browser "
+            "instructions and provenance."
+        ),
+    )
     run_sede.add_argument("--project-root", default=".")
     run_sede.set_defaults(func=cmd_run_sede_pilot)
 
@@ -102,6 +123,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Prepare a metadata-only Hugging Face dataset release folder.",
     )
     prepare_hf.add_argument("--pilot-date", required=True)
+    prepare_hf.add_argument(
+        "--site-slug",
+        help="Optional pilot site slug, for example math, to find site-specific artifacts.",
+    )
     prepare_hf.add_argument("--repo-id", required=True)
     prepare_hf.add_argument("--out-dir", required=True)
     prepare_hf.add_argument("--project-root", default=".")
@@ -288,6 +313,9 @@ def cmd_run_sede_pilot(args: argparse.Namespace) -> int:
                 min_rows=args.min_rows,
                 max_rows=args.max_rows,
                 query_url=args.query_url,
+                site_slug=args.site_slug,
+                site_name=args.site_name,
+                query_file=Path(args.query_file) if args.query_file else None,
             )
         )
     except SedePilotError as exc:
@@ -304,6 +332,7 @@ def cmd_prepare_hf_release(args: argparse.Namespace) -> int:
             pilot_date=args.pilot_date,
             repo_id=args.repo_id,
             out_dir=Path(args.out_dir),
+            site_slug=args.site_slug,
         )
     except HuggingFaceReleaseError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))

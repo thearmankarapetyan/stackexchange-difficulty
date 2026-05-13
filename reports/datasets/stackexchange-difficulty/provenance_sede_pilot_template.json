@@ -3,7 +3,10 @@
   "dataset_version": "sede-pilot-YYYY-MM-DD",
   "source_method": "sede_pilot_export",
   "source_version": "SEDE snapshot visible at export time",
-  "query_or_dump_file": "reports/datasets/stackexchange-difficulty/sede_pilot_query.sql",
+  "source_site_slug": "site-slug",
+  "source_site_name": "Site Name",
+  "query_url": "https://data.stackexchange.com/site-slug/query/new",
+  "query_or_dump_file": "reports/datasets/stackexchange-difficulty/sede_pilot_query_site_generic.sql",
   "export_identifier": "data/raw/stackexchange-difficulty/sede-pilot-YYYY-MM-DD.tsv",
   "access_date": "YYYY-MM-DD",
   "official_source_checked_at": "YYYY-MM-DD",
@@ -16,7 +19,7 @@
   },
   "license": "CC BY-SA, version determined by each exported post ContentLicense",
   "transformation_steps": [
-    "exported Stack Overflow pilot rows manually through SEDE",
+    "exported selected-site pilot rows manually through SEDE",
     "stored raw export unchanged under data/raw/stackexchange-difficulty/",
     "normalized local export with stackexchange-difficulty ingest-sede",
     "derived indicators and JSONL with stackexchange-difficulty derive"

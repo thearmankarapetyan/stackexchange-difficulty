@@ -11,10 +11,15 @@ from pathlib import Path
 
 import pytest
 
+import stackexchange_difficulty.sede_pilot as sede_pilot_module
 from stackexchange_difficulty.sede import validate_sede_export
 from stackexchange_difficulty.sede_pilot import (
+    SedePilotConfig,
     SedePilotError,
+    build_sede_pilot_context,
+    normalize_site_slug,
     prepare_browser_session,
+    run_sede_pilot,
     wait_for_sede_export,
 )
 from stackexchange_difficulty.validation import read_table
@@ -201,6 +206,144 @@ def test_run_sede_pilot_export_path_completes_pipeline_without_pending_provenanc
     assert str(project_root) not in audit_text
 
 
+def test_run_sede_pilot_site_slug_uses_site_specific_names_and_metadata(tmp_path):
+    project_root = make_project_root(tmp_path)
+    fixture = Path.cwd() / "tests/fixtures/sede_pilot_export.tsv"
+    query_file = (
+        "reports/datasets/stackexchange-difficulty/"
+        "sede_pilot_query_site_generic.sql"
+    )
+
+    result = run_cli(
+        [
+            "run-sede-pilot",
+            "--export",
+            str(fixture),
+            "--pilot-date",
+            "2026-05-12",
+            "--site-slug",
+            "math",
+            "--site-name",
+            "Mathematics",
+            "--query-file",
+            query_file,
+            "--min-rows",
+            "1",
+            "--max-rows",
+            "10",
+            "--project-root",
+            str(project_root),
+        ]
+    )
+
+    payload = json.loads(result.stdout)
+    assert result.returncode == 0
+    assert payload["ok"] is True
+    assert payload["source_site_slug"] == "math"
+    assert payload["source_site_name"] == "Mathematics"
+    assert payload["query_url"] == "https://data.stackexchange.com/math/query/new"
+    assert payload["raw_export"].endswith("sede-pilot-math-2026-05-12.tsv")
+    assert payload["processed_dir"].endswith("pilot-math-2026-05-12")
+    assert payload["derived_dir"].endswith("pilot-math-2026-05-12-derived")
+    assert payload["audit"].endswith("sede_pilot_math_2026-05-12.md")
+    assert payload["provenance"].endswith(
+        "provenance_sede_pilot_math_2026-05-12.json"
+    )
+
+    provenance = json.loads(Path(payload["provenance"]).read_text(encoding="utf-8"))
+    assert provenance["source_site_slug"] == "math"
+    assert provenance["source_site_name"] == "Mathematics"
+    assert provenance["query_url"] == "https://data.stackexchange.com/math/query/new"
+    assert provenance["query_or_dump_file"] == query_file
+    assert provenance["transformation_steps"][0] == (
+        "exported Mathematics pilot rows manually through SEDE"
+    )
+
+    audit_text = Path(payload["audit"]).read_text(encoding="utf-8")
+    assert "- Source: Mathematics SEDE." in audit_text
+    assert f"- Query file: `{query_file}`." in audit_text
+    assert "- Query URL: `https://data.stackexchange.com/math/query/new`." in audit_text
+
+
+def test_build_sede_context_derives_math_query_url_and_query_file(tmp_path):
+    project_root = make_project_root(tmp_path)
+    query_file = Path(
+        "reports/datasets/stackexchange-difficulty/sede_pilot_query_site_generic.sql"
+    )
+
+    context = build_sede_pilot_context(
+        SedePilotConfig(
+            project_root=project_root,
+            pilot_date="2026-05-12",
+            site_slug="math",
+            site_name="Mathematics",
+            query_file=query_file,
+        )
+    )
+
+    assert context.site_slug == "math"
+    assert context.site_name == "Mathematics"
+    assert context.query_url == "https://data.stackexchange.com/math/query/new"
+    assert context.query_file == (project_root / query_file).resolve()
+    assert context.raw_stem == "sede-pilot-math-2026-05-12"
+
+
+def test_run_sede_pilot_browser_mode_uses_site_url_and_query_file(
+    tmp_path,
+    monkeypatch,
+    capsys,
+):
+    project_root = make_project_root(tmp_path)
+    fixture = Path.cwd() / "tests/fixtures/sede_pilot_export.tsv"
+    query_file = Path(
+        "reports/datasets/stackexchange-difficulty/sede_pilot_query_site_generic.sql"
+    )
+    opened_urls: list[str] = []
+
+    def fake_prepare_browser_session(query_url):
+        opened_urls.append(query_url)
+        return {"opened": True, "query_url": query_url}
+
+    def fake_wait_for_sede_export(*args, **kwargs):
+        return fixture
+
+    monkeypatch.setattr(
+        sede_pilot_module,
+        "prepare_browser_session",
+        fake_prepare_browser_session,
+    )
+    monkeypatch.setattr(
+        sede_pilot_module,
+        "wait_for_sede_export",
+        fake_wait_for_sede_export,
+    )
+
+    result = run_sede_pilot(
+        SedePilotConfig(
+            project_root=project_root,
+            pilot_date="2026-05-12",
+            open_browser=True,
+            min_rows=1,
+            max_rows=10,
+            site_slug="math",
+            site_name="Mathematics",
+            query_file=query_file,
+        )
+    )
+
+    stdout = capsys.readouterr().out
+    assert result.ok is True
+    assert opened_urls == ["https://data.stackexchange.com/math/query/new"]
+    assert str((project_root / query_file).resolve()) in stdout
+    assert "https://data.stackexchange.com/math/query/new" in stdout
+
+
+@pytest.mark.parametrize("bad_slug", ["math site", "math/site", "../math", "math.site"])
+def test_site_slug_rejects_path_like_values(bad_slug):
+    with pytest.raises(SedePilotError, match="site slug"):
+        normalize_site_slug(bad_slug)
+
+
 def test_run_sede_pilot_missing_required_columns_fails_before_ingestion(tmp_path):
     project_root = make_project_root(tmp_path)
     export = tmp_path / "missing.tsv"
@@ -257,8 +400,11 @@ def test_validate_sede_export_rejects_duplicate_and_missing_accepted_answer(tmp_
 def test_real_data_paths_are_ignored_by_git():
     paths = [
         "data/raw/stackexchange-difficulty/sede-pilot-2026-05-12.csv",
+        "data/raw/stackexchange-difficulty/sede-pilot-math-2026-05-12.csv",
         "data/processed/stackexchange-difficulty/pilot-2026-05-12/questions.tsv",
+        "data/processed/stackexchange-difficulty/pilot-math-2026-05-12/questions.tsv",
         "data/processed/stackexchange-difficulty/pilot-2026-05-12-derived/threads.jsonl",
+        "data/processed/stackexchange-difficulty/pilot-math-2026-05-12-derived/threads.jsonl",
         "downloads/query-results.csv.crdownload",
     ]
     for path in paths:
@@ -279,6 +425,10 @@ def make_project_root(tmp_path: Path) -> Path:
     (root / "data/raw/stackexchange-difficulty").mkdir(parents=True)
     (root / "data/processed/stackexchange-difficulty").mkdir(parents=True)
     (report_dir / "sede_pilot_query.sql").write_text("select 1;\n", encoding="utf-8")
+    (report_dir / "sede_pilot_query_site_generic.sql").write_text(
+        "select 1;\n",
+        encoding="utf-8",
+    )
     (report_dir / "provenance_sede_pilot_template.json").write_text(
         json.dumps(
             {

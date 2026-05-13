@@ -4,8 +4,15 @@ This checklist must be completed before a real SEDE pilot export is processed.
 
 ## Before Export
 
-- Use `sede_pilot_query.sql` as the query source.
-- Confirm the target database is Stack Overflow.
+- For site-selected pilots, use `sede_pilot_query_site_generic.sql` as the
+  query source. The SEDE site picker controls the forum; for Mathematics, use
+  `https://data.stackexchange.com/math/query/new`.
+- Keep `sede_pilot_query.sql` as the historical/default Stack Overflow
+  technical pilot query.
+- Treat `sede_pilot_query_non_code.sql` and `sede_pilot_query_non_coding.sql`
+  as optional Stack Overflow experiments, not the preferred route for changing
+  forums.
+- Confirm the selected SEDE site before running the query.
 - Confirm the export target is 5,000-10,000 question rows.
 - Confirm the expected columns match `sede_expected_columns.tsv`.
 - Do not edit downloaded raw exports manually.
@@ -50,6 +57,20 @@ stackexchange-difficulty run-sede-pilot \
 
 The command opens SEDE and watches for the exported CSV/TSV, but the user must
 complete login, Cloudflare verification, query execution, and export manually.
+
+For a Mathematics pilot, use explicit site metadata so filenames, provenance,
+audits, and later Hugging Face metadata remain separate from Stack Overflow:
+
+```bash
+stackexchange-difficulty run-sede-pilot \
+  --pilot-date auto \
+  --site-slug math \
+  --site-name Mathematics \
+  --query-file reports/datasets/stackexchange-difficulty/sede_pilot_query_site_generic.sql \
+  --download-dir "$HOME/Downloads" \
+  --open-browser \
+  --timeout-seconds 1800
+```
 
 ## Processing Rule
 

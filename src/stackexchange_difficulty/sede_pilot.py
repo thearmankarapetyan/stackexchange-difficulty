@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import re
 import shutil
 import subprocess
 import time
@@ -30,8 +31,12 @@ from stackexchange_difficulty.validation import (
 )
 
 SEDE_QUERY_URL = "https://data.stackexchange.com/stackoverflow/query/new"
+DEFAULT_QUERY_FILE = Path(
+    "reports/datasets/stackexchange-difficulty/sede_pilot_query.sql"
+)
 SUPPORTED_EXPORT_SUFFIXES = {".csv", ".tsv"}
 PARTIAL_EXPORT_SUFFIXES = {".crdownload", ".part", ".tmp", ".download"}
+SITE_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 
 
 class SedePilotError(RuntimeError):
@@ -48,7 +53,10 @@ class SedePilotConfig:
     timeout_seconds: float = 1800
     min_rows: int = 5000
     max_rows: int = 10000
-    query_url: str = SEDE_QUERY_URL
+    query_url: str | None = None
+    site_slug: str | None = None
+    site_name: str | None = None
+    query_file: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -61,6 +69,10 @@ class SedePilotResult:
     audit: Path
     rows: int
     issues: list[dict[str, Any]]
+    source_site_slug: str
+    source_site_name: str
+    query_url: str
+    query_file: Path
 
     def to_payload(self) -> dict[str, Any]:
         return {
@@ -72,7 +84,25 @@ class SedePilotResult:
             "audit": str(self.audit),
             "rows": self.rows,
             "issues": self.issues,
+            "source_site_slug": self.source_site_slug,
+            "source_site_name": self.source_site_name,
+            "query_url": self.query_url,
+            "query_file": str(self.query_file),
         }
+
+
+@dataclass(frozen=True)
+class SedePilotContext:
+    site_slug: str
+    site_name: str
+    query_url: str
+    query_file: Path
+    raw_stem: str
+    processed_stem: str
+    derived_stem: str
+    audit_name: str
+    provenance_name: str
+    dataset_version: str
 
 
 def resolve_pilot_date(value: str) -> str:
@@ -83,6 +113,64 @@ def resolve_pilot_date(value: str) -> str:
     except ValueError as exc:
         raise SedePilotError("pilot date must be 'auto' or YYYY-MM-DD") from exc
     return value
+
+
+def build_sede_pilot_context(config: SedePilotConfig) -> SedePilotContext:
+    root = config.project_root.resolve()
+    site_slug = (
+        normalize_site_slug(config.site_slug) if config.site_slug else "stackoverflow"
+    )
+    explicit_site = config.site_slug is not None
+    site_name = config.site_name or (
+        "Stack Overflow" if not explicit_site else _name_from_slug(site_slug)
+    )
+    query_url = (
+        config.query_url
+        or (
+            f"https://data.stackexchange.com/{site_slug}/query/new"
+            if explicit_site
+            else SEDE_QUERY_URL
+        )
+    )
+    query_file = config.query_file or DEFAULT_QUERY_FILE
+    query_path = query_file if query_file.is_absolute() else root / query_file
+    query_path = query_path.resolve()
+    if not query_path.is_file():
+        raise SedePilotError(f"SEDE query file does not exist: {query_path}")
+
+    if explicit_site:
+        raw_stem = f"sede-pilot-{site_slug}-{config.pilot_date}"
+        processed_stem = f"pilot-{site_slug}-{config.pilot_date}"
+        audit_name = f"sede_pilot_{site_slug}_{config.pilot_date}.md"
+        provenance_name = f"provenance_sede_pilot_{site_slug}_{config.pilot_date}.json"
+    else:
+        raw_stem = f"sede-pilot-{config.pilot_date}"
+        processed_stem = f"pilot-{config.pilot_date}"
+        audit_name = f"sede_pilot_{config.pilot_date}.md"
+        provenance_name = f"provenance_sede_pilot_{config.pilot_date}.json"
+
+    return SedePilotContext(
+        site_slug=site_slug,
+        site_name=site_name,
+        query_url=query_url,
+        query_file=query_path,
+        raw_stem=raw_stem,
+        processed_stem=processed_stem,
+        derived_stem=f"{processed_stem}-derived",
+        audit_name=audit_name,
+        provenance_name=provenance_name,
+        dataset_version=raw_stem,
+    )
+
+
+def normalize_site_slug(value: str) -> str:
+    slug = value.strip().lower()
+    if not SITE_SLUG_PATTERN.fullmatch(slug) or ".." in slug:
+        raise SedePilotError(
+            "site slug must contain only letters, digits, and hyphens; "
+            "spaces, slashes, dots, and path traversal are not allowed"
+        )
+    return slug
 
 
 def prepare_browser_session(
@@ -130,7 +218,7 @@ def wait_for_sede_export(
 
 def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
     root = config.project_root.resolve()
-    query_path = root / "reports/datasets/stackexchange-difficulty/sede_pilot_query.sql"
+    context = build_sede_pilot_context(config)
     template_path = (
         root
         / "reports/datasets/stackexchange-difficulty/provenance_sede_pilot_template.json"
@@ -138,16 +226,16 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
     audit_path = (
         root
         / f"reports/datasets/stackexchange-difficulty/audits/"
-        f"sede_pilot_{config.pilot_date}.md"
+        f"{context.audit_name}"
     )
     provenance_path = (
         root
         / f"reports/datasets/stackexchange-difficulty/"
-        f"provenance_sede_pilot_{config.pilot_date}.json"
+        f"{context.provenance_name}"
     )
 
-    source_export = _resolve_source_export(config, query_path)
-    raw_export = _copy_raw_export(source_export, root, config.pilot_date)
+    source_export = _resolve_source_export(config, context)
+    raw_export = _copy_raw_export(source_export, root, context)
     raw_hash = sha256_file(raw_export)
     _write_hash_manifest(raw_export.with_name(f"{raw_export.name}.sha256"), [raw_export])
 
@@ -174,6 +262,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
                 issues=issues,
                 decision="not ready; preflight failed before ingestion",
                 root=root,
+                context=context,
             ),
         )
         return SedePilotResult(
@@ -185,6 +274,10 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
             audit=audit_path,
             rows=len(export.rows),
             issues=issues,
+            source_site_slug=context.site_slug,
+            source_site_name=context.site_name,
+            query_url=context.query_url,
+            query_file=context.query_file,
         )
 
     provenance = _build_pilot_provenance(
@@ -193,12 +286,11 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
         raw_export=raw_export,
         raw_hash=raw_hash,
         root=root,
+        context=context,
     )
     write_provenance_json(provenance, provenance_path)
 
-    processed_dir = (
-        root / f"data/processed/stackexchange-difficulty/pilot-{config.pilot_date}"
-    )
+    processed_dir = root / f"data/processed/stackexchange-difficulty/{context.processed_stem}"
     processed_dir.mkdir(parents=True, exist_ok=True)
     questions, answers, comments = normalize_sede_export(export)
     validation_report = validate_dataset(
@@ -226,6 +318,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
                 issues=issues,
                 decision="not ready; normalized validation failed",
                 root=root,
+                context=context,
             ),
         )
         return SedePilotResult(
@@ -237,6 +330,10 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
             audit=audit_path,
             rows=len(export.rows),
             issues=issues,
+            source_site_slug=context.site_slug,
+            source_site_name=context.site_name,
+            query_url=context.query_url,
+            query_file=context.query_file,
         )
 
     _write_tsv(questions.rows, processed_dir / "questions.tsv", list(questions.columns))
@@ -267,9 +364,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
         comments=comments,
         provenance=finalized_provenance,
     )
-    derived_dir = (
-        root / f"data/processed/stackexchange-difficulty/pilot-{config.pilot_date}-derived"
-    )
+    derived_dir = root / f"data/processed/stackexchange-difficulty/{context.derived_stem}"
     derived_dir.mkdir(parents=True, exist_ok=True)
     write_validation_report(finalized_report, derived_dir / "validation_report.json")
     if not finalized_report.ok:
@@ -290,6 +385,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
                 issues=issues,
                 decision="not ready; finalized provenance validation failed",
                 root=root,
+                context=context,
             ),
         )
         return SedePilotResult(
@@ -301,6 +397,10 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
             audit=audit_path,
             rows=len(export.rows),
             issues=issues,
+            source_site_slug=context.site_slug,
+            source_site_name=context.site_name,
+            query_url=context.query_url,
+            query_file=context.query_file,
         )
 
     indicators = derive_indicators(questions, answers=answers, comments=comments)
@@ -345,6 +445,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
                 "Data Dump planning"
             ),
             root=root,
+            context=context,
         ),
     )
     return SedePilotResult(
@@ -356,20 +457,24 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
         audit=audit_path,
         rows=len(export.rows),
         issues=[],
+        source_site_slug=context.site_slug,
+        source_site_name=context.site_name,
+        query_url=context.query_url,
+        query_file=context.query_file,
     )
 
 
-def _resolve_source_export(config: SedePilotConfig, query_path: Path) -> Path:
+def _resolve_source_export(config: SedePilotConfig, context: SedePilotContext) -> Path:
     if config.export_path:
         return config.export_path
     if not config.open_browser:
         raise SedePilotError("run-sede-pilot requires --export or --open-browser")
     prepare_browser_session(
-        query_url=config.query_url,
+        query_url=context.query_url,
     )
-    print(f"SEDE query file: {query_path}")
+    print(f"SEDE query file: {context.query_file}")
     print("Paste the SQL from that file into the SEDE editor after the page opens.")
-    print(f"Opened SEDE query page: {config.query_url}")
+    print(f"Opened SEDE query page: {context.query_url}")
     download_dir = config.download_dir or Path.home() / "Downloads"
     return wait_for_sede_export(
         download_dir,
@@ -378,14 +483,18 @@ def _resolve_source_export(config: SedePilotConfig, query_path: Path) -> Path:
     )
 
 
-def _copy_raw_export(source_export: Path, root: Path, pilot_date: str) -> Path:
+def _copy_raw_export(
+    source_export: Path,
+    root: Path,
+    context: SedePilotContext,
+) -> Path:
     source = source_export.resolve()
     if source.suffix.lower() not in SUPPORTED_EXPORT_SUFFIXES:
         raise SedePilotError("SEDE export must use a .csv or .tsv suffix")
     target = (
         root
         / "data/raw/stackexchange-difficulty"
-        / f"sede-pilot-{pilot_date}{source.suffix.lower()}"
+        / f"{context.raw_stem}{source.suffix.lower()}"
     )
     target.parent.mkdir(parents=True, exist_ok=True)
     if source == target.resolve():
@@ -403,14 +512,16 @@ def _build_pilot_provenance(
     raw_export: Path,
     raw_hash: str,
     root: Path,
+    context: SedePilotContext,
 ) -> dict[str, Any]:
     record = load_provenance(template_path)
-    record["dataset_version"] = f"sede-pilot-{pilot_date}"
+    record["dataset_version"] = context.dataset_version
     record["source_method"] = "sede_pilot_export"
     record["source_version"] = "SEDE snapshot visible at export time"
-    record["query_or_dump_file"] = (
-        "reports/datasets/stackexchange-difficulty/sede_pilot_query.sql"
-    )
+    record["source_site_slug"] = context.site_slug
+    record["source_site_name"] = context.site_name
+    record["query_url"] = context.query_url
+    record["query_or_dump_file"] = _display_path(context.query_file, root)
     record["export_identifier"] = _display_path(raw_export, root)
     record["access_date"] = pilot_date
     record["official_source_checked_at"] = pilot_date
@@ -422,6 +533,14 @@ def _build_pilot_provenance(
         "stack_exchange_sede_help": pilot_date,
     }
     record["license"] = "CC BY-SA, version determined by each exported post ContentLicense"
+    record["transformation_steps"] = [
+        f"exported {context.site_name} pilot rows manually through SEDE",
+        "stored raw export unchanged under data/raw/stackexchange-difficulty/",
+        "normalized SEDE rows into question, answer, and empty comment tables",
+        "validated required fields, answer links, artificial IDs, and provenance",
+        "derived thread indicators and JSONL from finalized provenance",
+        "wrote aggregate audit without copied Stack Exchange post content",
+    ]
     record["raw_export_hash"] = f"sha256:{raw_hash}"
     record["processed_output_hash"] = "sha256:pending-before-processing"
     record["output_hash"] = "sha256:pending-before-processing"
@@ -501,6 +620,7 @@ def _build_audit(
     issues: list[dict[str, Any]],
     decision: str,
     root: Path,
+    context: SedePilotContext,
 ) -> str:
     issue_counts = Counter(issue["code"] for issue in issues)
     validation_issues = Counter(
@@ -535,9 +655,10 @@ def _build_audit(
             "",
             "## Source And Scope",
             "",
-            "- Source: Stack Overflow SEDE.",
+            f"- Source: {context.site_name} SEDE.",
             "- Query file: "
-            "`reports/datasets/stackexchange-difficulty/sede_pilot_query.sql`.",
+            f"`{_display_path(context.query_file, root)}`.",
+            f"- Query URL: `{context.query_url}`.",
             f"- Raw export: `{_display_path(raw_export, root)}`.",
             f"- Provenance file: `{_display_path(provenance_path, root)}`.",
             f"- Raw export hash: `sha256:{raw_hash}`.",
@@ -655,6 +776,21 @@ def _format_counter(counter: Counter[str]) -> str:
 
 def _bool_text(value: Any) -> str:
     return str(bool(value)).lower() if isinstance(value, bool) else str(value).lower()
+
+
+def _name_from_slug(site_slug: str) -> str:
+    known_names = {
+        "math": "Mathematics",
+        "stackoverflow": "Stack Overflow",
+        "superuser": "Super User",
+        "serverfault": "Server Fault",
+        "stats": "Cross Validated",
+        "askubuntu": "Ask Ubuntu",
+    }
+    return known_names.get(
+        site_slug,
+        " ".join(part.capitalize() for part in site_slug.split("-")),
+    )
 
 
 def _row_count(validation_report: dict[str, Any] | None, table: str) -> str:
