@@ -734,7 +734,8 @@ def _source_distribution_summary(rows: list[dict[str, Any]]) -> dict[str, str]:
         }
     return {
         "tag_family": _format_counter(
-            Counter(str(row.get("tag_family", "") or "missing") for row in rows)
+            Counter(str(row.get("tag_family", "") or "missing") for row in rows),
+            top_n=25,
         ),
         "time_period": _format_counter(
             Counter(str(row.get("time_period", "") or "missing") for row in rows)
@@ -770,8 +771,15 @@ def _distribution_summary(rows: list[dict[str, Any]]) -> dict[str, str]:
     }
 
 
-def _format_counter(counter: Counter[str]) -> str:
-    return ", ".join(f"{key}={value}" for key, value in sorted(counter.items()))
+def _format_counter(counter: Counter[str], *, top_n: int | None = None) -> str:
+    items = sorted(counter.items())
+    if top_n is not None and len(items) > top_n:
+        top_items = sorted(counter.items(), key=lambda item: (-item[1], item[0]))[:top_n]
+        top_keys = {key for key, _value in top_items}
+        other = sum(value for key, value in counter.items() if key not in top_keys)
+        items = sorted(top_items)
+        items.append(("other", other))
+    return ", ".join(f"{key}={value}" for key, value in items)
 
 
 def _bool_text(value: Any) -> str:

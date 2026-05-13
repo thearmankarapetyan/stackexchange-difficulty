@@ -34,6 +34,13 @@ The current SEDE pilot export path is question/answer centered and does not
 include comment text. Comment context is inspected only if a separate comment
 export or enrichment step is explicitly added and documented.
 
+Use `stackexchange-difficulty prepare-inspection` to create local ignored
+review and label files under `data/processed/stackexchange-difficulty/`. The
+review file may contain real post text and must stay untracked. Use
+`stackexchange-difficulty summarize-inspection` only after labels have been
+filled with controlled values; the tracked audit receives aggregate counts
+only.
+
 Tracked audit notes must report aggregate findings only. Do not copy question
 titles, post bodies, answer text, code snippets, comments, or user profile
 content into Git.

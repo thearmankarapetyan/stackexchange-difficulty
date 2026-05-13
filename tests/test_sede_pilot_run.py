@@ -7,6 +7,7 @@ import subprocess
 import sys
 import threading
 import time
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -16,6 +17,7 @@ from stackexchange_difficulty.sede import validate_sede_export
 from stackexchange_difficulty.sede_pilot import (
     SedePilotConfig,
     SedePilotError,
+    _format_counter,
     build_sede_pilot_context,
     normalize_site_slug,
     prepare_browser_session,
@@ -145,6 +147,17 @@ def test_prepare_browser_session_opens_query_page():
     assert result["opened"] is True
     assert result["query_url"] == "https://example.test/query"
     assert opened == ["https://example.test/query"]
+
+
+def test_format_counter_compacts_long_distribution():
+    counter = {f"tag-{index:02d}": index for index in range(1, 31)}
+
+    formatted = _format_counter(Counter(counter), top_n=25)
+
+    assert "other=15" in formatted
+    assert "tag-30=30" in formatted
+    assert "tag-06=6" in formatted
+    assert "tag-05=5" not in formatted
 
 
 def test_run_sede_pilot_export_path_completes_pipeline_without_pending_provenance(tmp_path):

@@ -15,6 +15,11 @@ from stackexchange_difficulty.hf_release import (
     prepare_hf_release,
     upload_hf_release,
 )
+from stackexchange_difficulty.inspection import (
+    InspectionError,
+    prepare_inspection_files,
+    summarize_inspection_labels,
+)
 from stackexchange_difficulty.jsonl import build_threads, write_jsonl
 from stackexchange_difficulty.provenance import (
     finalize_processed_hashes,
@@ -143,6 +148,28 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     prepare_hf.set_defaults(func=cmd_prepare_hf_release)
+
+    prepare_inspection = subparsers.add_parser(
+        "prepare-inspection",
+        help="Prepare ignored local files for content-safe manual inspection.",
+    )
+    prepare_inspection.add_argument("--questions", required=True)
+    prepare_inspection.add_argument("--answers", required=True)
+    prepare_inspection.add_argument("--indicators", required=True)
+    prepare_inspection.add_argument("--site-slug", required=True)
+    prepare_inspection.add_argument("--pilot-date", required=True)
+    prepare_inspection.add_argument("--sample-size", type=int, default=100)
+    prepare_inspection.add_argument("--seed", type=int, default=20260513)
+    prepare_inspection.add_argument("--out-dir", required=True)
+    prepare_inspection.set_defaults(func=cmd_prepare_inspection)
+
+    summarize_inspection = subparsers.add_parser(
+        "summarize-inspection",
+        help="Append aggregate manual-inspection results to a tracked audit.",
+    )
+    summarize_inspection.add_argument("--labels", required=True)
+    summarize_inspection.add_argument("--audit", required=True)
+    summarize_inspection.set_defaults(func=cmd_summarize_inspection)
 
     upload_hf = subparsers.add_parser(
         "upload-hf-release",
@@ -347,6 +374,38 @@ def cmd_prepare_hf_release(args: argparse.Namespace) -> int:
             site_slug=args.site_slug,
         )
     except HuggingFaceReleaseError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0
+
+
+def cmd_prepare_inspection(args: argparse.Namespace) -> int:
+    try:
+        result = prepare_inspection_files(
+            questions=read_table(args.questions, name="questions"),
+            answers=read_table(args.answers, name="answers"),
+            indicators=read_table(args.indicators, name="derived_thread_indicators"),
+            site_slug=args.site_slug,
+            pilot_date=args.pilot_date,
+            sample_size=args.sample_size,
+            out_dir=Path(args.out_dir),
+            seed=args.seed,
+        )
+    except InspectionError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0
+
+
+def cmd_summarize_inspection(args: argparse.Namespace) -> int:
+    try:
+        result = summarize_inspection_labels(
+            labels=read_table(args.labels, name="inspection_labels"),
+            audit_path=Path(args.audit),
+        )
+    except InspectionError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
         return 1
     print(json.dumps(result.to_payload(), sort_keys=True))

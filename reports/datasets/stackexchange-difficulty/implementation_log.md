@@ -453,3 +453,35 @@ Content-safety note:
   `data/` remain ignored by Git.
 - Comment usefulness remains deferred because this SEDE export path does not
   include comment text.
+
+## 2026-05-13 Safe Mathematics inspection tooling
+
+Implemented the content-safe manual inspection workflow for the Mathematics
+pilot:
+
+- Compacted future audit tag-family distributions to the top 25 values plus an
+  `other` count.
+- Updated the tracked Mathematics audit to use the compact tag-family summary.
+- Added `stackexchange-difficulty prepare-inspection` to write local ignored
+  `review.tsv`, `labels.tsv`, and `README.md` files under
+  `data/processed/stackexchange-difficulty/`.
+- Added deterministic stratified sampling across answer, accepted-answer,
+  closure, duplicate, latency, and tag-popularity signals.
+- Added `stackexchange-difficulty summarize-inspection` to update tracked
+  audits with aggregate manual-inspection counts only.
+- Kept per-record review material and labels out of Git; the CLI prints only
+  paths, counts, and JSON status.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 67 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `stackexchange-difficulty --help`: passed.
+- `stackexchange-difficulty prepare-inspection --help`: passed.
+- `stackexchange-difficulty summarize-inspection --help`: passed.
+- `git diff --check`: passed.
+- `stackexchange-difficulty prepare-inspection` created a 100-record local
+  Mathematics inspection sample under the ignored processed-data directory.
+- `git check-ignore` confirmed the Mathematics `review.tsv` and `labels.tsv`
+  inspection files are ignored by Git.
+- Known-leak credential scan found no matches.
