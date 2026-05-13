@@ -115,7 +115,13 @@ def build_parser() -> argparse.ArgumentParser:
             "instructions and provenance."
         ),
     )
-    run_sede.add_argument("--project-root", default=".")
+    run_sede.add_argument(
+        "--project-root",
+        help=(
+            "Project root. Defaults to auto-detection from the current "
+            "directory or a projects/stackexchange-difficulty child."
+        ),
+    )
     run_sede.set_defaults(func=cmd_run_sede_pilot)
 
     prepare_hf = subparsers.add_parser(
@@ -129,7 +135,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     prepare_hf.add_argument("--repo-id", required=True)
     prepare_hf.add_argument("--out-dir", required=True)
-    prepare_hf.add_argument("--project-root", default=".")
+    prepare_hf.add_argument(
+        "--project-root",
+        help=(
+            "Project root. Defaults to auto-detection from the current "
+            "directory or a projects/stackexchange-difficulty child."
+        ),
+    )
     prepare_hf.set_defaults(func=cmd_prepare_hf_release)
 
     upload_hf = subparsers.add_parser(
@@ -304,7 +316,7 @@ def cmd_run_sede_pilot(args: argparse.Namespace) -> int:
         pilot_date = resolve_pilot_date(args.pilot_date)
         result = run_sede_pilot(
             SedePilotConfig(
-                project_root=Path(args.project_root),
+                project_root=resolve_project_root(args.project_root),
                 pilot_date=pilot_date,
                 export_path=Path(args.export) if args.export else None,
                 download_dir=Path(args.download_dir) if args.download_dir else None,
@@ -328,7 +340,7 @@ def cmd_run_sede_pilot(args: argparse.Namespace) -> int:
 def cmd_prepare_hf_release(args: argparse.Namespace) -> int:
     try:
         result = prepare_hf_release(
-            project_root=Path(args.project_root),
+            project_root=resolve_project_root(args.project_root),
             pilot_date=args.pilot_date,
             repo_id=args.repo_id,
             out_dir=Path(args.out_dir),
@@ -339,6 +351,29 @@ def cmd_prepare_hf_release(args: argparse.Namespace) -> int:
         return 1
     print(json.dumps(result.to_payload(), sort_keys=True))
     return 0
+
+
+def resolve_project_root(value: str | None = None) -> Path:
+    if value:
+        return Path(value)
+
+    cwd = Path.cwd()
+    candidates = [
+        cwd,
+        cwd / "projects/stackexchange-difficulty",
+        Path(__file__).resolve().parents[2],
+    ]
+    for candidate in candidates:
+        if _looks_like_project_root(candidate):
+            return candidate
+    return cwd
+
+
+def _looks_like_project_root(path: Path) -> bool:
+    return (
+        (path / "src/stackexchange_difficulty").is_dir()
+        and (path / "reports/datasets/stackexchange-difficulty").is_dir()
+    )
 
 
 def cmd_upload_hf_release(args: argparse.Namespace) -> int:

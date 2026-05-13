@@ -265,6 +265,47 @@ def test_run_sede_pilot_site_slug_uses_site_specific_names_and_metadata(tmp_path
     assert "- Query URL: `https://data.stackexchange.com/math/query/new`." in audit_text
 
 
+def test_run_sede_pilot_auto_detects_project_under_workspace_projects(tmp_path):
+    project_root = make_project_root(tmp_path)
+    workspace = tmp_path / "workspace"
+    projects = workspace / "projects"
+    projects.mkdir(parents=True)
+    (projects / "stackexchange-difficulty").symlink_to(
+        project_root,
+        target_is_directory=True,
+    )
+    fixture = Path.cwd() / "tests/fixtures/sede_pilot_export.tsv"
+
+    result = run_cli(
+        [
+            "run-sede-pilot",
+            "--export",
+            str(fixture),
+            "--pilot-date",
+            "2026-05-12",
+            "--site-slug",
+            "math",
+            "--site-name",
+            "Mathematics",
+            "--query-file",
+            "reports/datasets/stackexchange-difficulty/sede_pilot_query_site_generic.sql",
+            "--min-rows",
+            "1",
+            "--max-rows",
+            "10",
+        ],
+        cwd=workspace,
+    )
+
+    payload = json.loads(result.stdout)
+    assert result.returncode == 0
+    assert payload["ok"] is True
+    assert Path(payload["raw_export"]).resolve() == (
+        project_root
+        / "data/raw/stackexchange-difficulty/sede-pilot-math-2026-05-12.tsv"
+    )
+
+
 def test_build_sede_context_derives_math_query_url_and_query_file(tmp_path):
     project_root = make_project_root(tmp_path)
     query_file = Path(
@@ -424,6 +465,7 @@ def make_project_root(tmp_path: Path) -> Path:
     (report_dir / "audits").mkdir(parents=True)
     (root / "data/raw/stackexchange-difficulty").mkdir(parents=True)
     (root / "data/processed/stackexchange-difficulty").mkdir(parents=True)
+    (root / "src/stackexchange_difficulty").mkdir(parents=True)
     (report_dir / "sede_pilot_query.sql").write_text("select 1;\n", encoding="utf-8")
     (report_dir / "sede_pilot_query_site_generic.sql").write_text(
         "select 1;\n",
@@ -468,12 +510,12 @@ def write_rows(path: Path, rows: list[dict[str, str]]) -> None:
         writer.writerows(rows)
 
 
-def run_cli(args: list[str]) -> subprocess.CompletedProcess[str]:
+def run_cli(args: list[str], *, cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
     env["PYTHONPATH"] = str(Path.cwd() / "src")
     return subprocess.run(
         [sys.executable, "-m", "stackexchange_difficulty", *args],
-        cwd=Path.cwd(),
+        cwd=cwd or Path.cwd(),
         env=env,
         text=True,
         capture_output=True,

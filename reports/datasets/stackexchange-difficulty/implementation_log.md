@@ -394,3 +394,32 @@ Verification:
 - `git diff --check` passed.
 - `git check-ignore` confirmed the Mathematics raw export, processed question
   table, and derived JSONL paths are ignored.
+
+## 2026-05-13 Project-root autodetection fix
+
+Fixed the browser-assisted command when launched from the Stage workspace root
+instead of the project repository.
+
+Cause:
+
+- `run-sede-pilot` resolved relative query paths against the current working
+  directory.
+- Running from `~/Stage` therefore looked for
+  `reports/datasets/stackexchange-difficulty/sede_pilot_query_site_generic.sql`
+  outside the project repository.
+
+Fix:
+
+- Added default project-root autodetection for CLI commands that need repository
+  files.
+- The resolver now checks the current directory, then
+  `projects/stackexchange-difficulty`, then the editable package source root.
+- Added a regression test that runs the CLI from a workspace root containing a
+  `projects/stackexchange-difficulty` project.
+
+Verification:
+
+- `python -m pytest` passed with 59 tests.
+- `python -m ruff check .` passed.
+- From `/home/stage/Stage`, `resolve_project_root()` returned
+  `/home/stage/Stage/projects/stackexchange-difficulty`.
