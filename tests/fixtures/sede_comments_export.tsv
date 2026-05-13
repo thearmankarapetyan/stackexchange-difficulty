@@ -1,0 +1,3 @@
+comment_id	post_id	question_id	post_type_id	text	score	creation_date	content_license
+801	501	501	1	Please clarify the synthetic setup.	1	2026-02-01T08:30:00+00:00	CC BY-SA 4.0
+802	701	501	2	The synthetic answer needs a reference.	0	2026-02-01T09:30:00+00:00	CC BY-SA 4.0

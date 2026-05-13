@@ -49,8 +49,12 @@ REVIEW_COLUMNS = (
     "answers_for_review",
 )
 
+COMMENT_REINSPECTION_COLUMNS = (*REVIEW_COLUMNS, "comments_for_review")
+
 INSPECTION_SECTION_HEADING = "## Inspection Summary"
 LEGACY_INSPECTION_SECTION_HEADING = "## Manual Inspection Summary"
+COMMENT_REINSPECTION_SECTION_HEADING = "## Comment-Enriched LLM Reinspection"
+COMMENT_ENRICHED_DECISION_HEADING = "## Comment-Enriched Decision"
 REASON_CODE_PATTERN = re.compile(r"^[a-z0-9_-]+$")
 
 
@@ -91,6 +95,23 @@ class InspectionSummaryResult:
             "audit": str(self.audit_path),
             "inspected": self.inspected,
             "recommendation": self.recommendation,
+        }
+
+
+@dataclass(frozen=True)
+class CommentReinspectionPrepareResult:
+    review_path: Path
+    labels_path: Path
+    readme_path: Path
+    selected_records: int
+
+    def to_payload(self) -> dict[str, Any]:
+        return {
+            "ok": True,
+            "review": str(self.review_path),
+            "labels": str(self.labels_path),
+            "readme": str(self.readme_path),
+            "selected_records": self.selected_records,
         }
 
 
@@ -148,6 +169,105 @@ def prepare_inspection_files(
     )
 
 
+def prepare_comment_reinspection_files(
+    *,
+    review: Table,
+    labels: Table,
+    comments: Table,
+    out_dir: Path,
+) -> CommentReinspectionPrepareResult:
+    _require_ignored_processed_out_dir(out_dir)
+    _require_columns(review, ("record_index", "question_id", "answers_for_review"))
+    _require_columns(labels, LABEL_COLUMNS)
+    _require_columns(comments, ("comment_id", "post_id", "text", "score", "creation_date"))
+
+    selected_indices = {
+        str(row.get("record_index", "")).strip()
+        for row in labels.rows
+        if _judgment(row.get("needs_comments")) == "yes"
+    }
+    if not selected_indices:
+        raise InspectionError("no labels with needs_comments=yes were found")
+
+    comments_by_post: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    comments_by_question: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for comment in comments.rows:
+        post_id = str(comment.get("post_id", "")).strip()
+        question_id = str(comment.get("question_id", "")).strip()
+        if post_id:
+            comments_by_post[post_id].append(comment)
+        if question_id:
+            comments_by_question[question_id].append(comment)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    review_path = out_dir / "llm_reinspection_review.tsv"
+    labels_path = out_dir / "llm_reinspection_labels.tsv"
+    readme_path = out_dir / "README.md"
+    selected_rows = [
+        row
+        for row in review.rows
+        if str(row.get("record_index", "")).strip() in selected_indices
+    ]
+    if not selected_rows:
+        raise InspectionError("needs_comments labels do not match any review rows")
+
+    with review_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=COMMENT_REINSPECTION_COLUMNS,
+            delimiter="\t",
+        )
+        writer.writeheader()
+        for row in selected_rows:
+            copied = {column: row.get(column, "") for column in REVIEW_COLUMNS}
+            copied["comments_for_review"] = _comments_for_review(
+                row,
+                comments_by_post=comments_by_post,
+                comments_by_question=comments_by_question,
+            )
+            writer.writerow(copied)
+
+    with labels_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=LABEL_COLUMNS, delimiter="\t")
+        writer.writeheader()
+        for row in selected_rows:
+            writer.writerow(
+                {
+                    "record_index": row.get("record_index", ""),
+                    "sample_stratum": row.get("sample_stratum", ""),
+                    "suitable": "",
+                    "answerability_clear": "",
+                    "math_notation_readable": "",
+                    "needs_comments": "",
+                    "reason_code": "",
+                    "notes": "",
+                }
+            )
+
+    readme_path.write_text(
+        "\n".join(
+            [
+                "# Comment-Enriched LLM Reinspection",
+                "",
+                "These files are local ignored review material. They may contain Stack "
+                "Exchange titles, bodies, answers, and comments, so do not commit them.",
+                "",
+                "Use the label file with "
+                "`stackexchange-difficulty summarize-comment-reinspection` after "
+                "LLM-assisted or manual relabeling.",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    return CommentReinspectionPrepareResult(
+        review_path=review_path,
+        labels_path=labels_path,
+        readme_path=readme_path,
+        selected_records=len(selected_rows),
+    )
+
+
 def summarize_inspection_labels(
     *,
     labels: Table,
@@ -200,6 +320,66 @@ def summarize_inspection_labels(
     )
 
 
+def summarize_comment_reinspection_labels(
+    *,
+    labels: Table,
+    audit_path: Path,
+    labeler: str = "llm_assisted_comment_enriched",
+) -> InspectionSummaryResult:
+    missing = [column for column in LABEL_COLUMNS if column not in labels.columns]
+    if missing:
+        raise InspectionError(
+            f"comment reinspection labels missing required columns: {', '.join(missing)}"
+        )
+    safe_labeler = _safe_labeler(labeler)
+
+    rows = labels.rows
+    reason_counts: Counter[str] = Counter()
+    suitable = Counter(_judgment(row.get("suitable")) for row in rows)
+    answerability = Counter(_judgment(row.get("answerability_clear")) for row in rows)
+    notation = Counter(_judgment(row.get("math_notation_readable")) for row in rows)
+    needs_comments = Counter(_judgment(row.get("needs_comments")) for row in rows)
+    for row in rows:
+        reason = str(row.get("reason_code", "")).strip().lower()
+        if not reason:
+            continue
+        if not REASON_CODE_PATTERN.fullmatch(reason):
+            raise InspectionError(
+                "reason_code values must use only lowercase letters, digits, "
+                "hyphens, and underscores"
+            )
+        reason_counts[reason] += 1
+
+    recommendation = _comment_reinspection_recommendation(
+        inspected=len(rows),
+        suitable=suitable,
+        answerability=answerability,
+        notation=notation,
+        needs_comments=needs_comments,
+    )
+    summary = _comment_reinspection_markdown(
+        inspected=len(rows),
+        labeler=safe_labeler,
+        suitable=suitable,
+        answerability=answerability,
+        notation=notation,
+        needs_comments=needs_comments,
+        reason_counts=reason_counts,
+        recommendation=recommendation,
+    )
+    decision = _comment_enriched_decision_markdown(recommendation)
+    audit_text = audit_path.read_text(encoding="utf-8")
+    audit_path.write_text(
+        _upsert_comment_reinspection_sections(audit_text, summary, decision),
+        encoding="utf-8",
+    )
+    return InspectionSummaryResult(
+        audit_path=audit_path,
+        inspected=len(rows),
+        recommendation=recommendation,
+    )
+
+
 def _require_ignored_processed_out_dir(out_dir: Path) -> None:
     parts = out_dir.parts
     required = ("data", "processed", "stackexchange-difficulty")
@@ -209,6 +389,55 @@ def _require_ignored_processed_out_dir(out_dir: Path) -> None:
     raise InspectionError(
         "inspection out-dir must be under data/processed/stackexchange-difficulty "
         "so row-level review files remain ignored by Git"
+    )
+
+
+def _require_columns(table: Table, columns: tuple[str, ...]) -> None:
+    missing = [column for column in columns if column not in table.columns]
+    if missing:
+        raise InspectionError(
+            f"{table.name} is missing required columns: {', '.join(missing)}"
+        )
+
+
+def _comments_for_review(
+    review_row: dict[str, Any],
+    *,
+    comments_by_post: dict[str, list[dict[str, Any]]],
+    comments_by_question: dict[str, list[dict[str, Any]]],
+) -> str:
+    question_id = str(review_row.get("question_id", "")).strip()
+    answer_ids = set(
+        re.findall(
+            r"answer_id=([0-9]+)",
+            str(review_row.get("answers_for_review", "")),
+        )
+    )
+    selected: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for comment in comments_by_question.get(question_id, []):
+        comment_id = str(comment.get("comment_id", "")).strip()
+        if comment_id and comment_id not in seen:
+            selected.append(comment)
+            seen.add(comment_id)
+    for post_id in {question_id, *answer_ids}:
+        for comment in comments_by_post.get(post_id, []):
+            comment_id = str(comment.get("comment_id", "")).strip()
+            if comment_id and comment_id not in seen:
+                selected.append(comment)
+                seen.add(comment_id)
+    selected.sort(key=lambda row: str(row.get("creation_date", "")))
+    return "\n\n--- comment ---\n\n".join(
+        "\n".join(
+            [
+                f"comment_id={comment.get('comment_id', '')}",
+                f"post_id={comment.get('post_id', '')}",
+                f"score={comment.get('score', '')}",
+                f"creation_date={comment.get('creation_date', '')}",
+                str(comment.get("text", "")),
+            ]
+        )
+        for comment in selected
     )
 
 
@@ -441,6 +670,50 @@ def _summary_markdown(
     )
 
 
+def _comment_reinspection_markdown(
+    *,
+    inspected: int,
+    labeler: str,
+    suitable: Counter[str],
+    answerability: Counter[str],
+    notation: Counter[str],
+    needs_comments: Counter[str],
+    reason_counts: Counter[str],
+    recommendation: str,
+) -> str:
+    return "\n".join(
+        [
+            COMMENT_REINSPECTION_SECTION_HEADING,
+            "",
+            "- Reinspection source: local ignored comment-enriched label file "
+            "under `data/processed/stackexchange-difficulty/`.",
+            f"- Labeling method: {labeler}.",
+            f"- Reinspected records: {inspected}.",
+            f"- Suitable records: {_format_judgments(suitable)}.",
+            f"- Answerability clear: {_format_judgments(answerability)}.",
+            f"- Math notation readable: {_format_judgments(notation)}.",
+            f"- Still needs comments: {_format_judgments(needs_comments)}.",
+            f"- Top reason codes: {_format_counter(reason_counts, top_n=10)}.",
+            "- Content-safety status: aggregate counts only; row IDs, titles, "
+            "bodies, answers, comments, URLs, usernames, notes, and code snippets "
+            "are not copied into this audit.",
+            f"- Recommendation: {recommendation}.",
+            "",
+        ]
+    )
+
+
+def _comment_enriched_decision_markdown(decision: str) -> str:
+    return "\n".join(
+        [
+            COMMENT_ENRICHED_DECISION_HEADING,
+            "",
+            f"- Decision: {decision}.",
+            "",
+        ]
+    )
+
+
 def _upsert_summary_section(audit_text: str, summary: str) -> str:
     heading = (
         LEGACY_INSPECTION_SECTION_HEADING
@@ -460,6 +733,56 @@ def _upsert_summary_section(audit_text: str, summary: str) -> str:
     return audit_text.rstrip() + "\n\n" + summary
 
 
+def _upsert_comment_reinspection_sections(
+    audit_text: str,
+    summary: str,
+    decision: str,
+) -> str:
+    updated = _replace_or_insert_section(
+        audit_text,
+        heading=COMMENT_REINSPECTION_SECTION_HEADING,
+        section=summary,
+        insert_before=(COMMENT_ENRICHED_DECISION_HEADING, "## Decision"),
+    )
+    return _replace_or_insert_section(
+        updated,
+        heading=COMMENT_ENRICHED_DECISION_HEADING,
+        section=decision,
+        insert_before=("## Decision",),
+    )
+
+
+def _replace_or_insert_section(
+    text: str,
+    *,
+    heading: str,
+    section: str,
+    insert_before: tuple[str, ...],
+) -> str:
+    pattern = re.compile(
+        rf"^{re.escape(heading)}\n.*?(?=^## |\Z)",
+        flags=re.DOTALL | re.MULTILINE,
+    )
+    match = pattern.search(text)
+    if match:
+        return text[: match.start()].rstrip() + "\n\n" + section + text[match.end() :]
+
+    insert_at = _first_heading_position(text, insert_before)
+    if insert_at is not None:
+        return text[:insert_at].rstrip() + "\n\n" + section + text[insert_at:]
+    return text.rstrip() + "\n\n" + section
+
+
+def _first_heading_position(text: str, headings: tuple[str, ...]) -> int | None:
+    positions: list[int] = []
+    for heading in headings:
+        pattern = re.compile(rf"^{re.escape(heading)}\n", flags=re.MULTILINE)
+        match = pattern.search(text)
+        if match:
+            positions.append(match.start())
+    return min(positions) if positions else None
+
+
 def _recommendation(
     *,
     inspected: int,
@@ -476,6 +799,28 @@ def _recommendation(
     if suitable["yes"] / inspected >= 0.80:
         return "go_for_larger_design"
     return "inspection_review_required"
+
+
+def _comment_reinspection_recommendation(
+    *,
+    inspected: int,
+    suitable: Counter[str],
+    answerability: Counter[str],
+    notation: Counter[str],
+    needs_comments: Counter[str],
+) -> str:
+    if inspected == 0:
+        return "needs_more_comment_coverage"
+    if needs_comments["yes"] / inspected > 0.20:
+        return "needs_more_comment_coverage"
+    unsuitable_or_uncertain = suitable["no"] + suitable["uncertain"]
+    if unsuitable_or_uncertain / inspected > 0.20:
+        return "revise_sede_query"
+    if answerability["yes"] / inspected < 0.80:
+        return "revise_sede_query"
+    if notation["yes"] / inspected < 0.80:
+        return "revise_sede_query"
+    return "ready_for_data_dump_design"
 
 
 def _safe_labeler(value: str) -> str:

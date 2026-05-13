@@ -35,6 +35,17 @@ COMMENT_REQUIRED_COLUMNS = (
     "creation_date",
 )
 
+SEDE_COMMENT_REQUIRED_COLUMNS = (
+    "comment_id",
+    "post_id",
+    "question_id",
+    "post_type_id",
+    "text",
+    "score",
+    "creation_date",
+    "content_license",
+)
+
 DERIVED_COLUMNS = (
     "question_id",
     "has_answer",

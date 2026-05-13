@@ -507,3 +507,108 @@ Content-safety note:
 - No titles, bodies, answers, URLs, formulas, usernames, comments, or copied
   post content were added to tracked files.
 - The row-level review and label files remain ignored by Git.
+
+## 2026-05-13 SEDE comment enrichment tooling
+
+Implemented the comment-enrichment workflow for the Mathematics pilot without
+running a live SEDE export:
+
+- Added `stackexchange-difficulty run-sede-comment-enrichment` for an existing
+  pilot question/answer table.
+- Added a tracked reusable `sede_comments_query_template.sql`; the rendered
+  ID-locked query is generated only under ignored `data/processed/` paths
+  because it contains real post IDs.
+- Added strict comment export validation for required columns, duplicate
+  `comment_id` values, unknown `question_id` values, unknown `post_id` values,
+  unsupported post types, and empty exports when pilot question rows report
+  nonzero comment counts.
+- Added comment-enriched processed and derived output paths that do not
+  overwrite the original Mathematics pilot.
+- Added `stackexchange-difficulty prepare-comment-reinspection` to create an
+  ignored local LLM reinspection subset for records previously labeled
+  `needs_comments=yes`.
+- Updated CI help checks, validation protocol, completion criteria, and the
+  SEDE export checklist for the comment-enrichment workflow.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 83 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `stackexchange-difficulty run-sede-comment-enrichment --help`: passed.
+- `stackexchange-difficulty prepare-comment-reinspection --help`: passed.
+- `git diff --check`: passed.
+- `git check-ignore` confirmed the raw comment export, generated comment
+  query, comment-enriched `comments.tsv`, and comment-enriched `threads.jsonl`
+  paths are ignored by Git.
+- Known-leak credential scan found no matches.
+
+## 2026-05-13 Comment-enriched reinspection summary tooling
+
+Added the final aggregate-summary command needed after comment-enriched LLM
+reinspection:
+
+- Added `stackexchange-difficulty summarize-comment-reinspection` so the
+  comment-enriched relabeling pass updates only the `Comment-Enriched LLM
+  Reinspection` and `Comment-Enriched Decision` sections of the tracked audit.
+- Kept the original 100-record `Inspection Summary` intact; this avoids
+  overwriting the first inspection results after comments are added.
+- The command records aggregate counts, reason-code counts, labeler method, and
+  one final decision: `ready_for_data_dump_design`,
+  `needs_more_comment_coverage`, or `revise_sede_query`.
+- Label notes, row IDs, titles, bodies, answers, comments, URLs, usernames, and
+  code snippets are not copied into tracked audit files.
+- Updated CI help checks, validation protocol, and completion criteria to include
+  the new summary command.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 87 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `stackexchange-difficulty --help`: passed.
+- `stackexchange-difficulty run-sede-comment-enrichment --help`: passed.
+- `stackexchange-difficulty prepare-comment-reinspection --help`: passed.
+- `stackexchange-difficulty summarize-comment-reinspection --help`: passed.
+- `git diff --check`: passed.
+- `git check-ignore` confirmed the raw comment export, generated comment query,
+  comment-enriched outputs, derived JSONL, and comment-reinspection label path
+  are ignored by Git.
+- Known-leak credential scan found no matches.
+
+## 2026-05-13 Comment-enriched LLM reinspection
+
+Completed the targeted LLM-assisted reinspection for the 21 Mathematics pilot
+records previously labeled `needs_comments=yes`:
+
+- Split the ignored local review file into four small labeling batches.
+- Wrote batch labels only under ignored `data/processed/` paths, then merged
+  them into the ignored `llm_reinspection_labels.tsv` file.
+- Ran `stackexchange-difficulty summarize-comment-reinspection --labeler
+  llm_assisted_comment_enriched`.
+- Updated the tracked audit with aggregate reinspection counts only.
+
+Aggregate reinspection result:
+
+- Reinspected records: 21.
+- Suitable records: yes=6, no=12, uncertain=3.
+- Answerability clear: yes=9, no=6, uncertain=6.
+- Math notation readable: yes=21, no=0, uncertain=0.
+- Still needs comments: yes=10, no=11, uncertain=0.
+- Top reason codes: still_missing_context=7, resolved_with_comments=6,
+  duplicate_or_closed=5, unclear_answerability=3.
+- Recommendation: `needs_more_comment_coverage`.
+
+Content-safety note:
+
+- No row-level Stack Exchange titles, bodies, answers, comments, formulas,
+  URLs, usernames, code snippets, or copied notes were added to tracked files.
+- Raw comment exports, processed comment tables, derived JSONL, batch labels,
+  and merged reinspection labels remain ignored by Git.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 87 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `git diff --check`: passed before the final aggregate decision wording patch.
+- `git check-ignore` confirmed comment raw, processed, derived, and label paths
+  are ignored by Git.
+- Known-leak credential scan found no matches.

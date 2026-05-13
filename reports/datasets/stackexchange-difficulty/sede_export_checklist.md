@@ -108,6 +108,25 @@ The current pilot export path does not include comment text. Any audit produced
 from it must state that comment usefulness is deferred unless a separate comment
 export is added.
 
+For comment enrichment, first process the question/answer pilot, then generate
+the ID-locked comment query from local pilot IDs:
+
+```bash
+stackexchange-difficulty run-sede-comment-enrichment \
+  --pilot-date 2026-05-13 \
+  --site-slug math \
+  --site-name Mathematics \
+  --questions data/processed/stackexchange-difficulty/pilot-math-2026-05-13/questions.tsv \
+  --answers data/processed/stackexchange-difficulty/pilot-math-2026-05-13/answers.tsv \
+  --download-dir auto \
+  --open-browser \
+  --timeout-seconds 1800
+```
+
+The rendered comment query is written under ignored `data/processed/` because
+it contains real post IDs. Do not commit that rendered query, the raw comment
+export, comment-enriched TSV files, JSONL, or local reinspection files.
+
 Tracked audit files belong under `audits/` and must contain aggregate results
 only, with no question titles, post bodies, answer text, code snippets, comments,
 or user profile content.

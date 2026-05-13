@@ -69,6 +69,39 @@ The 100-record inspection was completed through LLM-assisted labeling over local
 - Top reason codes: good=55, closed_unsuitable=10, too_ambiguous=8, needs_comments=6, duplicate_useful=5, duplicate_not_useful=4, insufficient_answer_context=4, too_specialized=4, not_difficulty_related=3, bad_formatting=1.
 - Recommendation: needs_comment_enrichment.
 
+## Comment Enrichment
+
+- Source: Mathematics SEDE comment export.
+- Generated query file: `data/processed/stackexchange-difficulty/pilot-math-2026-05-13-comment-enrichment/sede_comments_query.sql`.
+- Raw comment export: `data/raw/stackexchange-difficulty/sede-comments-math-2026-05-13.csv`.
+- Comment provenance file: `reports/datasets/stackexchange-difficulty/provenance_sede_comments_math_2026-05-13.json`.
+- Raw comment export hash: `sha256:1c834bec4ea534af66711d8e1fab4048389821b30f920d39c341fb05860f2dfb`.
+- Comment rows: 20269.
+- Covered questions: 4126.
+- Covered included answer posts: 1741.
+- Validation issues: none.
+- Processed output: `data/processed/stackexchange-difficulty/pilot-math-2026-05-13-comment-enriched`.
+- Derived output: `data/processed/stackexchange-difficulty/pilot-math-2026-05-13-comment-enriched-derived`.
+- Content-safety status: aggregate audit only; no copied titles, bodies, answers, comments, code snippets, URLs, usernames, or credentials.
+
+## Comment-Enriched LLM Reinspection
+
+- Reinspection source: local ignored comment-enriched label file under `data/processed/stackexchange-difficulty/`.
+- Labeling method: llm_assisted_comment_enriched.
+- Reinspected records: 21.
+- Suitable records: yes=6, no=12, uncertain=3.
+- Answerability clear: yes=9, no=6, uncertain=6.
+- Math notation readable: yes=21, no=0, uncertain=0.
+- Still needs comments: yes=10, no=11, uncertain=0.
+- Top reason codes: still_missing_context=7, resolved_with_comments=6, duplicate_or_closed=5, unclear_answerability=3.
+- Content-safety status: aggregate counts only; row IDs, titles, bodies, answers, comments, URLs, usernames, notes, and code snippets are not copied into this audit.
+- Recommendation: needs_more_comment_coverage.
+
+## Comment-Enriched Decision
+
+- Decision: needs_more_comment_coverage.
+
 ## Decision
 
-- Decision: LLM-assisted inspection complete; add comment enrichment before larger Data Dump planning.
+- Decision: Comment-enriched reinspection complete; the Mathematics pilot needs
+  more comment coverage or query revision before larger Data Dump planning.

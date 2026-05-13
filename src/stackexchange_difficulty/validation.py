@@ -101,6 +101,8 @@ def validate_dataset(
         if answers is not None:
             issues.extend(validate_answer_links(questions, answers))
             issues.extend(validate_accepted_answers(questions, answers))
+        if comments is not None:
+            issues.extend(validate_comment_links(questions, answers, comments))
         if provenance is not None:
             issues.extend(validate_provenance_record(provenance))
 
@@ -210,6 +212,44 @@ def validate_accepted_answers(questions: Table, answers: Table) -> list[Validati
                     "accepted_answer_flag_mismatch",
                     f"Accepted answer {accepted_answer_id} is not marked is_accepted.",
                     row_id=question_id,
+                )
+            )
+    return issues
+
+
+def validate_comment_links(
+    questions: Table,
+    answers: Table | None,
+    comments: Table,
+) -> list[ValidationIssue]:
+    question_ids = {str(row["question_id"]).strip() for row in questions.rows}
+    answer_ids = {
+        str(row["answer_id"]).strip()
+        for row in (answers.rows if answers is not None else [])
+    }
+    valid_post_ids = question_ids | answer_ids
+    seen: set[str] = set()
+    issues: list[ValidationIssue] = []
+    for row in comments.rows:
+        comment_id = str(row.get("comment_id", "")).strip()
+        post_id = str(row.get("post_id", "")).strip()
+        if not comment_id:
+            issues.append(ValidationIssue("missing_comment_id", "Comment row has no comment_id."))
+        elif comment_id in seen:
+            issues.append(
+                ValidationIssue(
+                    "duplicate_comment_id",
+                    f"Duplicate comment_id: {comment_id}",
+                    row_id=comment_id,
+                )
+            )
+        seen.add(comment_id)
+        if post_id not in valid_post_ids:
+            issues.append(
+                ValidationIssue(
+                    "comment_post_missing",
+                    f"Comment {comment_id} points to missing post_id {post_id}.",
+                    row_id=comment_id or None,
                 )
             )
     return issues

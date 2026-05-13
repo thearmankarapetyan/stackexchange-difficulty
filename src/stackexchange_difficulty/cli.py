@@ -17,7 +17,9 @@ from stackexchange_difficulty.hf_release import (
 )
 from stackexchange_difficulty.inspection import (
     InspectionError,
+    prepare_comment_reinspection_files,
     prepare_inspection_files,
+    summarize_comment_reinspection_labels,
     summarize_inspection_labels,
 )
 from stackexchange_difficulty.jsonl import build_threads, write_jsonl
@@ -28,6 +30,11 @@ from stackexchange_difficulty.provenance import (
     write_provenance_json,
 )
 from stackexchange_difficulty.sede import normalize_sede_export, validate_sede_export
+from stackexchange_difficulty.sede_comments import (
+    SedeCommentConfig,
+    SedeCommentError,
+    run_sede_comment_enrichment,
+)
 from stackexchange_difficulty.sede_pilot import (
     SedePilotConfig,
     SedePilotError,
@@ -129,6 +136,36 @@ def build_parser() -> argparse.ArgumentParser:
     )
     run_sede.set_defaults(func=cmd_run_sede_pilot)
 
+    run_sede_comments = subparsers.add_parser(
+        "run-sede-comment-enrichment",
+        help="Export and ingest SEDE comments for an existing pilot.",
+    )
+    run_sede_comments.add_argument(
+        "--export",
+        help="Already downloaded local comments CSV/TSV export.",
+    )
+    run_sede_comments.add_argument("--pilot-date", required=True)
+    run_sede_comments.add_argument("--site-slug", required=True)
+    run_sede_comments.add_argument("--site-name")
+    run_sede_comments.add_argument("--questions", required=True)
+    run_sede_comments.add_argument("--answers", required=True)
+    run_sede_comments.add_argument("--download-dir", default="auto")
+    run_sede_comments.add_argument("--open-browser", action="store_true")
+    run_sede_comments.add_argument("--timeout-seconds", type=float, default=1800)
+    run_sede_comments.add_argument("--query-url")
+    run_sede_comments.add_argument(
+        "--query-template",
+        help="Repository-relative or absolute comment-query template SQL file.",
+    )
+    run_sede_comments.add_argument(
+        "--project-root",
+        help=(
+            "Project root. Defaults to auto-detection from the current "
+            "directory or a projects/stackexchange-difficulty child."
+        ),
+    )
+    run_sede_comments.set_defaults(func=cmd_run_sede_comment_enrichment)
+
     prepare_hf = subparsers.add_parser(
         "prepare-hf-release",
         help="Prepare a metadata-only Hugging Face dataset release folder.",
@@ -175,6 +212,32 @@ def build_parser() -> argparse.ArgumentParser:
         help="Aggregate label source recorded in the audit, for example manual or llm_assisted.",
     )
     summarize_inspection.set_defaults(func=cmd_summarize_inspection)
+
+    prepare_reinspection = subparsers.add_parser(
+        "prepare-comment-reinspection",
+        help="Prepare ignored comment-enriched files for targeted LLM reinspection.",
+    )
+    prepare_reinspection.add_argument("--review", required=True)
+    prepare_reinspection.add_argument("--labels", required=True)
+    prepare_reinspection.add_argument("--comments", required=True)
+    prepare_reinspection.add_argument("--out-dir", required=True)
+    prepare_reinspection.set_defaults(func=cmd_prepare_comment_reinspection)
+
+    summarize_reinspection = subparsers.add_parser(
+        "summarize-comment-reinspection",
+        help="Append aggregate comment-enriched reinspection results to a tracked audit.",
+    )
+    summarize_reinspection.add_argument("--labels", required=True)
+    summarize_reinspection.add_argument("--audit", required=True)
+    summarize_reinspection.add_argument(
+        "--labeler",
+        default="llm_assisted_comment_enriched",
+        help=(
+            "Aggregate label source recorded in the audit, for example "
+            "llm_assisted_comment_enriched."
+        ),
+    )
+    summarize_reinspection.set_defaults(func=cmd_summarize_comment_reinspection)
 
     upload_hf = subparsers.add_parser(
         "upload-hf-release",
@@ -369,6 +432,33 @@ def cmd_run_sede_pilot(args: argparse.Namespace) -> int:
     return 0 if result.ok else 1
 
 
+def cmd_run_sede_comment_enrichment(args: argparse.Namespace) -> int:
+    try:
+        pilot_date = resolve_pilot_date(args.pilot_date)
+        root = resolve_project_root(args.project_root)
+        result = run_sede_comment_enrichment(
+            SedeCommentConfig(
+                project_root=root,
+                pilot_date=pilot_date,
+                site_slug=args.site_slug,
+                site_name=args.site_name,
+                questions_path=_resolve_cli_path(args.questions, root),
+                answers_path=_resolve_cli_path(args.answers, root),
+                export_path=_resolve_cli_path(args.export, root) if args.export else None,
+                download_dir=args.download_dir,
+                open_browser=args.open_browser,
+                timeout_seconds=args.timeout_seconds,
+                query_url=args.query_url,
+                query_template=Path(args.query_template) if args.query_template else None,
+            )
+        )
+    except (SedeCommentError, SedePilotError) as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0 if result.ok else 1
+
+
 def cmd_prepare_hf_release(args: argparse.Namespace) -> int:
     try:
         result = prepare_hf_release(
@@ -418,6 +508,35 @@ def cmd_summarize_inspection(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_prepare_comment_reinspection(args: argparse.Namespace) -> int:
+    try:
+        result = prepare_comment_reinspection_files(
+            review=read_table(args.review, name="inspection_review"),
+            labels=read_table(args.labels, name="inspection_labels"),
+            comments=read_table(args.comments, name="comments"),
+            out_dir=Path(args.out_dir),
+        )
+    except InspectionError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0
+
+
+def cmd_summarize_comment_reinspection(args: argparse.Namespace) -> int:
+    try:
+        result = summarize_comment_reinspection_labels(
+            labels=read_table(args.labels, name="comment_reinspection_labels"),
+            audit_path=Path(args.audit),
+            labeler=args.labeler,
+        )
+    except InspectionError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0
+
+
 def resolve_project_root(value: str | None = None) -> Path:
     if value:
         return Path(value)
@@ -439,6 +558,18 @@ def _looks_like_project_root(path: Path) -> bool:
         (path / "src/stackexchange_difficulty").is_dir()
         and (path / "reports/datasets/stackexchange-difficulty").is_dir()
     )
+
+
+def _resolve_cli_path(value: str, root: Path) -> Path:
+    path = Path(value)
+    if path.is_absolute():
+        return path
+    rooted = root / path
+    if rooted.exists():
+        return rooted
+    if path.exists():
+        return path
+    return rooted
 
 
 def cmd_upload_hf_release(args: argparse.Namespace) -> int:

@@ -43,6 +43,28 @@ The first real SEDE pilot is ready for review only when:
   processed-file hashes, and the inspection summary.
 - No real Stack Exchange post content has been committed.
 
+## Comment-Enriched Pilot Gate
+
+The Mathematics pilot is ready for larger design planning only when:
+
+- `stackexchange-difficulty run-sede-comment-enrichment` has generated an
+  ID-locked SEDE comment query from the existing pilot IDs.
+- The rendered query, raw comment export, processed comment table, derived
+  JSONL, and local reinspection files remain under ignored `data/` paths.
+- Comment validation has confirmed required columns, unique `comment_id`
+  values, known `question_id` values, and `post_id` links to pilot questions or
+  included first/accepted answers.
+- Pending provenance hashes have been finalized before comment-enriched JSONL
+  is generated.
+- `stackexchange-difficulty prepare-comment-reinspection` has produced a local
+  ignored subset for records previously labeled `needs_comments=yes`.
+- `stackexchange-difficulty summarize-comment-reinspection` has updated the
+  tracked audit with aggregate comment-enriched relabeling counts only.
+- The tracked audit contains aggregate comment coverage and aggregate
+  reinspection counts only.
+- The final decision is one of `ready_for_data_dump_design`,
+  `needs_more_comment_coverage`, or `revise_sede_query`.
+
 ## Hugging Face Metadata Release Gate
 
 A private Hugging Face metadata release is ready only when:

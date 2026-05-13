@@ -34,6 +34,13 @@ The current SEDE pilot export path is question/answer centered and does not
 include comment text. Comment context is inspected only if a separate comment
 export or enrichment step is explicitly added and documented.
 
+For a comment-enrichment pass, use the existing pilot `questions.tsv` and
+`answers.tsv` as the source of allowed IDs. The generated SEDE comment query
+must stay under ignored `data/processed/stackexchange-difficulty/` because it
+contains real Stack Exchange post IDs. The tracked template is
+`sede_comments_query_template.sql`; the ID-filled query is not a report
+artifact.
+
 Use `stackexchange-difficulty prepare-inspection` to create local ignored
 review and label files under `data/processed/stackexchange-difficulty/`. The
 review file may contain real post text and must stay untracked. Use
@@ -41,6 +48,13 @@ review file may contain real post text and must stay untracked. Use
 filled with controlled values by a human reviewer or LLM-assisted labeling
 process; the tracked audit receives aggregate counts and the labeler method
 only.
+
+After comment enrichment, use `stackexchange-difficulty prepare-comment-reinspection`
+to create a local ignored review subset for records previously labeled
+`needs_comments=yes`. The reinspection files may contain comment text and must
+remain untracked. Use `stackexchange-difficulty summarize-comment-reinspection`
+after the comment-enriched labels are complete; only aggregate relabeling counts
+and the final comment-enriched decision may be copied into an audit.
 
 Tracked audit notes must report aggregate findings only. Do not copy question
 titles, post bodies, answer text, code snippets, comments, or user profile

@@ -33,7 +33,10 @@ jobs:
         run: |
           stackexchange-difficulty --help
           stackexchange-difficulty run-sede-pilot --help
+          stackexchange-difficulty run-sede-comment-enrichment --help
           stackexchange-difficulty prepare-inspection --help
+          stackexchange-difficulty prepare-comment-reinspection --help
           stackexchange-difficulty summarize-inspection --help
+          stackexchange-difficulty summarize-comment-reinspection --help
           stackexchange-difficulty prepare-hf-release --help
           stackexchange-difficulty upload-hf-release --help

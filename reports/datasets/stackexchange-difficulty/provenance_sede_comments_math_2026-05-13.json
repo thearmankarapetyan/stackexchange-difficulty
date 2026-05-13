@@ -1,0 +1,28 @@
+{
+  "dataset_name": "stackexchange-difficulty",
+  "dataset_version": "sede-comments-math-2026-05-13",
+  "source_method": "sede_comment_export",
+  "source_version": "SEDE snapshot visible at export time",
+  "source_site_slug": "math",
+  "source_site_name": "Mathematics",
+  "query_url": "https://data.stackexchange.com/math/query/new",
+  "query_or_dump_file": "reports/datasets/stackexchange-difficulty/sede_comments_query_template.sql",
+  "generated_query_file": "data/processed/stackexchange-difficulty/pilot-math-2026-05-13-comment-enrichment/sede_comments_query.sql",
+  "export_identifier": "data/raw/stackexchange-difficulty/sede-comments-math-2026-05-13.csv",
+  "access_date": "2026-05-13",
+  "official_source_checked_at": "2026-05-13",
+  "license": "CC BY-SA, version determined by each exported comment ContentLicense",
+  "transformation_steps": [
+    "generated ID-locked Mathematics comment query from existing pilot IDs",
+    "exported Mathematics comments manually through SEDE",
+    "stored raw comment export unchanged under data/raw/stackexchange-difficulty/",
+    "validated comment IDs, question IDs, post IDs, and provenance",
+    "created a comment-enriched processed dataset without overwriting the pilot",
+    "derived thread indicators and JSONL from finalized provenance",
+    "updated tracked audit with aggregate comment counts only"
+  ],
+  "raw_export_hash": "sha256:1c834bec4ea534af66711d8e1fab4048389821b30f920d39c341fb05860f2dfb",
+  "processed_output_hash": "sha256:ead8fe983a75cc56c62b423ff1bd8a40c216dfcfb52a5438fc865fa571124315",
+  "output_hash": "sha256:ead8fe983a75cc56c62b423ff1bd8a40c216dfcfb52a5438fc865fa571124315",
+  "processed_hash_manifest": "data/processed/stackexchange-difficulty/pilot-math-2026-05-13-comment-enriched/processed-output.sha256"
+}

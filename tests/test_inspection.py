@@ -11,7 +11,9 @@ import pytest
 
 from stackexchange_difficulty.inspection import (
     InspectionError,
+    prepare_comment_reinspection_files,
     prepare_inspection_files,
+    summarize_comment_reinspection_labels,
     summarize_inspection_labels,
 )
 from stackexchange_difficulty.validation import Table, read_table
@@ -108,6 +110,89 @@ def test_prepare_inspection_rejects_tracked_looking_out_dir(tmp_path):
             sample_size=2,
             out_dir=tmp_path / "reports/inspection",
         )
+
+
+def test_prepare_comment_reinspection_selects_only_records_needing_comments(tmp_path):
+    review_path = tmp_path / "review.tsv"
+    review_path.write_text(
+        "\t".join(
+            [
+                "record_index",
+                "sample_stratum",
+                "question_id",
+                "title",
+                "body_html",
+                "tags",
+                "creation_date",
+                "score",
+                "view_count",
+                "answer_count",
+                "comment_count",
+                "closed_date",
+                "accepted_answer_id",
+                "is_duplicate",
+                "content_license",
+                "indicator_has_answer",
+                "indicator_has_accepted_answer",
+                "indicator_is_unanswered",
+                "indicator_is_closed",
+                "indicator_is_duplicate",
+                "indicator_time_to_first_answer_hours",
+                "indicator_tag_popularity_bucket",
+                "answers_for_review",
+            ]
+        )
+        + "\n"
+        + "1\tanswered\t101\tSensitive title\tSensitive body\t<math>\t2026-01-01\t"
+        + "0\t1\t1\t1\t\t201\tfalse\tCC BY-SA\ttrue\ttrue\tfalse\tfalse\tfalse\t"
+        + "1.0\tlow\tanswer_id=201\n"
+        + "2\tanswered\t102\tOther title\tOther body\t<math>\t2026-01-02\t"
+        + "0\t1\t1\t0\t\t\tfalse\tCC BY-SA\ttrue\tfalse\tfalse\tfalse\tfalse\t"
+        + "1.0\tlow\tanswer_id=202\n",
+        encoding="utf-8",
+    )
+    labels_path = tmp_path / "labels.tsv"
+    labels_path.write_text(
+        "\t".join(
+            [
+                "record_index",
+                "sample_stratum",
+                "suitable",
+                "answerability_clear",
+                "math_notation_readable",
+                "needs_comments",
+                "reason_code",
+                "notes",
+            ]
+        )
+        + "\n1\tanswered\tuncertain\tuncertain\tyes\tyes\tneeds_comments\t\n"
+        + "2\tanswered\tyes\tyes\tyes\tno\tgood\t\n",
+        encoding="utf-8",
+    )
+    comments_path = tmp_path / "comments.tsv"
+    comments_path.write_text(
+        "comment_id\tpost_id\tquestion_id\ttext\tscore\tcreation_date\n"
+        "301\t101\t101\tSensitive comment text\t1\t2026-01-01T00:00:00+00:00\n"
+        "302\t201\t101\tSensitive answer comment\t0\t2026-01-01T01:00:00+00:00\n",
+        encoding="utf-8",
+    )
+    out_dir = tmp_path / "data/processed/stackexchange-difficulty/reinspection"
+
+    result = prepare_comment_reinspection_files(
+        review=read_table(review_path, name="inspection_review"),
+        labels=read_table(labels_path, name="inspection_labels"),
+        comments=read_table(comments_path, name="comments"),
+        out_dir=out_dir,
+    )
+
+    review_text = result.review_path.read_text(encoding="utf-8")
+    labels = read_table(result.labels_path, name="labels")
+    assert result.selected_records == 1
+    assert "Sensitive comment text" in review_text
+    assert "Sensitive answer comment" in review_text
+    assert "Other title" not in review_text
+    assert len(labels.rows) == 1
+    assert labels.rows[0]["record_index"] == "1"
 
 
 def test_summarize_inspection_updates_audit_with_aggregate_counts_only(tmp_path):
@@ -224,6 +309,153 @@ def test_summarize_inspection_rejects_unsafe_labeler(tmp_path):
             audit_path=audit,
             labeler="LLM assisted with copied text",
         )
+
+
+def test_summarize_comment_reinspection_preserves_original_inspection_summary(tmp_path):
+    labels_path = tmp_path / "llm_reinspection_labels.tsv"
+    labels_path.write_text(
+        "\t".join(
+            [
+                "record_index",
+                "sample_stratum",
+                "suitable",
+                "answerability_clear",
+                "math_notation_readable",
+                "needs_comments",
+                "reason_code",
+                "notes",
+            ]
+        )
+        + "\n"
+        + "1\tanswered\tyes\tyes\tyes\tno\tresolved_with_comments\t"
+        + "Do not leak this comment\n"
+        + "2\tanswered\tyes\tyes\tyes\tno\tresolved_with_comments\t"
+        + "Do not leak this title\n",
+        encoding="utf-8",
+    )
+    audit = tmp_path / "audit.md"
+    audit.write_text(
+        "# SEDE Pilot Audit\n\n"
+        "## Inspection Summary\n\n"
+        "- Original summary stays here.\n\n"
+        "## Comment Enrichment\n\n"
+        "- Comment rows: 12.\n\n"
+        "## Comment-Enriched LLM Reinspection\n\n"
+        "- Status: pending.\n\n"
+        "## Comment-Enriched Decision\n\n"
+        "- Decision: needs_more_comment_coverage.\n\n"
+        "## Decision\n\n"
+        "- Decision: needs_comment_enrichment.\n",
+        encoding="utf-8",
+    )
+
+    result = summarize_comment_reinspection_labels(
+        labels=read_table(labels_path, name="comment_reinspection_labels"),
+        audit_path=audit,
+    )
+
+    text = audit.read_text(encoding="utf-8")
+    assert result.inspected == 2
+    assert result.recommendation == "ready_for_data_dump_design"
+    assert "## Inspection Summary" in text
+    assert "- Original summary stays here." in text
+    assert "## Comment-Enriched LLM Reinspection" in text
+    assert "Reinspected records: 2" in text
+    assert "Still needs comments: yes=0, no=2, uncertain=0" in text
+    assert "Recommendation: ready_for_data_dump_design" in text
+    assert "## Comment-Enriched Decision" in text
+    assert "Decision: ready_for_data_dump_design" in text
+    assert "Do not leak this comment" not in text
+    assert "Do not leak this title" not in text
+
+
+def test_summarize_comment_reinspection_can_request_more_comment_coverage(tmp_path):
+    labels_path = tmp_path / "llm_reinspection_labels.tsv"
+    labels_path.write_text(
+        "\t".join(
+            [
+                "record_index",
+                "sample_stratum",
+                "suitable",
+                "answerability_clear",
+                "math_notation_readable",
+                "needs_comments",
+                "reason_code",
+                "notes",
+            ]
+        )
+        + "\n"
+        + "1\tanswered\tyes\tyes\tyes\tyes\tstill_missing_context\t\n"
+        + "2\tanswered\tyes\tyes\tyes\tno\tresolved_with_comments\t\n",
+        encoding="utf-8",
+    )
+    audit = tmp_path / "audit.md"
+    audit.write_text(
+        "# SEDE Pilot Audit\n\n## Decision\n\n- Decision: pending.\n",
+        encoding="utf-8",
+    )
+
+    result = summarize_comment_reinspection_labels(
+        labels=read_table(labels_path, name="comment_reinspection_labels"),
+        audit_path=audit,
+        labeler="llm_assisted_comment_enriched",
+    )
+
+    text = audit.read_text(encoding="utf-8")
+    assert result.recommendation == "needs_more_comment_coverage"
+    assert "## Comment-Enriched LLM Reinspection" in text
+    assert "Recommendation: needs_more_comment_coverage" in text
+    assert "Decision: needs_more_comment_coverage" in text
+
+
+def test_summarize_comment_reinspection_missing_columns_fails(tmp_path):
+    labels = tmp_path / "llm_reinspection_labels.tsv"
+    labels.write_text("record_index\tsuitable\n1\tyes\n", encoding="utf-8")
+    audit = tmp_path / "audit.md"
+    audit.write_text("# Audit\n", encoding="utf-8")
+
+    with pytest.raises(InspectionError, match="missing required columns"):
+        summarize_comment_reinspection_labels(
+            labels=read_table(labels, name="comment_reinspection_labels"),
+            audit_path=audit,
+        )
+
+
+def test_summarize_comment_reinspection_cli_does_not_print_label_notes(tmp_path):
+    labels_path = tmp_path / "llm_reinspection_labels.tsv"
+    labels_path.write_text(
+        "\t".join(
+            [
+                "record_index",
+                "sample_stratum",
+                "suitable",
+                "answerability_clear",
+                "math_notation_readable",
+                "needs_comments",
+                "reason_code",
+                "notes",
+            ]
+        )
+        + "\n1\tanswered\tyes\tyes\tyes\tno\tresolved_with_comments\t"
+        + "Sensitive copied post text\n",
+        encoding="utf-8",
+    )
+    audit = tmp_path / "audit.md"
+    audit.write_text("# Audit\n", encoding="utf-8")
+
+    result = run_cli(
+        [
+            "summarize-comment-reinspection",
+            "--labels",
+            str(labels_path),
+            "--audit",
+            str(audit),
+        ]
+    )
+
+    assert result.returncode == 0
+    assert "Sensitive copied post text" not in result.stdout
+    assert "Sensitive copied post text" not in audit.read_text(encoding="utf-8")
 
 
 def test_inspection_paths_are_ignored_by_git():
