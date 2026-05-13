@@ -143,11 +143,13 @@ def test_summarize_inspection_updates_audit_with_aggregate_counts_only(tmp_path)
     result = summarize_inspection_labels(
         labels=read_table(labels_path, name="inspection_labels"),
         audit_path=audit,
+        labeler="llm_assisted",
     )
 
     text = audit.read_text(encoding="utf-8")
     assert result.inspected == 2
-    assert "## Manual Inspection Summary" in text
+    assert "## Inspection Summary" in text
+    assert "Labeling method: llm_assisted" in text
     assert "Suitable records: yes=1, no=1, uncertain=0" in text
     assert "Top reason codes: good=1, needs_comments=1" in text
     assert "Do not leak this title" not in text
@@ -192,6 +194,35 @@ def test_summarize_inspection_rejects_free_text_reason_codes(tmp_path):
         summarize_inspection_labels(
             labels=read_table(labels, name="inspection_labels"),
             audit_path=audit,
+        )
+
+
+def test_summarize_inspection_rejects_unsafe_labeler(tmp_path):
+    labels = tmp_path / "labels.tsv"
+    labels.write_text(
+        "\t".join(
+            [
+                "record_index",
+                "sample_stratum",
+                "suitable",
+                "answerability_clear",
+                "math_notation_readable",
+                "needs_comments",
+                "reason_code",
+                "notes",
+            ]
+        )
+        + "\n1\tanswered\tyes\tyes\tyes\tno\tgood\t\n",
+        encoding="utf-8",
+    )
+    audit = tmp_path / "audit.md"
+    audit.write_text("# Audit\n", encoding="utf-8")
+
+    with pytest.raises(InspectionError, match="labeler"):
+        summarize_inspection_labels(
+            labels=read_table(labels, name="inspection_labels"),
+            audit_path=audit,
+            labeler="LLM assisted with copied text",
         )
 
 

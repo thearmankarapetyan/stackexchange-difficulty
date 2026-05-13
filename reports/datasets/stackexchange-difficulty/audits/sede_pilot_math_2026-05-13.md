@@ -51,12 +51,24 @@ Pilot date: `2026-05-13`
 - `threads.jsonl` produced: yes.
 - Derived output hash summary: `data/processed/stackexchange-difficulty/pilot-math-2026-05-13-derived/derived-output.sha256`.
 
-## Manual Inspection
+## Inspection
 
-Manual inspection is not automated. Inspect at least 100 local records before using this pilot as a scaling decision. This tracked audit must not include real titles, post bodies, answer text, code snippets, comments, usernames, credentials, or other copied user content.
+The 100-record inspection was completed through LLM-assisted labeling over local ignored review files. This tracked audit contains aggregate labels only and does not include real titles, post bodies, answer text, code snippets, comments, usernames, credentials, or other copied user content.
 
 - Comments included in this pilot export: no; the current SEDE pilot path writes an empty comments table unless a separate comment export is documented.
 
+## Inspection Summary
+
+- Inspection source: local ignored label file under `data/processed/stackexchange-difficulty/`.
+- Labeling method: llm_assisted.
+- Inspected records: 100.
+- Suitable records: yes=61, no=22, uncertain=17.
+- Answerability clear: yes=70, no=10, uncertain=20.
+- Math notation readable: yes=100, no=0, uncertain=0.
+- Needs comments: yes=21, no=79, uncertain=0.
+- Top reason codes: good=55, closed_unsuitable=10, too_ambiguous=8, needs_comments=6, duplicate_useful=5, duplicate_not_useful=4, insufficient_answer_context=4, too_specialized=4, not_difficulty_related=3, bad_formatting=1.
+- Recommendation: needs_comment_enrichment.
+
 ## Decision
 
-- Decision: pipeline complete; manual inspection still required before larger Data Dump planning.
+- Decision: LLM-assisted inspection complete; add comment enrichment before larger Data Dump planning.

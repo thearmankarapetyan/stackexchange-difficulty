@@ -51,7 +51,7 @@ Pilot date: `YYYY-MM-DD`
 - `threads.jsonl` produced: yes/no.
 - Derived output hash summary:
 
-## Manual Inspection
+## Inspection
 
 At least 100 local records were inspected without copying real post content into
 this audit.

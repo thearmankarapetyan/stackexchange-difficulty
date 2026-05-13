@@ -441,7 +441,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
             derived_rows=indicators,
             issues=[],
             decision=(
-                "pipeline complete; manual inspection still required before larger "
+                "pipeline complete; inspection still required before larger "
                 "Data Dump planning"
             ),
             root=root,
@@ -707,12 +707,13 @@ def _build_audit(
             "- Derived output hash summary: "
             f"`{_display_path(derived_hash, root) if derived_hash else 'not produced'}`.",
             "",
-            "## Manual Inspection",
+            "## Inspection",
             "",
-            "Manual inspection is not automated. Inspect at least 100 local records "
-            "before using this pilot as a scaling decision. This tracked audit must "
-            "not include real titles, post bodies, answer text, code snippets, "
-            "comments, usernames, credentials, or other copied user content.",
+            "Inspection is not completed by the SEDE pipeline. Inspect or "
+            "LLM-label at least 100 local records before using this pilot as a "
+            "scaling decision. This tracked audit must not include real titles, "
+            "post bodies, answer text, code snippets, comments, usernames, "
+            "credentials, or other copied user content.",
             "",
             "- Comments included in this pilot export: no; the current SEDE pilot "
             "path writes an empty comments table unless a separate comment export "

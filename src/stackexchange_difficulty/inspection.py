@@ -1,4 +1,4 @@
-"""Content-safe local manual inspection helpers."""
+"""Content-safe local pilot inspection helpers."""
 
 from __future__ import annotations
 
@@ -49,7 +49,8 @@ REVIEW_COLUMNS = (
     "answers_for_review",
 )
 
-INSPECTION_SECTION_HEADING = "## Manual Inspection Summary"
+INSPECTION_SECTION_HEADING = "## Inspection Summary"
+LEGACY_INSPECTION_SECTION_HEADING = "## Manual Inspection Summary"
 REASON_CODE_PATTERN = re.compile(r"^[a-z0-9_-]+$")
 
 
@@ -123,7 +124,7 @@ def prepare_inspection_files(
     readme_path.write_text(
         "\n".join(
             [
-                "# Local Manual Inspection",
+                "# Local Pilot Inspection",
                 "",
                 "This directory is ignored by Git because `review.tsv` may contain real "
                 "Stack Exchange post text.",
@@ -147,10 +148,16 @@ def prepare_inspection_files(
     )
 
 
-def summarize_inspection_labels(*, labels: Table, audit_path: Path) -> InspectionSummaryResult:
+def summarize_inspection_labels(
+    *,
+    labels: Table,
+    audit_path: Path,
+    labeler: str = "manual",
+) -> InspectionSummaryResult:
     missing = [column for column in LABEL_COLUMNS if column not in labels.columns]
     if missing:
         raise InspectionError(f"inspection labels missing required columns: {', '.join(missing)}")
+    safe_labeler = _safe_labeler(labeler)
 
     rows = labels.rows
     reason_counts: Counter[str] = Counter()
@@ -176,6 +183,7 @@ def summarize_inspection_labels(*, labels: Table, audit_path: Path) -> Inspectio
     )
     summary = _summary_markdown(
         inspected=len(rows),
+        labeler=safe_labeler,
         suitable=suitable,
         answerability=answerability,
         notation=notation,
@@ -406,6 +414,7 @@ def _answers_for_review(answers: list[dict[str, Any]]) -> str:
 def _summary_markdown(
     *,
     inspected: int,
+    labeler: str,
     suitable: Counter[str],
     answerability: Counter[str],
     notation: Counter[str],
@@ -419,6 +428,7 @@ def _summary_markdown(
             "",
             "- Inspection source: local ignored label file under "
             "`data/processed/stackexchange-difficulty/`.",
+            f"- Labeling method: {labeler}.",
             f"- Inspected records: {inspected}.",
             f"- Suitable records: {_format_judgments(suitable)}.",
             f"- Answerability clear: {_format_judgments(answerability)}.",
@@ -432,9 +442,14 @@ def _summary_markdown(
 
 
 def _upsert_summary_section(audit_text: str, summary: str) -> str:
-    if INSPECTION_SECTION_HEADING in audit_text:
-        start = audit_text.index(INSPECTION_SECTION_HEADING)
-        following = audit_text.find("\n## ", start + len(INSPECTION_SECTION_HEADING))
+    heading = (
+        LEGACY_INSPECTION_SECTION_HEADING
+        if LEGACY_INSPECTION_SECTION_HEADING in audit_text
+        else INSPECTION_SECTION_HEADING
+    )
+    if heading in audit_text:
+        start = audit_text.index(heading)
+        following = audit_text.find("\n## ", start + len(heading))
         if following == -1:
             return audit_text[:start].rstrip() + "\n\n" + summary
         return audit_text[:start].rstrip() + "\n\n" + summary + audit_text[following:]
@@ -452,7 +467,7 @@ def _recommendation(
     needs_comments: Counter[str],
 ) -> str:
     if inspected == 0:
-        return "manual_inspection_incomplete"
+        return "inspection_incomplete"
     unsuitable_or_uncertain = suitable["no"] + suitable["uncertain"]
     if needs_comments["yes"] / inspected > 0.20:
         return "needs_comment_enrichment"
@@ -460,7 +475,16 @@ def _recommendation(
         return "revise_query_or_sampling"
     if suitable["yes"] / inspected >= 0.80:
         return "go_for_larger_design"
-    return "manual_inspection_review_required"
+    return "inspection_review_required"
+
+
+def _safe_labeler(value: str) -> str:
+    text = value.strip().lower()
+    if not text or not REASON_CODE_PATTERN.fullmatch(text):
+        raise InspectionError(
+            "labeler must use only lowercase letters, digits, hyphens, and underscores"
+        )
+    return text
 
 
 def _format_judgments(counter: Counter[str]) -> str:

@@ -151,7 +151,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     prepare_inspection = subparsers.add_parser(
         "prepare-inspection",
-        help="Prepare ignored local files for content-safe manual inspection.",
+        help="Prepare ignored local files for content-safe pilot inspection.",
     )
     prepare_inspection.add_argument("--questions", required=True)
     prepare_inspection.add_argument("--answers", required=True)
@@ -165,10 +165,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     summarize_inspection = subparsers.add_parser(
         "summarize-inspection",
-        help="Append aggregate manual-inspection results to a tracked audit.",
+        help="Append aggregate inspection results to a tracked audit.",
     )
     summarize_inspection.add_argument("--labels", required=True)
     summarize_inspection.add_argument("--audit", required=True)
+    summarize_inspection.add_argument(
+        "--labeler",
+        default="manual",
+        help="Aggregate label source recorded in the audit, for example manual or llm_assisted.",
+    )
     summarize_inspection.set_defaults(func=cmd_summarize_inspection)
 
     upload_hf = subparsers.add_parser(
@@ -404,6 +409,7 @@ def cmd_summarize_inspection(args: argparse.Namespace) -> int:
         result = summarize_inspection_labels(
             labels=read_table(args.labels, name="inspection_labels"),
             audit_path=Path(args.audit),
+            labeler=args.labeler,
         )
     except InspectionError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))

@@ -456,7 +456,7 @@ Content-safety note:
 
 ## 2026-05-13 Safe Mathematics inspection tooling
 
-Implemented the content-safe manual inspection workflow for the Mathematics
+Implemented the content-safe inspection workflow for the Mathematics
 pilot:
 
 - Compacted future audit tag-family distributions to the top 25 values plus an
@@ -468,7 +468,7 @@ pilot:
 - Added deterministic stratified sampling across answer, accepted-answer,
   closure, duplicate, latency, and tag-popularity signals.
 - Added `stackexchange-difficulty summarize-inspection` to update tracked
-  audits with aggregate manual-inspection counts only.
+  audits with aggregate inspection counts only.
 - Kept per-record review material and labels out of Git; the CLI prints only
   paths, counts, and JSON status.
 
@@ -485,3 +485,25 @@ Verification results:
 - `git check-ignore` confirmed the Mathematics `review.tsv` and `labels.tsv`
   inspection files are ignored by Git.
 - Known-leak credential scan found no matches.
+
+## 2026-05-13 LLM-assisted Mathematics inspection
+
+Completed the 100-record Mathematics pilot inspection through LLM-assisted
+batch labeling:
+
+- Split the ignored local `review.tsv` sample into five 20-record batches.
+- Each batch returned only controlled labels: suitability, answerability,
+  notation readability, comment need, and reason code.
+- Wrote the labels to the ignored local `labels.tsv` file under
+  `data/processed/stackexchange-difficulty/pilot-math-2026-05-13-inspection/`.
+- Ran `stackexchange-difficulty summarize-inspection --labeler llm_assisted`.
+- Updated the tracked audit with aggregate counts only: 61 suitable, 22
+  unsuitable, 17 uncertain; 70 answerability-clear; 100 notation-readable; 21
+  needing comments.
+- The aggregate recommendation is `needs_comment_enrichment`.
+
+Content-safety note:
+
+- No titles, bodies, answers, URLs, formulas, usernames, comments, or copied
+  post content were added to tracked files.
+- The row-level review and label files remain ignored by Git.

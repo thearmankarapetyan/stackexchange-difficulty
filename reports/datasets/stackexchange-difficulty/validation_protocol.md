@@ -24,7 +24,7 @@ comparison is attempted.
 - Inspect tag distribution and visibility skew.
 - Inspect time-to-first-answer distribution.
 
-## Manual Inspection
+## Pilot Inspection
 
 At least 100 records in a future real pilot must be inspected for readability,
 field linking, code/error preservation, duplicate-link usefulness, and
@@ -38,7 +38,8 @@ Use `stackexchange-difficulty prepare-inspection` to create local ignored
 review and label files under `data/processed/stackexchange-difficulty/`. The
 review file may contain real post text and must stay untracked. Use
 `stackexchange-difficulty summarize-inspection` only after labels have been
-filled with controlled values; the tracked audit receives aggregate counts
+filled with controlled values by a human reviewer or LLM-assisted labeling
+process; the tracked audit receives aggregate counts and the labeler method
 only.
 
 Tracked audit notes must report aggregate findings only. Do not copy question

@@ -18,7 +18,7 @@ The v1 scaffold is complete when:
 - The private GitHub repository contains the initial scaffold commit.
 - GitHub Actions passes on `main`.
 
-Future corpus work is complete only after a real pilot also satisfies the manual
+Future corpus work is complete only after a real pilot also satisfies the pilot
 inspection and audit requirements in `validation_protocol.md`.
 
 ## First Real SEDE Pilot Gate
@@ -40,7 +40,7 @@ The first real SEDE pilot is ready for review only when:
   hashes before derived JSONL is generated.
 - `stackexchange-difficulty derive` has produced indicators and JSONL.
 - The tracked audit under `audits/` contains aggregate validation results,
-  processed-file hashes, and the manual-inspection summary.
+  processed-file hashes, and the inspection summary.
 - No real Stack Exchange post content has been committed.
 
 ## Hugging Face Metadata Release Gate
