@@ -203,6 +203,68 @@ def test_run_sede_comment_enrichment_with_export_completes_pipeline(tmp_path):
     assert "Synthetic SEDE CSV parsing" not in audit_text
 
 
+def test_run_sede_comment_enrichment_pilot_slug_uses_answerable_paths(tmp_path):
+    project_root = make_project_root(tmp_path)
+    seed_pilot_files(
+        project_root,
+        pilot_stem="pilot-math-answerable-2026-05-13",
+        audit_name="sede_pilot_math_answerable_2026-05-13.md",
+    )
+    fixture = Path.cwd() / "tests/fixtures/sede_comments_export.tsv"
+
+    result = run_cli(
+        [
+            "run-sede-comment-enrichment",
+            "--export",
+            str(fixture),
+            "--pilot-date",
+            "2026-05-13",
+            "--site-slug",
+            "math",
+            "--site-name",
+            "Mathematics",
+            "--pilot-slug",
+            "math-answerable",
+            "--questions",
+            (
+                "data/processed/stackexchange-difficulty/"
+                "pilot-math-answerable-2026-05-13/questions.tsv"
+            ),
+            "--answers",
+            (
+                "data/processed/stackexchange-difficulty/"
+                "pilot-math-answerable-2026-05-13/answers.tsv"
+            ),
+            "--project-root",
+            str(project_root),
+        ]
+    )
+
+    payload = json.loads(result.stdout)
+    assert result.returncode == 0
+    assert payload["ok"] is True
+    assert payload["query_file"].endswith(
+        "pilot-math-answerable-2026-05-13-comment-enrichment/sede_comments_query.sql"
+    )
+    assert payload["raw_export"].endswith("sede-comments-math-answerable-2026-05-13.tsv")
+    assert payload["processed_dir"].endswith(
+        "pilot-math-answerable-2026-05-13-comment-enriched"
+    )
+    assert payload["derived_dir"].endswith(
+        "pilot-math-answerable-2026-05-13-comment-enriched-derived"
+    )
+    assert payload["provenance"].endswith(
+        "provenance_sede_comments_math_answerable_2026-05-13.json"
+    )
+    assert payload["audit"].endswith("sede_pilot_math_answerable_2026-05-13.md")
+
+    provenance = json.loads(Path(payload["provenance"]).read_text(encoding="utf-8"))
+    assert provenance["source_site_slug"] == "math"
+    assert provenance["source_site_name"] == "Mathematics"
+    assert provenance["pilot_slug"] == "math-answerable"
+    assert provenance["dataset_version"] == "sede-comments-math-answerable-2026-05-13"
+
+
 def test_run_sede_comment_enrichment_rejects_bad_export_before_outputs(tmp_path):
     project_root = make_project_root(tmp_path)
     seed_pilot_files(project_root)
@@ -279,8 +341,16 @@ def test_comment_enrichment_paths_are_ignored_by_git():
     paths = [
         "data/raw/stackexchange-difficulty/sede-comments-math-2026-05-13.csv",
         (
+            "data/raw/stackexchange-difficulty/"
+            "sede-comments-math-answerable-2026-05-13.csv"
+        ),
+        (
             "data/processed/stackexchange-difficulty/"
             "pilot-math-2026-05-13-comment-enrichment/sede_comments_query.sql"
+        ),
+        (
+            "data/processed/stackexchange-difficulty/"
+            "pilot-math-answerable-2026-05-13-comment-enrichment/sede_comments_query.sql"
         ),
         (
             "data/processed/stackexchange-difficulty/"
@@ -288,7 +358,15 @@ def test_comment_enrichment_paths_are_ignored_by_git():
         ),
         (
             "data/processed/stackexchange-difficulty/"
+            "pilot-math-answerable-2026-05-13-comment-enriched/comments.tsv"
+        ),
+        (
+            "data/processed/stackexchange-difficulty/"
             "pilot-math-2026-05-13-comment-enriched-derived/threads.jsonl"
+        ),
+        (
+            "data/processed/stackexchange-difficulty/"
+            "pilot-math-answerable-2026-05-13-comment-enriched-derived/threads.jsonl"
         ),
     ]
     for path in paths:
@@ -377,12 +455,22 @@ def make_project_root(tmp_path: Path) -> Path:
     return root
 
 
-def seed_pilot_files(project_root: Path) -> None:
+def seed_pilot_files(
+    project_root: Path,
+    *,
+    pilot_stem: str = "pilot-math-2026-05-13",
+    audit_name: str = "sede_pilot_math_2026-05-13.md",
+) -> None:
     questions, answers = pilot_tables()
-    out = project_root / "data/processed/stackexchange-difficulty/pilot-math-2026-05-13"
+    out = project_root / "data/processed/stackexchange-difficulty" / pilot_stem
     out.mkdir(parents=True)
     write_rows(out / "questions.tsv", questions.rows)
     write_rows(out / "answers.tsv", answers.rows)
+    audit = project_root / "reports/datasets/stackexchange-difficulty/audits" / audit_name
+    audit.write_text(
+        "# SEDE Pilot Audit\n\n## Decision\n\n- Decision: needs_comment_enrichment.\n",
+        encoding="utf-8",
+    )
 
 
 def read_comment_rows() -> list[dict[str, str]]:

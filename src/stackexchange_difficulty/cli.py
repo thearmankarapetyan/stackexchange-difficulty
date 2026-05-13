@@ -121,6 +121,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Human-readable site name for provenance and audits, for example Mathematics.",
     )
     run_sede.add_argument(
+        "--pilot-slug",
+        help=(
+            "Optional pilot identity separate from the SEDE site slug, for example "
+            "math-answerable."
+        ),
+    )
+    run_sede.add_argument(
         "--query-file",
         help=(
             "Repository-relative or absolute SQL file to use for browser "
@@ -147,6 +154,13 @@ def build_parser() -> argparse.ArgumentParser:
     run_sede_comments.add_argument("--pilot-date", required=True)
     run_sede_comments.add_argument("--site-slug", required=True)
     run_sede_comments.add_argument("--site-name")
+    run_sede_comments.add_argument(
+        "--pilot-slug",
+        help=(
+            "Optional pilot identity separate from the SEDE site slug, for example "
+            "math-answerable."
+        ),
+    )
     run_sede_comments.add_argument("--questions", required=True)
     run_sede_comments.add_argument("--answers", required=True)
     run_sede_comments.add_argument("--download-dir", default="auto")
@@ -174,6 +188,13 @@ def build_parser() -> argparse.ArgumentParser:
     prepare_hf.add_argument(
         "--site-slug",
         help="Optional pilot site slug, for example math, to find site-specific artifacts.",
+    )
+    prepare_hf.add_argument(
+        "--pilot-slug",
+        help=(
+            "Optional pilot identity separate from the source site, for example "
+            "math-answerable."
+        ),
     )
     prepare_hf.add_argument("--repo-id", required=True)
     prepare_hf.add_argument("--out-dir", required=True)
@@ -422,6 +443,7 @@ def cmd_run_sede_pilot(args: argparse.Namespace) -> int:
                 query_url=args.query_url,
                 site_slug=args.site_slug,
                 site_name=args.site_name,
+                pilot_slug=args.pilot_slug,
                 query_file=Path(args.query_file) if args.query_file else None,
             )
         )
@@ -442,6 +464,7 @@ def cmd_run_sede_comment_enrichment(args: argparse.Namespace) -> int:
                 pilot_date=pilot_date,
                 site_slug=args.site_slug,
                 site_name=args.site_name,
+                pilot_slug=args.pilot_slug,
                 questions_path=_resolve_cli_path(args.questions, root),
                 answers_path=_resolve_cli_path(args.answers, root),
                 export_path=_resolve_cli_path(args.export, root) if args.export else None,
@@ -467,6 +490,7 @@ def cmd_prepare_hf_release(args: argparse.Namespace) -> int:
             repo_id=args.repo_id,
             out_dir=Path(args.out_dir),
             site_slug=args.site_slug,
+            pilot_slug=args.pilot_slug,
         )
     except HuggingFaceReleaseError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))

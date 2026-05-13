@@ -19,6 +19,7 @@ from stackexchange_difficulty.sede_pilot import (
     SedePilotError,
     _format_counter,
     build_sede_pilot_context,
+    normalize_pilot_slug,
     normalize_site_slug,
     prepare_browser_session,
     run_sede_pilot,
@@ -279,6 +280,70 @@ def test_run_sede_pilot_site_slug_uses_site_specific_names_and_metadata(tmp_path
     assert "- Query URL: `https://data.stackexchange.com/math/query/new`." in audit_text
 
 
+def test_run_sede_pilot_pilot_slug_keeps_source_site_metadata(tmp_path):
+    project_root = make_project_root(tmp_path)
+    fixture = Path.cwd() / "tests/fixtures/sede_pilot_export.tsv"
+    query_file = (
+        "reports/datasets/stackexchange-difficulty/"
+        "sede_pilot_query_math_answerable.sql"
+    )
+
+    result = run_cli(
+        [
+            "run-sede-pilot",
+            "--export",
+            str(fixture),
+            "--pilot-date",
+            "2026-05-12",
+            "--site-slug",
+            "math",
+            "--site-name",
+            "Mathematics",
+            "--pilot-slug",
+            "math-answerable",
+            "--query-file",
+            query_file,
+            "--min-rows",
+            "1",
+            "--max-rows",
+            "10",
+            "--project-root",
+            str(project_root),
+        ]
+    )
+
+    payload = json.loads(result.stdout)
+    assert result.returncode == 0
+    assert payload["ok"] is True
+    assert payload["source_site_slug"] == "math"
+    assert payload["source_site_name"] == "Mathematics"
+    assert payload["pilot_slug"] == "math-answerable"
+    assert payload["query_url"] == "https://data.stackexchange.com/math/query/new"
+    assert payload["raw_export"].endswith(
+        "sede-pilot-math-answerable-2026-05-12.tsv"
+    )
+    assert payload["processed_dir"].endswith("pilot-math-answerable-2026-05-12")
+    assert payload["derived_dir"].endswith(
+        "pilot-math-answerable-2026-05-12-derived"
+    )
+    assert payload["audit"].endswith("sede_pilot_math_answerable_2026-05-12.md")
+    assert payload["provenance"].endswith(
+        "provenance_sede_pilot_math_answerable_2026-05-12.json"
+    )
+
+    provenance = json.loads(Path(payload["provenance"]).read_text(encoding="utf-8"))
+    assert provenance["source_site_slug"] == "math"
+    assert provenance["source_site_name"] == "Mathematics"
+    assert provenance["pilot_slug"] == "math-answerable"
+    assert provenance["query_url"] == "https://data.stackexchange.com/math/query/new"
+    assert provenance["query_or_dump_file"] == query_file
+
+    audit_text = Path(payload["audit"]).read_text(encoding="utf-8")
+    assert "- Source: Mathematics SEDE." in audit_text
+    assert "- Pilot slug: `math-answerable`." in audit_text
+    assert f"- Query file: `{query_file}`." in audit_text
+
+
 def test_run_sede_pilot_auto_detects_project_under_workspace_projects(tmp_path):
     project_root = make_project_root(tmp_path)
     workspace = tmp_path / "workspace"
@@ -343,6 +408,37 @@ def test_build_sede_context_derives_math_query_url_and_query_file(tmp_path):
     assert context.raw_stem == "sede-pilot-math-2026-05-12"
 
 
+def test_build_sede_context_uses_pilot_slug_for_artifact_names(tmp_path):
+    project_root = make_project_root(tmp_path)
+    query_file = Path(
+        "reports/datasets/stackexchange-difficulty/sede_pilot_query_math_answerable.sql"
+    )
+
+    context = build_sede_pilot_context(
+        SedePilotConfig(
+            project_root=project_root,
+            pilot_date="2026-05-12",
+            site_slug="math",
+            site_name="Mathematics",
+            pilot_slug="math-answerable",
+            query_file=query_file,
+        )
+    )
+
+    assert context.site_slug == "math"
+    assert context.site_name == "Mathematics"
+    assert context.pilot_slug == "math-answerable"
+    assert context.query_url == "https://data.stackexchange.com/math/query/new"
+    assert context.raw_stem == "sede-pilot-math-answerable-2026-05-12"
+    assert context.processed_stem == "pilot-math-answerable-2026-05-12"
+    assert context.derived_stem == "pilot-math-answerable-2026-05-12-derived"
+    assert context.audit_name == "sede_pilot_math_answerable_2026-05-12.md"
+    assert (
+        context.provenance_name
+        == "provenance_sede_pilot_math_answerable_2026-05-12.json"
+    )
+
+
 def test_run_sede_pilot_browser_mode_uses_site_url_and_query_file(
     tmp_path,
     monkeypatch,
@@ -397,6 +493,15 @@ def test_run_sede_pilot_browser_mode_uses_site_url_and_query_file(
 def test_site_slug_rejects_path_like_values(bad_slug):
     with pytest.raises(SedePilotError, match="site slug"):
         normalize_site_slug(bad_slug)
+
+
+@pytest.mark.parametrize(
+    "bad_slug",
+    ["MathAnswerable", "math answerable", "math/answerable", "../math", "math.answerable"],
+)
+def test_pilot_slug_rejects_invalid_values(bad_slug):
+    with pytest.raises(SedePilotError, match="pilot slug"):
+        normalize_pilot_slug(bad_slug)
 
 
 def test_run_sede_pilot_missing_required_columns_fails_before_ingestion(tmp_path):
@@ -456,10 +561,22 @@ def test_real_data_paths_are_ignored_by_git():
     paths = [
         "data/raw/stackexchange-difficulty/sede-pilot-2026-05-12.csv",
         "data/raw/stackexchange-difficulty/sede-pilot-math-2026-05-12.csv",
+        (
+            "data/raw/stackexchange-difficulty/"
+            "sede-pilot-math-answerable-2026-05-12.csv"
+        ),
         "data/processed/stackexchange-difficulty/pilot-2026-05-12/questions.tsv",
         "data/processed/stackexchange-difficulty/pilot-math-2026-05-12/questions.tsv",
+        (
+            "data/processed/stackexchange-difficulty/"
+            "pilot-math-answerable-2026-05-12/questions.tsv"
+        ),
         "data/processed/stackexchange-difficulty/pilot-2026-05-12-derived/threads.jsonl",
         "data/processed/stackexchange-difficulty/pilot-math-2026-05-12-derived/threads.jsonl",
+        (
+            "data/processed/stackexchange-difficulty/"
+            "pilot-math-answerable-2026-05-12-derived/threads.jsonl"
+        ),
         "downloads/query-results.csv.crdownload",
     ]
     for path in paths:
@@ -482,6 +599,10 @@ def make_project_root(tmp_path: Path) -> Path:
     (root / "src/stackexchange_difficulty").mkdir(parents=True)
     (report_dir / "sede_pilot_query.sql").write_text("select 1;\n", encoding="utf-8")
     (report_dir / "sede_pilot_query_site_generic.sql").write_text(
+        "select 1;\n",
+        encoding="utf-8",
+    )
+    (report_dir / "sede_pilot_query_math_answerable.sql").write_text(
         "select 1;\n",
         encoding="utf-8",
     )

@@ -41,6 +41,11 @@ contains real Stack Exchange post IDs. The tracked template is
 `sede_comments_query_template.sql`; the ID-filled query is not a report
 artifact.
 
+When more than one pilot is run on the same Stack Exchange site, keep site and
+pilot identity separate. For example, the cleaner answerable Mathematics pilot
+uses `source_site_slug: math` and `pilot_slug: math-answerable`. Validation
+must reject any workflow that treats `math-answerable` as the SEDE site slug.
+
 Use `stackexchange-difficulty prepare-inspection` to create local ignored
 review and label files under `data/processed/stackexchange-difficulty/`. The
 review file may contain real post text and must stay untracked. Use

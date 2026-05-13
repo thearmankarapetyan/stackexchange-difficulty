@@ -63,7 +63,14 @@ CREDENTIAL_PATTERNS = (
 SITE_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 
 
-def pilot_artifact_suffix(*, pilot_date: str, site_slug: str | None = None) -> str:
+def pilot_artifact_suffix(
+    *,
+    pilot_date: str,
+    site_slug: str | None = None,
+    pilot_slug: str | None = None,
+) -> str:
+    if pilot_slug:
+        return f"{normalize_release_pilot_slug(pilot_slug).replace('-', '_')}_{pilot_date}"
     if not site_slug:
         return pilot_date
     return f"{normalize_release_site_slug(site_slug)}_{pilot_date}"
@@ -79,6 +86,17 @@ def normalize_release_site_slug(value: str) -> str:
     return slug
 
 
+def normalize_release_pilot_slug(value: str) -> str:
+    slug = value.strip()
+    if slug != value or not SITE_SLUG_PATTERN.fullmatch(slug) or ".." in slug:
+        raise HuggingFaceReleaseError(
+            "pilot slug must contain only lowercase letters, digits, and hyphens; "
+            "spaces, slashes, dots, uppercase letters, and path traversal are not "
+            "allowed"
+        )
+    return slug
+
+
 def prepare_hf_release(
     *,
     project_root: Path,
@@ -86,6 +104,7 @@ def prepare_hf_release(
     repo_id: str,
     out_dir: Path,
     site_slug: str | None = None,
+    pilot_slug: str | None = None,
     scanner: CredentialScanner | None = None,
 ) -> HuggingFaceReleaseResult:
     if "/" not in repo_id:
@@ -94,9 +113,14 @@ def prepare_hf_release(
     root = project_root.resolve()
     release_dir = out_dir.resolve()
     dataset_dir = root / "reports/datasets/stackexchange-difficulty"
-    artifact_suffix = pilot_artifact_suffix(pilot_date=pilot_date, site_slug=site_slug)
+    artifact_suffix = pilot_artifact_suffix(
+        pilot_date=pilot_date,
+        site_slug=site_slug,
+        pilot_slug=pilot_slug,
+    )
     provenance = dataset_dir / f"provenance_sede_pilot_{artifact_suffix}.json"
     audit = dataset_dir / "audits" / f"sede_pilot_{artifact_suffix}.md"
+    comment_provenance = dataset_dir / f"provenance_sede_comments_{artifact_suffix}.json"
     _require_file(provenance, "dated pilot provenance")
     _require_file(audit, "dated pilot audit")
     provenance_record = json.loads(provenance.read_text(encoding="utf-8"))
@@ -144,6 +168,14 @@ def prepare_hf_release(
             content_class="methodology_report",
         ),
     ]
+    if comment_provenance.is_file():
+        files.append(
+            ReleaseFile(
+                source=comment_provenance,
+                destination=Path("provenance") / comment_provenance.name,
+                content_class="comment_provenance",
+            )
+        )
     for file in files:
         _require_file(file.source, file.content_class)
         validate_release_source_path(file.source, root)
@@ -171,6 +203,7 @@ def prepare_hf_release(
             repo_id=repo_id,
             pilot_date=pilot_date,
             source_site_name=source_site_name,
+            pilot_slug=pilot_slug,
         ),
         encoding="utf-8",
     )
@@ -200,6 +233,7 @@ def prepare_hf_release(
         pilot_date=pilot_date,
         source_site_slug=source_site_slug,
         source_site_name=source_site_name,
+        pilot_slug=pilot_slug,
         release_dir=release_dir,
         release_files=release_files,
         project_root=root,
@@ -270,7 +304,16 @@ def build_dataset_card(
     repo_id: str,
     pilot_date: str,
     source_site_name: str = "Stack Overflow",
+    pilot_slug: str | None = None,
 ) -> str:
+    pilot_label = (
+        f"{source_site_name} `{pilot_slug}` pilot" if pilot_slug else f"{source_site_name} pilot"
+    )
+    methodology_label = (
+        f"{source_site_name} SEDE pilot (`{pilot_slug}`)"
+        if pilot_slug
+        else f"{source_site_name} SEDE pilot"
+    )
     return f"""---
 license: other
 pretty_name: Stack Exchange Difficulty Corpus Metadata Release
@@ -286,7 +329,7 @@ tags:
 
 This private-first dataset repository package documents a Stack Exchange
 difficulty corpus pilot for `{repo_id}`. It is a metadata-only release for the
-{source_site_name} pilot dated `{pilot_date}`.
+{pilot_label} dated `{pilot_date}`.
 
 ## Contents
 
@@ -297,7 +340,7 @@ records, comments, usernames, credentials, or browser-download artifacts.
 
 ## Methodology
 
-The project follows the report protocol: a {source_site_name} SEDE pilot
+The project follows the report protocol: a {methodology_label}
 validates field availability, sampling strata, provenance, and audit checks
 before any larger Data Dump planning. API access remains enrichment-only, and
 HTML scraping is excluded by default.
@@ -343,6 +386,7 @@ def build_release_manifest(
     pilot_date: str,
     source_site_slug: str,
     source_site_name: str,
+    pilot_slug: str | None,
     release_dir: Path,
     release_files: list[ReleaseFile],
     project_root: Path,
@@ -364,6 +408,7 @@ def build_release_manifest(
         "pilot_date": pilot_date,
         "source_site_slug": source_site_slug,
         "source_site_name": source_site_name,
+        **({"pilot_slug": pilot_slug} if pilot_slug else {}),
         "created_at": utc_now_iso(),
         "package_version": __version__,
         "git_commit": current_git_commit(project_root),

@@ -7,6 +7,9 @@ QUERY_PATH = Path("reports/datasets/stackexchange-difficulty/sede_pilot_query.sq
 SITE_GENERIC_QUERY_PATH = Path(
     "reports/datasets/stackexchange-difficulty/sede_pilot_query_site_generic.sql"
 )
+MATH_ANSWERABLE_QUERY_PATH = Path(
+    "reports/datasets/stackexchange-difficulty/sede_pilot_query_math_answerable.sql"
+)
 NON_CODE_QUERY_PATH = Path(
     "reports/datasets/stackexchange-difficulty/sede_pilot_query_non_code_questions.sql"
 )
@@ -52,6 +55,26 @@ def test_site_generic_query_uses_selected_site_and_generic_tag_family():
     assert "SELECT TOP 5000" in query
     assert "FROM selected_questions AS sq" in query
     assert query.index("FROM selected_questions AS sq") < query.index("OUTER APPLY")
+    assert_expected_columns_present(query)
+
+
+def test_math_answerable_query_filters_to_clean_answerable_sample():
+    query = MATH_ANSWERABLE_QUERY_PATH.read_text(encoding="utf-8")
+
+    assert "q.Id NOT IN (1000000001, 1000000010)" in query
+    assert "q.ClosedDate IS NULL" in query
+    assert "q.AnswerCount > 0" in query
+    assert "q.AcceptedAnswerId IS NOT NULL" in query
+    assert "NOT EXISTS" in query
+    assert "pl.LinkTypeId = 3" in query
+    assert "CROSS APPLY" in query
+    assert "first_answer_id" in query
+    assert "accepted_answer_body_html" in query
+    assert "SELECT TOP 5000" in query
+    assert "FROM Comments" not in query
+    assert "OwnerUserId" not in query
+    assert "OwnerDisplayName" not in query
+    assert "FROM Users" not in query
     assert_expected_columns_present(query)
 
 

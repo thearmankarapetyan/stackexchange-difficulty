@@ -22,6 +22,7 @@ from stackexchange_difficulty.provenance import (
 from stackexchange_difficulty.schema import SEDE_COMMENT_REQUIRED_COLUMNS
 from stackexchange_difficulty.sede_pilot import (
     SUPPORTED_EXPORT_SUFFIXES,
+    normalize_pilot_slug,
     normalize_site_slug,
     prepare_browser_session,
     wait_for_sede_export,
@@ -56,6 +57,7 @@ class SedeCommentConfig:
     site_name: str | None
     questions_path: Path
     answers_path: Path
+    pilot_slug: str | None = None
     export_path: Path | None = None
     download_dir: Path | str | None = "auto"
     open_browser: bool = False
@@ -98,23 +100,26 @@ def run_sede_comment_enrichment(config: SedeCommentConfig) -> SedeCommentResult:
     root = config.project_root.resolve()
     site_slug = normalize_site_slug(config.site_slug)
     site_name = config.site_name or _name_from_slug(site_slug)
+    pilot_slug = normalize_pilot_slug(config.pilot_slug) if config.pilot_slug else None
+    artifact_slug = pilot_slug or site_slug
+    report_slug = artifact_slug.replace("-", "_")
     query_url = config.query_url or COMMENT_QUERY_URL_TEMPLATE.format(site_slug=site_slug)
     query_template = _resolve_template(root, config.query_template)
     questions = read_table(config.questions_path, name="questions")
     answers = read_table(config.answers_path, name="answers")
 
-    context = _build_context(root, site_slug, config.pilot_date)
+    context = _build_context(root, artifact_slug, config.pilot_date)
     query_file = context["query_file"]
-    raw_target_stem = f"{COMMENTS_RAW_PREFIX}-{site_slug}-{config.pilot_date}"
+    raw_target_stem = f"{COMMENTS_RAW_PREFIX}-{artifact_slug}-{config.pilot_date}"
     audit_path = (
         root
         / "reports/datasets/stackexchange-difficulty/audits"
-        / f"sede_pilot_{site_slug}_{config.pilot_date}.md"
+        / f"sede_pilot_{report_slug}_{config.pilot_date}.md"
     )
     provenance_path = (
         root
         / "reports/datasets/stackexchange-difficulty"
-        / f"provenance_sede_comments_{site_slug}_{config.pilot_date}.json"
+        / f"provenance_sede_comments_{report_slug}_{config.pilot_date}.json"
     )
 
     query_text = render_comment_query(
@@ -174,12 +179,12 @@ def run_sede_comment_enrichment(config: SedeCommentConfig) -> SedeCommentResult:
     processed_dir = (
         root
         / "data/processed/stackexchange-difficulty"
-        / f"pilot-{site_slug}-{config.pilot_date}-comment-enriched"
+        / f"pilot-{artifact_slug}-{config.pilot_date}-comment-enriched"
     )
     derived_dir = (
         root
         / "data/processed/stackexchange-difficulty"
-        / f"pilot-{site_slug}-{config.pilot_date}-comment-enriched-derived"
+        / f"pilot-{artifact_slug}-{config.pilot_date}-comment-enriched-derived"
     )
     processed_dir.mkdir(parents=True, exist_ok=True)
     derived_dir.mkdir(parents=True, exist_ok=True)
@@ -188,6 +193,8 @@ def run_sede_comment_enrichment(config: SedeCommentConfig) -> SedeCommentResult:
         pilot_date=config.pilot_date,
         site_slug=site_slug,
         site_name=site_name,
+        pilot_slug=pilot_slug,
+        artifact_slug=artifact_slug,
         query_url=query_url,
         query_template=query_template,
         query_file=query_file,
@@ -509,11 +516,11 @@ def _resolve_template(root: Path, query_template: Path | None) -> Path:
     return path
 
 
-def _build_context(root: Path, site_slug: str, pilot_date: str) -> dict[str, Path]:
+def _build_context(root: Path, artifact_slug: str, pilot_date: str) -> dict[str, Path]:
     work_dir = (
         root
         / "data/processed/stackexchange-difficulty"
-        / f"pilot-{site_slug}-{pilot_date}-comment-enrichment"
+        / f"pilot-{artifact_slug}-{pilot_date}-comment-enrichment"
     )
     work_dir.mkdir(parents=True, exist_ok=True)
     return {"query_file": work_dir / "sede_comments_query.sql"}
@@ -551,6 +558,8 @@ def _build_comment_provenance(
     pilot_date: str,
     site_slug: str,
     site_name: str,
+    pilot_slug: str | None,
+    artifact_slug: str,
     query_url: str,
     query_template: Path,
     query_file: Path,
@@ -560,11 +569,12 @@ def _build_comment_provenance(
 ) -> dict[str, Any]:
     return {
         "dataset_name": "stackexchange-difficulty",
-        "dataset_version": f"sede-comments-{site_slug}-{pilot_date}",
+        "dataset_version": f"sede-comments-{artifact_slug}-{pilot_date}",
         "source_method": "sede_comment_export",
         "source_version": "SEDE snapshot visible at export time",
         "source_site_slug": site_slug,
         "source_site_name": site_name,
+        **({"pilot_slug": pilot_slug} if pilot_slug else {}),
         "query_url": query_url,
         "query_or_dump_file": _display_path(query_template, root),
         "generated_query_file": _display_path(query_file, root),

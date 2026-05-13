@@ -7,6 +7,10 @@ This checklist must be completed before a real SEDE pilot export is processed.
 - For site-selected pilots, use `sede_pilot_query_site_generic.sql` as the
   query source. The SEDE site picker controls the forum; for Mathematics, use
   `https://data.stackexchange.com/math/query/new`.
+- For the cleaner answerable Mathematics pilot, use
+  `sede_pilot_query_math_answerable.sql` with `--site-slug math` and
+  `--pilot-slug math-answerable`. The site slug identifies the Stack Exchange
+  site; the pilot slug identifies this second, answerable-first pilot.
 - Keep `sede_pilot_query.sql` as the historical/default Stack Overflow
   technical pilot query.
 - Treat `sede_pilot_query_non_code.sql` and `sede_pilot_query_non_coding.sql`
@@ -72,6 +76,27 @@ stackexchange-difficulty run-sede-pilot \
   --timeout-seconds 1800
 ```
 
+For the second, cleaner Mathematics pilot, keep the SEDE source site as
+`math` and add the pilot identity separately:
+
+```bash
+stackexchange-difficulty run-sede-pilot \
+  --pilot-date auto \
+  --site-slug math \
+  --site-name Mathematics \
+  --pilot-slug math-answerable \
+  --query-file reports/datasets/stackexchange-difficulty/sede_pilot_query_math_answerable.sql \
+  --download-dir auto \
+  --open-browser \
+  --timeout-seconds 1800
+```
+
+This produces artifact names such as
+`sede-pilot-math-answerable-YYYY-MM-DD.csv`,
+`pilot-math-answerable-YYYY-MM-DD/`, and
+`sede_pilot_math_answerable_YYYY-MM-DD.md`, while provenance still records
+`source_site_slug: math`.
+
 ## Processing Rule
 
 The exported file must stay outside Git under `data/raw/stackexchange-difficulty/`.
@@ -122,6 +147,10 @@ stackexchange-difficulty run-sede-comment-enrichment \
   --open-browser \
   --timeout-seconds 1800
 ```
+
+For a named pilot such as `math-answerable`, pass the same pilot slug to comment
+enrichment. Do not replace `--site-slug math` with `--site-slug
+math-answerable`; that would mislabel the source site.
 
 The rendered comment query is written under ignored `data/processed/` because
 it contains real post IDs. Do not commit that rendered query, the raw comment

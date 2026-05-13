@@ -117,6 +117,91 @@ def test_prepare_hf_release_site_slug_finds_site_specific_artifacts(tmp_path):
     assert "audits/sede_pilot_math_2026-05-12.md" in paths
 
 
+def test_prepare_hf_release_pilot_slug_finds_answerable_artifacts(tmp_path):
+    project_root = make_release_project(tmp_path)
+    dataset = project_root / "reports/datasets/stackexchange-difficulty"
+    (dataset / "provenance_sede_pilot_math_answerable_2026-05-12.json").write_text(
+        json.dumps(
+            {
+                "source_method": "sede_pilot_export",
+                "source_site_slug": "math",
+                "source_site_name": "Mathematics",
+                "pilot_slug": "math-answerable",
+                "query_url": "https://data.stackexchange.com/math/query/new",
+                "access_date": "2026-05-12",
+                "license": "CC BY-SA by per-record ContentLicense",
+                "transformation_steps": ["aggregate metadata only"],
+                "output_hash": "sha256:abc",
+                "query_or_dump_file": (
+                    "reports/datasets/stackexchange-difficulty/"
+                    "sede_pilot_query_math_answerable.sql"
+                ),
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (dataset / "provenance_sede_comments_math_answerable_2026-05-12.json").write_text(
+        json.dumps(
+            {
+                "source_method": "sede_comment_export",
+                "source_site_slug": "math",
+                "source_site_name": "Mathematics",
+                "pilot_slug": "math-answerable",
+                "access_date": "2026-05-12",
+                "license": "CC BY-SA by per-record ContentLicense",
+                "transformation_steps": ["aggregate comment metadata only"],
+                "output_hash": "sha256:def",
+                "query_or_dump_file": (
+                    "reports/datasets/stackexchange-difficulty/"
+                    "sede_comments_query_template.sql"
+                ),
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (dataset / "audits/sede_pilot_math_answerable_2026-05-12.md").write_text(
+        "# SEDE Pilot Audit\n\nSource: Mathematics SEDE. Aggregate counts only.\n",
+        encoding="utf-8",
+    )
+    release_dir = tmp_path / "release-math-answerable"
+
+    result = run_cli(
+        [
+            "prepare-hf-release",
+            "--pilot-date",
+            "2026-05-12",
+            "--site-slug",
+            "math",
+            "--pilot-slug",
+            "math-answerable",
+            "--repo-id",
+            "namespace/stackexchange-difficulty",
+            "--out-dir",
+            str(release_dir),
+            "--project-root",
+            str(project_root),
+        ]
+    )
+
+    payload = json.loads(result.stdout)
+    assert result.returncode == 0
+    assert payload["ok"] is True
+    card = (release_dir / "README.md").read_text(encoding="utf-8")
+    assert "Mathematics `math-answerable` pilot dated `2026-05-12`" in card
+
+    manifest = json.loads((release_dir / "hf_release_manifest.json").read_text())
+    assert manifest["source_site_slug"] == "math"
+    assert manifest["source_site_name"] == "Mathematics"
+    assert manifest["pilot_slug"] == "math-answerable"
+    paths = {row["path"] for row in manifest["files"]}
+    assert "provenance/provenance_sede_pilot_math_answerable_2026-05-12.json" in paths
+    assert "provenance/provenance_sede_comments_math_answerable_2026-05-12.json" in paths
+    assert "audits/sede_pilot_math_answerable_2026-05-12.md" in paths
+    assert "audits/sede_pilot_math_2026-05-12.md" not in paths
+
+
 def test_prepare_hf_release_missing_audit_or_provenance_fails(tmp_path):
     project_root = make_release_project(tmp_path)
     audit = (

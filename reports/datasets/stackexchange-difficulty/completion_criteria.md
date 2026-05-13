@@ -43,6 +43,25 @@ The first real SEDE pilot is ready for review only when:
   processed-file hashes, and the inspection summary.
 - No real Stack Exchange post content has been committed.
 
+## Cleaner Mathematics Answerable Pilot Gate
+
+The cleaner second Mathematics pilot is ready for inspection only when:
+
+- `stackexchange-difficulty run-sede-pilot` is run with `--site-slug math`,
+  `--site-name Mathematics`, `--pilot-slug math-answerable`, and
+  `sede_pilot_query_math_answerable.sql`.
+- The query returns 5,000-10,000 rows without accepting closed, duplicate,
+  unanswered, or no-accepted-answer records as the main sample.
+- Generated artifact names use `math-answerable`, while provenance keeps
+  `source_site_slug: math` and records `pilot_slug: math-answerable`.
+- The tracked audit is aggregate-only and contains no titles, bodies, answers,
+  comments, code snippets, usernames, or credentials.
+- A 100-record inspection or LLM-assisted inspection reaches at least 80
+  suitable records, at least 80 answerability-clear records, at least 95
+  notation-readable records, and at most 10 records needing comments.
+- The audit decision is `ready_for_data_dump_design` before Data Dump parser
+  planning begins.
+
 ## Comment-Enriched Pilot Gate
 
 The Mathematics pilot is ready for larger design planning only when:

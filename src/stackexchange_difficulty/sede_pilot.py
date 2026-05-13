@@ -56,6 +56,7 @@ class SedePilotConfig:
     query_url: str | None = None
     site_slug: str | None = None
     site_name: str | None = None
+    pilot_slug: str | None = None
     query_file: Path | None = None
 
 
@@ -71,6 +72,7 @@ class SedePilotResult:
     issues: list[dict[str, Any]]
     source_site_slug: str
     source_site_name: str
+    pilot_slug: str | None
     query_url: str
     query_file: Path
 
@@ -86,6 +88,7 @@ class SedePilotResult:
             "issues": self.issues,
             "source_site_slug": self.source_site_slug,
             "source_site_name": self.source_site_name,
+            "pilot_slug": self.pilot_slug,
             "query_url": self.query_url,
             "query_file": str(self.query_file),
         }
@@ -95,6 +98,7 @@ class SedePilotResult:
 class SedePilotContext:
     site_slug: str
     site_name: str
+    pilot_slug: str | None
     query_url: str
     query_file: Path
     raw_stem: str
@@ -138,11 +142,16 @@ def build_sede_pilot_context(config: SedePilotConfig) -> SedePilotContext:
     if not query_path.is_file():
         raise SedePilotError(f"SEDE query file does not exist: {query_path}")
 
-    if explicit_site:
-        raw_stem = f"sede-pilot-{site_slug}-{config.pilot_date}"
-        processed_stem = f"pilot-{site_slug}-{config.pilot_date}"
-        audit_name = f"sede_pilot_{site_slug}_{config.pilot_date}.md"
-        provenance_name = f"provenance_sede_pilot_{site_slug}_{config.pilot_date}.json"
+    pilot_slug = normalize_pilot_slug(config.pilot_slug) if config.pilot_slug else None
+    artifact_slug = pilot_slug or (site_slug if explicit_site else None)
+    if artifact_slug:
+        report_slug = artifact_slug.replace("-", "_")
+        raw_stem = f"sede-pilot-{artifact_slug}-{config.pilot_date}"
+        processed_stem = f"pilot-{artifact_slug}-{config.pilot_date}"
+        audit_name = f"sede_pilot_{report_slug}_{config.pilot_date}.md"
+        provenance_name = (
+            f"provenance_sede_pilot_{report_slug}_{config.pilot_date}.json"
+        )
     else:
         raw_stem = f"sede-pilot-{config.pilot_date}"
         processed_stem = f"pilot-{config.pilot_date}"
@@ -152,6 +161,7 @@ def build_sede_pilot_context(config: SedePilotConfig) -> SedePilotContext:
     return SedePilotContext(
         site_slug=site_slug,
         site_name=site_name,
+        pilot_slug=pilot_slug,
         query_url=query_url,
         query_file=query_path,
         raw_stem=raw_stem,
@@ -169,6 +179,17 @@ def normalize_site_slug(value: str) -> str:
         raise SedePilotError(
             "site slug must contain only letters, digits, and hyphens; "
             "spaces, slashes, dots, and path traversal are not allowed"
+        )
+    return slug
+
+
+def normalize_pilot_slug(value: str) -> str:
+    slug = value.strip()
+    if slug != value or not SITE_SLUG_PATTERN.fullmatch(slug) or ".." in slug:
+        raise SedePilotError(
+            "pilot slug must contain only lowercase letters, digits, and hyphens; "
+            "spaces, slashes, dots, uppercase letters, and path traversal are not "
+            "allowed"
         )
     return slug
 
@@ -276,6 +297,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
             issues=issues,
             source_site_slug=context.site_slug,
             source_site_name=context.site_name,
+            pilot_slug=context.pilot_slug,
             query_url=context.query_url,
             query_file=context.query_file,
         )
@@ -332,6 +354,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
             issues=issues,
             source_site_slug=context.site_slug,
             source_site_name=context.site_name,
+            pilot_slug=context.pilot_slug,
             query_url=context.query_url,
             query_file=context.query_file,
         )
@@ -399,6 +422,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
             issues=issues,
             source_site_slug=context.site_slug,
             source_site_name=context.site_name,
+            pilot_slug=context.pilot_slug,
             query_url=context.query_url,
             query_file=context.query_file,
         )
@@ -459,6 +483,7 @@ def run_sede_pilot(config: SedePilotConfig) -> SedePilotResult:
         issues=[],
         source_site_slug=context.site_slug,
         source_site_name=context.site_name,
+        pilot_slug=context.pilot_slug,
         query_url=context.query_url,
         query_file=context.query_file,
     )
@@ -520,6 +545,8 @@ def _build_pilot_provenance(
     record["source_version"] = "SEDE snapshot visible at export time"
     record["source_site_slug"] = context.site_slug
     record["source_site_name"] = context.site_name
+    if context.pilot_slug:
+        record["pilot_slug"] = context.pilot_slug
     record["query_url"] = context.query_url
     record["query_or_dump_file"] = _display_path(context.query_file, root)
     record["export_identifier"] = _display_path(raw_export, root)
@@ -647,6 +674,9 @@ def _build_audit(
         derived_dir / "derived_thread_indicators.tsv" if derived_dir else None
     )
     derived_hash = derived_dir / "derived-output.sha256" if derived_dir else None
+    pilot_slug_line = (
+        [f"- Pilot slug: `{context.pilot_slug}`."] if context.pilot_slug else []
+    )
     return "\n".join(
         [
             "# SEDE Pilot Audit",
@@ -656,6 +686,7 @@ def _build_audit(
             "## Source And Scope",
             "",
             f"- Source: {context.site_name} SEDE.",
+            *pilot_slug_line,
             "- Query file: "
             f"`{_display_path(context.query_file, root)}`.",
             f"- Query URL: `{context.query_url}`.",

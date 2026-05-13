@@ -612,3 +612,48 @@ Verification results:
 - `git check-ignore` confirmed comment raw, processed, derived, and label paths
   are ignored by Git.
 - Known-leak credential scan found no matches.
+
+## 2026-05-13 Pilot-slug support for cleaner Mathematics pilot
+
+Checkpointed the comment-enriched Mathematics workflow before changing pilot
+identity handling:
+
+- Local tests passed with 87 tests.
+- Ruff passed.
+- CLI help checks passed for the existing public commands.
+- Credential scan found no matches.
+- Ignored-data checks confirmed raw comment exports, generated comment queries,
+  comment-enriched outputs, derived JSONL, and LLM reinspection labels remain
+  ignored by Git.
+- Committed and pushed `Add comment-enriched Mathematics pilot workflow`.
+- GitHub Actions CI passed on `main` for commit `c06cf27`.
+
+Added explicit pilot identity support for the cleaner second Mathematics pilot:
+
+- Added `--pilot-slug` to `run-sede-pilot`, `run-sede-comment-enrichment`, and
+  `prepare-hf-release`.
+- Kept `source_site_slug=math` for the Mathematics SEDE site while allowing
+  artifact names such as `math-answerable`.
+- Added strict pilot-slug validation: lowercase letters, digits, and hyphens
+  only; uppercase, spaces, slashes, dots, and path traversal are rejected.
+- Updated pilot run paths, comment-enrichment paths, provenance, audits, and
+  Hugging Face metadata lookup to support `pilot_slug=math-answerable`.
+- Added `sede_pilot_query_math_answerable.sql`, an answerable-first Mathematics
+  query that preserves the current expected SEDE export columns while filtering
+  closed, duplicate, unanswered, and no-accepted-answer records.
+- Updated the SEDE export checklist, validation protocol, and completion
+  criteria to keep site identity and pilot identity separate.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 97 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `git diff --check`: passed.
+- `stackexchange-difficulty --help`: passed.
+- `stackexchange-difficulty run-sede-pilot --help`: passed.
+- `stackexchange-difficulty run-sede-comment-enrichment --help`: passed.
+- `stackexchange-difficulty prepare-hf-release --help`: passed.
+- `git check-ignore` confirmed raw answerable exports, answerable processed
+  tables, answerable derived JSONL, generated comment queries, comment-enriched
+  tables, and Hugging Face `dist/` staging files remain ignored.
+- Known-leak credential scan found no matches.
