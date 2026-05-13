@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<posthistory>
+  <row Id="701" PostHistoryTypeId="5" PostId="101" CreationDate="2022-01-01 00:05:00" Comment="synthetic edit" Text="Synthetic raw markdown for selected question" ContentLicense="CC BY-SA 4.0" />
+  <row Id="702" PostHistoryTypeId="5" PostId="201" CreationDate="2022-01-01 00:35:00" Comment="synthetic answer edit" Text="Synthetic raw markdown for selected answer" ContentLicense="CC BY-SA 4.0" />
+  <row Id="703" PostHistoryTypeId="5" PostId="999" CreationDate="2022-01-01 00:35:00" Comment="outside" Text="Synthetic outside history" ContentLicense="CC BY-SA 4.0" />
+</posthistory>

@@ -1,0 +1,22 @@
+{
+  "dataset_name": "stackexchange-difficulty",
+  "dataset_version": "data-dump-<pilot-slug>-<YYYY-MM-DD>",
+  "source_method": "stack_exchange_data_dump",
+  "source_site_slug": "<site-slug>",
+  "source_site_name": "<site-name>",
+  "pilot_slug": "<pilot-slug>",
+  "sample_profile": "answerable_pilot",
+  "sample_size": 5000,
+  "sample_seed": 20260513,
+  "dump_date": "<YYYY-MM-DD>",
+  "dump_dir": "data/raw/stackexchange-difficulty/data-dump/<site-slug>-<YYYY-MM-DD>",
+  "source_version": "Stack Exchange Data Dump <YYYY-MM-DD>",
+  "access_date": "<YYYY-MM-DD>",
+  "official_source_checked_at": "<YYYY-MM-DD>",
+  "license": "CC BY-SA, version determined by each post ContentLicense",
+  "transformation_steps": [],
+  "raw_file_hashes": {},
+  "processed_output_hash": "sha256:pending-before-processing",
+  "output_hash": "sha256:pending-before-processing",
+  "script_version": "<package-version>"
+}

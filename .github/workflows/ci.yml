@@ -40,3 +40,5 @@ jobs:
           stackexchange-difficulty summarize-comment-reinspection --help
           stackexchange-difficulty prepare-hf-release --help
           stackexchange-difficulty upload-hf-release --help
+          stackexchange-difficulty preflight-dump --help
+          stackexchange-difficulty run-data-dump-pilot --help

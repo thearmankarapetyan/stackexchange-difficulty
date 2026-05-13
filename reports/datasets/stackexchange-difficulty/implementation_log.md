@@ -713,3 +713,48 @@ Verification results:
 - `git check-ignore` confirmed the answerable pilot raw export, processed
   questions table, derived JSONL, inspection review file, and merged label file
   are ignored by Git.
+
+## 2026-05-13 Data Dump parser workflow
+
+Added the local Stack Exchange Data Dump parser-validation workflow after the
+answerable Mathematics SEDE pilot reached `ready_for_data_dump_design`.
+
+Implementation scope:
+
+- Added `stackexchange-difficulty preflight-dump` for aggregate local checks of
+  manually extracted Data Dump XML files.
+- Added `stackexchange-difficulty run-data-dump-pilot` for the local
+  `answerable_pilot` parser path.
+- Kept Data Dump archive download and extraction manual; the project does not
+  download `.7z` files, call the API, scrape HTML, or upload content.
+- Required `Posts.xml` and `PostLinks.xml` for `answerable_pilot`, because
+  duplicate exclusion depends on `PostLinks.xml` rows with `LinkTypeId=3`.
+- Treated `Comments.xml` and `Tags.xml` as optional inputs.
+- Kept `PostHistory.xml` opt-in through `--include-post-history` because it can
+  be large and contains raw markdown or event text.
+- Implemented streaming XML row parsing with `xml.etree.ElementTree.iterparse`
+  and element clearing.
+- Preserved `Posts.Body` as rendered HTML in canonical `body_html` fields.
+- Kept canonical `questions.tsv`, `answers.tsv`, and `comments.tsv` compatible
+  with existing validation and derivation.
+- Added local support tables for `post_links.tsv`, `tags.tsv`, and optional
+  `post_history.tsv` under ignored processed paths.
+- Finalized processed hashes before derived indicators and JSONL are generated.
+- Generated tracked Data Dump provenance and audit files as aggregate metadata
+  only.
+- Added synthetic Data Dump fixtures only; no real Stack Exchange post content
+  was added to tests.
+
+Verification results:
+
+- `source ~/venvs/stage/bin/activate && python -m pytest tests/test_data_dump.py`:
+  passed, 17 tests.
+- `source ~/venvs/stage/bin/activate && python -m pytest`: passed, 125 tests.
+- `source ~/venvs/stage/bin/activate && python -m ruff check .`: passed.
+- `stackexchange-difficulty --help`: passed.
+- `stackexchange-difficulty preflight-dump --help`: passed.
+- `stackexchange-difficulty run-data-dump-pilot --help`: passed.
+- `git diff --check`: passed.
+- Known-leak credential scan found no matches.
+- `git check-ignore` confirmed raw Data Dump XML paths, processed TSV paths,
+  optional post-history output, and derived JSONL paths remain ignored by Git.

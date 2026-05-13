@@ -24,6 +24,50 @@ comparison is attempted.
 - Inspect tag distribution and visibility skew.
 - Inspect time-to-first-answer distribution.
 
+## Data Dump Parser Checks
+
+The Data Dump parser is a local parser-validation milestone, not the final
+large corpus run. The user downloads and extracts Stack Exchange Data Dump
+archives manually. Project tooling reads the extracted XML files from ignored
+`data/raw/stackexchange-difficulty/data-dump/` paths and must not download
+archives, call the API, scrape HTML, upload data, or print post text.
+
+For the v1 `answerable_pilot` profile, `Posts.xml` and `PostLinks.xml` are
+required. `PostLinks.xml` is not optional because duplicate exclusion depends
+on link rows with `LinkTypeId=3`. `Comments.xml` and `Tags.xml` are optional;
+missing comment files produce an empty `comments.tsv`. `PostHistory.xml` is
+read only when `--include-post-history` is passed, because it can be large and
+its `Text` field contains raw markdown or event text that must remain separate
+from rendered `Posts.Body` HTML.
+
+Use `stackexchange-difficulty preflight-dump` before a parser run. The default
+preflight output is aggregate JSON on stdout; it writes a report file only when
+`--out` is provided. The preflight checks file presence, XML readability, row
+counts, and raw file hashes without displaying titles, bodies, comments,
+answers, formulas, usernames, or URLs.
+
+Use `stackexchange-difficulty run-data-dump-pilot` only after preflight passes.
+The parser must:
+
+- reuse the shared `site_slug` and `pilot_slug` validation rules;
+- exclude artificial post IDs `1000000001` and `1000000010`;
+- reject incomplete duplicate filtering;
+- reject closed, duplicate, unanswered, no-accepted-answer, missing-accepted,
+  and accepted-parent-mismatch candidates for the `answerable_pilot` profile;
+- stream XML row parsing with `iterparse` and clear parsed elements;
+- write validation-compatible `questions.tsv`, `answers.tsv`, and
+  `comments.tsv` tables under ignored `data/processed/`;
+- write support tables such as `post_links.tsv`, `tags.tsv`, and optional
+  `post_history.tsv` only under ignored processed paths;
+- finalize processed hashes before deriving indicators and JSONL;
+- produce tracked provenance and audit files that contain aggregate metadata
+  only.
+
+The Data Dump audit can be marked `data_dump_parser_validated` only when
+`Posts.xml` and `PostLinks.xml` were present, the requested sample size was
+reached, canonical validation passed, duplicate filtering was complete, and no
+raw or processed Stack Exchange content was added to Git.
+
 ## Pilot Inspection
 
 At least 100 records in a future real pilot must be inspected for readability,

@@ -123,6 +123,45 @@ stackexchange-difficulty derive \
   --out-dir "$PILOT_DERIVED"
 ```
 
+After the answerable Mathematics SEDE pilot has a `ready_for_data_dump_design`
+audit, validate a manually extracted Stack Exchange Data Dump layout. The tool
+does not download or extract `.7z` archives; put extracted XML files under
+ignored `data/raw/` first:
+
+```bash
+stackexchange-difficulty preflight-dump \
+  --dump-dir data/raw/stackexchange-difficulty/data-dump/math-YYYY-MM-DD \
+  --site-slug math \
+  --site-name Mathematics \
+  --dump-date YYYY-MM-DD \
+  --sample-profile answerable_pilot
+```
+
+For the v1 `answerable_pilot` profile, `Posts.xml` and `PostLinks.xml` are
+required because duplicate exclusion depends on post links. `Comments.xml` and
+`Tags.xml` are optional. `PostHistory.xml` is read only when explicitly requested
+with `--include-post-history`, because it can be large and contains raw markdown
+or event text.
+
+Run the local Data Dump pilot parser after preflight:
+
+```bash
+stackexchange-difficulty run-data-dump-pilot \
+  --dump-dir data/raw/stackexchange-difficulty/data-dump/math-YYYY-MM-DD \
+  --site-slug math \
+  --site-name Mathematics \
+  --pilot-slug math-answerable \
+  --dump-date YYYY-MM-DD \
+  --sample-profile answerable_pilot \
+  --sample-size 5000
+```
+
+The Data Dump workflow normalizes selected rows into ignored processed TSV
+tables, finalizes provenance hashes before derivation, writes derived indicators
+and `threads.jsonl`, and creates aggregate tracked provenance/audit files. The
+tracked audit contains counts and hashes only; raw XML, processed post text,
+comments, JSONL threads, and post history stay ignored under `data/`.
+
 Run the browser-assisted SEDE pilot pipeline after manual browser export:
 
 ```bash

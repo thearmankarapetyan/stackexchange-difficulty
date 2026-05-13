@@ -9,6 +9,13 @@ from pathlib import Path
 from typing import Any
 
 from stackexchange_difficulty.api import run_api_smoke
+from stackexchange_difficulty.data_dump import (
+    DataDumpError,
+    DataDumpPilotConfig,
+    DataDumpPreflightConfig,
+    preflight_dump,
+    run_data_dump_pilot,
+)
 from stackexchange_difficulty.derive import derive_indicators
 from stackexchange_difficulty.hf_release import (
     HuggingFaceReleaseError,
@@ -92,6 +99,48 @@ def build_parser() -> argparse.ArgumentParser:
     ingest_sede.add_argument("--provenance", required=True)
     ingest_sede.add_argument("--out-dir", required=True)
     ingest_sede.set_defaults(func=cmd_ingest_sede)
+
+    preflight_dump_parser = subparsers.add_parser(
+        "preflight-dump",
+        help="Validate local extracted Stack Exchange Data Dump XML files.",
+    )
+    preflight_dump_parser.add_argument("--dump-dir", required=True)
+    preflight_dump_parser.add_argument("--site-slug", required=True)
+    preflight_dump_parser.add_argument("--site-name", required=True)
+    preflight_dump_parser.add_argument("--dump-date", required=True)
+    preflight_dump_parser.add_argument("--sample-profile", default="answerable_pilot")
+    preflight_dump_parser.add_argument("--include-post-history", action="store_true")
+    preflight_dump_parser.add_argument("--out")
+    preflight_dump_parser.add_argument(
+        "--project-root",
+        help=(
+            "Project root. Defaults to auto-detection from the current "
+            "directory or a projects/stackexchange-difficulty child."
+        ),
+    )
+    preflight_dump_parser.set_defaults(func=cmd_preflight_dump)
+
+    run_dump = subparsers.add_parser(
+        "run-data-dump-pilot",
+        help="Run the local Data Dump pilot parser pipeline.",
+    )
+    run_dump.add_argument("--dump-dir", required=True)
+    run_dump.add_argument("--site-slug", required=True)
+    run_dump.add_argument("--site-name", required=True)
+    run_dump.add_argument("--pilot-slug", required=True)
+    run_dump.add_argument("--dump-date", required=True)
+    run_dump.add_argument("--sample-profile", default="answerable_pilot")
+    run_dump.add_argument("--sample-size", type=int, default=5000)
+    run_dump.add_argument("--sample-seed", type=int, default=20260513)
+    run_dump.add_argument("--include-post-history", action="store_true")
+    run_dump.add_argument(
+        "--project-root",
+        help=(
+            "Project root. Defaults to auto-detection from the current "
+            "directory or a projects/stackexchange-difficulty child."
+        ),
+    )
+    run_dump.set_defaults(func=cmd_run_data_dump_pilot)
 
     run_sede = subparsers.add_parser(
         "run-sede-pilot",
@@ -413,6 +462,57 @@ def cmd_ingest_sede(args: argparse.Namespace) -> int:
         )
     )
     return 0
+
+
+def cmd_preflight_dump(args: argparse.Namespace) -> int:
+    try:
+        root = resolve_project_root(args.project_root)
+        result = preflight_dump(
+            DataDumpPreflightConfig(
+                project_root=root,
+                dump_dir=_resolve_cli_path(args.dump_dir, root),
+                site_slug=args.site_slug,
+                site_name=args.site_name,
+                dump_date=args.dump_date,
+                sample_profile=args.sample_profile,
+                include_post_history=args.include_post_history,
+            )
+        )
+    except DataDumpError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    payload = result.to_payload()
+    if args.out:
+        out_path = _resolve_cli_path(args.out, root)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        payload["out"] = str(out_path)
+    print(json.dumps(payload, sort_keys=True))
+    return 0 if result.ok else 1
+
+
+def cmd_run_data_dump_pilot(args: argparse.Namespace) -> int:
+    try:
+        root = resolve_project_root(args.project_root)
+        result = run_data_dump_pilot(
+            DataDumpPilotConfig(
+                project_root=root,
+                dump_dir=_resolve_cli_path(args.dump_dir, root),
+                site_slug=args.site_slug,
+                site_name=args.site_name,
+                dump_date=args.dump_date,
+                sample_profile=args.sample_profile,
+                include_post_history=args.include_post_history,
+                pilot_slug=args.pilot_slug,
+                sample_size=args.sample_size,
+                sample_seed=args.sample_seed,
+            )
+        )
+    except DataDumpError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0 if result.ok else 1
 
 
 def cmd_finalize_provenance(args: argparse.Namespace) -> int:

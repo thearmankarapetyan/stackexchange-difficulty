@@ -84,6 +84,37 @@ The Mathematics pilot is ready for larger design planning only when:
 - The final decision is one of `ready_for_data_dump_design`,
   `needs_more_comment_coverage`, or `revise_sede_query`.
 
+## Data Dump Parser Validation Gate
+
+The local Data Dump parser milestone is complete only when:
+
+- The cleaner `math-answerable` SEDE pilot audit has already reached
+  `ready_for_data_dump_design`.
+- Extracted Data Dump XML files are provided manually under ignored
+  `data/raw/stackexchange-difficulty/data-dump/` paths.
+- The project does not download archives, extract `.7z` files, call the API,
+  scrape HTML, upload content, or print Stack Exchange post text.
+- `stackexchange-difficulty preflight-dump` confirms XML file presence,
+  readability, row counts, raw hashes, and the required `PostLinks.xml` file
+  for `sample_profile=answerable_pilot`.
+- `stackexchange-difficulty run-data-dump-pilot` fails instead of overwriting
+  existing processed directories, derived directories, provenance files, or
+  audits.
+- `questions.tsv`, `answers.tsv`, and `comments.tsv` remain compatible with the
+  existing canonical validation checks.
+- `PostLinks.xml` duplicate filtering is complete; a parser audit cannot be
+  marked validated without it.
+- `PostHistory.xml` is ignored by default and included only when
+  `--include-post-history` is passed.
+- Processed hash manifests are finalized before derived indicators and
+  `threads.jsonl` are produced.
+- Generated tracked provenance and audit files contain aggregate metadata,
+  hashes, and decisions only.
+- Raw XML, processed TSVs, JSONL threads, comments, post history, review files,
+  labels, and any copied Stack Exchange content remain ignored and uncommitted.
+- A synthetic fixture run can produce `data_dump_parser_validated`.
+- Local tests, Ruff, CLI help checks, and GitHub Actions pass.
+
 ## Hugging Face Metadata Release Gate
 
 A private Hugging Face metadata release is ready only when:

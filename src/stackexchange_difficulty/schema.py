@@ -1,6 +1,7 @@
 """Schema constants derived from the methodological report."""
 
 ARTIFICIAL_POST_IDS = {"1000000001", "1000000010"}
+DUPLICATE_LINK_TYPE_ID = "3"
 
 QUESTION_REQUIRED_COLUMNS = (
     "question_id",
@@ -99,4 +100,30 @@ SEDE_PILOT_REQUIRED_COLUMNS = (
     "accepted_answer_body_html",
     "accepted_answer_score",
     "accepted_answer_creation_date",
+)
+
+POST_LINK_COLUMNS = (
+    "post_link_id",
+    "creation_date",
+    "post_id",
+    "related_post_id",
+    "link_type_id",
+)
+
+POST_HISTORY_COLUMNS = (
+    "post_history_id",
+    "post_history_type_id",
+    "post_id",
+    "creation_date",
+    "comment",
+    "text",
+    "content_license",
+)
+
+TAG_COLUMNS = (
+    "tag_id",
+    "tag_name",
+    "count",
+    "excerpt_post_id",
+    "wiki_post_id",
 )

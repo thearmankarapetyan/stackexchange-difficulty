@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<posts>
+  <row Id="101" PostTypeId="1" AcceptedAnswerId="201" CreationDate="2022-01-01 00:00:00" Score="5" ViewCount="1200" Body="&lt;p&gt;Synthetic rendered question body 101&lt;/p&gt;" Title="Synthetic question title 101" Tags="&lt;calculus&gt;" AnswerCount="1" CommentCount="0" ContentLicense="CC BY-SA 4.0" />
+  <row Id="201" PostTypeId="2" ParentId="101" CreationDate="2022-01-01 00:30:00" Score="3" Body="&lt;p&gt;Synthetic rendered answer body 201&lt;/p&gt;" ContentLicense="CC BY-SA 4.0" />
+</posts>
