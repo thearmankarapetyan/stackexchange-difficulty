@@ -62,6 +62,19 @@
 
 - This audit contains aggregate counts and hashes only. It does not include titles, bodies, formulas, code snippets, answers, comments, usernames, URLs, row IDs, labels, credentials, or copied Stack Exchange post content.
 
+## Inspection Summary
+
+- Inspection source: local ignored label file under `data/processed/stackexchange-difficulty/`.
+- Labeling method: llm_assisted.
+- Decision profile: target_scale_answerable.
+- Inspected records: 100.
+- Suitable records: yes=78, no=8, uncertain=14.
+- Answerability clear: yes=79, no=5, uncertain=16.
+- Math notation readable: yes=98, no=2, uncertain=0.
+- Needs comments: yes=1, no=96, uncertain=3.
+- Top reason codes: good=77, unclear_answerability=16, still_missing_context=3, unsuitable=3, notation_issue=1.
+- Recommendation: target_scale_revise_sampling.
+
 ## Decision
 
 - Decision: data_dump_parser_validated.
