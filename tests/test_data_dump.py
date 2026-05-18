@@ -47,6 +47,42 @@ def test_preflight_dump_requires_posts_and_postlinks_for_answerable_profile(tmp_
     assert any(issue["code"] == "missing_postlinks_for_answerable_pilot" for issue in result.issues)
 
 
+def test_preflight_dump_accepts_answerable_clean_profile(tmp_path):
+    root, dump_dir = make_project_root(tmp_path, "clean_profile")
+
+    result = preflight_dump(
+        DataDumpPreflightConfig(
+            project_root=root,
+            dump_dir=dump_dir,
+            site_slug="math",
+            site_name="Mathematics",
+            dump_date="2026-05-13",
+            sample_profile="answerable_clean",
+        )
+    )
+
+    assert result.ok is True
+    assert result.sample_profile == "answerable_clean"
+
+
+def test_preflight_dump_requires_postlinks_for_answerable_clean_profile(tmp_path):
+    root, dump_dir = make_project_root(tmp_path, "missing_postlinks")
+
+    result = preflight_dump(
+        DataDumpPreflightConfig(
+            project_root=root,
+            dump_dir=dump_dir,
+            site_slug="math",
+            site_name="Mathematics",
+            dump_date="2026-05-13",
+            sample_profile="answerable_clean",
+        )
+    )
+
+    assert result.ok is False
+    assert any(issue["code"] == "missing_postlinks_for_answerable_pilot" for issue in result.issues)
+
+
 def test_preflight_dump_requires_posts_xml(tmp_path):
     root, dump_dir = make_project_root(tmp_path, "invalid_missing_posts")
 
@@ -195,6 +231,74 @@ def test_run_data_dump_pilot_writes_canonical_outputs_without_post_history_by_de
     assert "Duplicate-link exclusions: 1" in audit
     assert "Synthetic question title" not in audit
     assert "Synthetic rendered answer body" not in audit
+
+
+def test_run_data_dump_pilot_answerable_clean_excludes_low_signal_metadata(tmp_path):
+    root, dump_dir = make_project_root(tmp_path, "clean_profile")
+
+    result = run_data_dump_pilot(
+        DataDumpPilotConfig(
+            project_root=root,
+            dump_dir=dump_dir,
+            site_slug="math",
+            site_name="Mathematics",
+            pilot_slug="math-answerable-clean",
+            dump_date="2026-05-13",
+            sample_profile="answerable_clean",
+            sample_size=2,
+        )
+    )
+
+    assert result.ok is True
+    assert result.selected_questions == 2
+    assert result.processed_dir is not None
+    questions = read_table(result.processed_dir / "questions.tsv", name="questions")
+    assert {row["question_id"] for row in questions.rows} == {"301", "306"}
+    audit = result.audit.read_text(encoding="utf-8")
+    assert "Sample profile: `answerable_clean`" in audit
+    assert "Clean negative-score exclusions: 1" in audit
+    assert "Clean missing-tag exclusions: 1" in audit
+    assert "Clean missing first-answer timing exclusions: 1" in audit
+    assert "Clean long-answer-latency exclusions: 1" in audit
+    provenance = json.loads(result.provenance.read_text(encoding="utf-8"))
+    assert provenance["sample_profile"] == "answerable_clean"
+    assert (
+        "filtered clean answerable Mathematics question candidates using metadata-only rules"
+        in provenance["transformation_steps"]
+    )
+
+
+def test_run_data_dump_pilot_answerable_pilot_keeps_clean_profile_exclusions_available(
+    tmp_path,
+):
+    root, dump_dir = make_project_root(tmp_path, "clean_profile")
+
+    result = run_data_dump_pilot(
+        DataDumpPilotConfig(
+            project_root=root,
+            dump_dir=dump_dir,
+            site_slug="math",
+            site_name="Mathematics",
+            pilot_slug="math-answerable",
+            dump_date="2026-05-13",
+            sample_profile="answerable_pilot",
+            sample_size=6,
+        )
+    )
+
+    assert result.ok is True
+    assert result.processed_dir is not None
+    questions = read_table(result.processed_dir / "questions.tsv", name="questions")
+    assert {row["question_id"] for row in questions.rows} == {
+        "301",
+        "302",
+        "303",
+        "304",
+        "305",
+        "306",
+    }
+    audit = result.audit.read_text(encoding="utf-8")
+    assert "Clean negative-score exclusions" not in audit
 
 
 def test_run_data_dump_pilot_writes_post_history_only_when_requested(tmp_path):
@@ -427,6 +531,22 @@ def test_data_dump_cli_help_commands_work():
         result = run_cli([command, "--help"])
         assert result.returncode == 0
         assert command in result.stdout
+
+
+def test_data_dump_unknown_sample_profile_lists_supported_profiles(tmp_path):
+    root, dump_dir = make_project_root(tmp_path, "valid")
+
+    with pytest.raises(DataDumpError, match="answerable_clean, answerable_pilot"):
+        preflight_dump(
+            DataDumpPreflightConfig(
+                project_root=root,
+                dump_dir=dump_dir,
+                site_slug="math",
+                site_name="Mathematics",
+                dump_date="2026-05-13",
+                sample_profile="broad",
+            )
+        )
 
 
 def test_data_dump_paths_are_ignored_by_git():

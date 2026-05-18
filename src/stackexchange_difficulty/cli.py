@@ -29,6 +29,10 @@ from stackexchange_difficulty.inspection import (
     summarize_comment_reinspection_labels,
     summarize_inspection_labels,
 )
+from stackexchange_difficulty.inspection_diagnostics import (
+    InspectionDiagnosticsError,
+    diagnose_inspection_strata,
+)
 from stackexchange_difficulty.jsonl import build_threads, write_jsonl
 from stackexchange_difficulty.provenance import (
     finalize_processed_hashes,
@@ -108,7 +112,11 @@ def build_parser() -> argparse.ArgumentParser:
     preflight_dump_parser.add_argument("--site-slug", required=True)
     preflight_dump_parser.add_argument("--site-name", required=True)
     preflight_dump_parser.add_argument("--dump-date", required=True)
-    preflight_dump_parser.add_argument("--sample-profile", default="answerable_pilot")
+    preflight_dump_parser.add_argument(
+        "--sample-profile",
+        default="answerable_pilot",
+        help="Supported profiles: answerable_pilot, answerable_clean.",
+    )
     preflight_dump_parser.add_argument("--include-post-history", action="store_true")
     preflight_dump_parser.add_argument("--out")
     preflight_dump_parser.add_argument(
@@ -129,7 +137,11 @@ def build_parser() -> argparse.ArgumentParser:
     run_dump.add_argument("--site-name", required=True)
     run_dump.add_argument("--pilot-slug", required=True)
     run_dump.add_argument("--dump-date", required=True)
-    run_dump.add_argument("--sample-profile", default="answerable_pilot")
+    run_dump.add_argument(
+        "--sample-profile",
+        default="answerable_pilot",
+        help="Supported profiles: answerable_pilot, answerable_clean.",
+    )
     run_dump.add_argument("--sample-size", type=int, default=5000)
     run_dump.add_argument("--sample-seed", type=int, default=20260513)
     run_dump.add_argument("--include-post-history", action="store_true")
@@ -290,6 +302,15 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     summarize_inspection.set_defaults(func=cmd_summarize_inspection)
+
+    diagnose_inspection = subparsers.add_parser(
+        "diagnose-inspection-strata",
+        help="Write aggregate-only diagnostics for local inspection labels.",
+    )
+    diagnose_inspection.add_argument("--review", required=True)
+    diagnose_inspection.add_argument("--labels", required=True)
+    diagnose_inspection.add_argument("--out", required=True)
+    diagnose_inspection.set_defaults(func=cmd_diagnose_inspection_strata)
 
     prepare_reinspection = subparsers.add_parser(
         "prepare-comment-reinspection",
@@ -635,6 +656,20 @@ def cmd_summarize_inspection(args: argparse.Namespace) -> int:
             decision_profile=args.decision_profile,
         )
     except InspectionError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0
+
+
+def cmd_diagnose_inspection_strata(args: argparse.Namespace) -> int:
+    try:
+        result = diagnose_inspection_strata(
+            review=read_table(args.review, name="inspection_review"),
+            labels=read_table(args.labels, name="inspection_labels"),
+            output_path=Path(args.out),
+        )
+    except InspectionDiagnosticsError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
         return 1
     print(json.dumps(result.to_payload(), sort_keys=True))

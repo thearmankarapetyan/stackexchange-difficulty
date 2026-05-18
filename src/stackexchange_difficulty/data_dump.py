@@ -39,7 +39,10 @@ from stackexchange_difficulty.sede_pilot import (
 )
 from stackexchange_difficulty.validation import Table, validate_dataset, write_validation_report
 
-SUPPORTED_SAMPLE_PROFILES = {"answerable_pilot"}
+ANSWERABLE_PILOT_PROFILE = "answerable_pilot"
+ANSWERABLE_CLEAN_PROFILE = "answerable_clean"
+SUPPORTED_SAMPLE_PROFILES = {ANSWERABLE_PILOT_PROFILE, ANSWERABLE_CLEAN_PROFILE}
+ANSWERABLE_PROFILES = {ANSWERABLE_PILOT_PROFILE, ANSWERABLE_CLEAN_PROFILE}
 DEFAULT_SAMPLE_SEED = 20260513
 DATA_DUMP_FILES = ("Posts.xml", "PostLinks.xml", "Comments.xml", "Tags.xml", "PostHistory.xml")
 
@@ -536,6 +539,11 @@ def _select_questions(
             excluded["duplicate_question"] += 1
             continue
         first_answer = first_answer_by_question.get(question_id)
+        if config.sample_profile == ANSWERABLE_CLEAN_PROFILE:
+            clean_exclusion = _clean_profile_exclusion(row, first_answer)
+            if clean_exclusion:
+                excluded[clean_exclusion] += 1
+                continue
         eligible.append(
             _candidate_from_row(
                 row,
@@ -792,6 +800,26 @@ def _candidate_from_row(
     )
 
 
+def _clean_profile_exclusion(row: dict[str, str], first_answer: AnswerMeta | None) -> str | None:
+    # Keep the first clean profile metadata-only so sampling can happen before
+    # retaining titles, bodies, answers, comments, or post history.
+    if _int(row["score"]) < 0:
+        return "clean_negative_score"
+    if not row["tags"]:
+        return "clean_missing_tags"
+    if first_answer is None or not first_answer.creation_date:
+        return "clean_missing_first_answer_timing"
+    latency = elapsed_hours(
+        parse_datetime(row["creation_date"]),
+        parse_datetime(first_answer.creation_date),
+    )
+    if latency is None:
+        return "clean_missing_first_answer_timing"
+    if latency > 168:
+        return "clean_long_answer_latency"
+    return None
+
+
 def _stratified_sample(
     candidates: list[QuestionCandidate],
     *,
@@ -821,6 +849,15 @@ def _stratified_sample(
         if not added:
             break
     return selected
+
+
+def _profile_transformation_step(config: DataDumpPilotConfig) -> str:
+    if config.sample_profile == ANSWERABLE_CLEAN_PROFILE:
+        return (
+            f"filtered clean answerable {config.site_name} question candidates "
+            "using metadata-only rules"
+        )
+    return f"filtered answerable {config.site_name} question candidates"
 
 
 def _build_provenance(
@@ -853,7 +890,7 @@ def _build_provenance(
             "transformation_steps": [
                 "read local extracted Stack Exchange Data Dump XML files",
                 "excluded artificial post IDs 1000000001 and 1000000010",
-                f"filtered answerable {config.site_name} question candidates",
+                _profile_transformation_step(config),
                 "sampled eligible questions deterministically",
                 "normalized selected questions, answers, comments, links, and optional history",
                 "validated required fields and accepted-answer consistency",
@@ -929,6 +966,7 @@ def _build_audit(
             "- Accepted-answer parent mismatch exclusions: "
             f"{_excluded(selection, 'accepted_answer_parent_mismatch')}.",
             f"- Duplicate-link exclusions: {_excluded(selection, 'duplicate_question')}.",
+            *_clean_exclusion_lines(config, selection),
             "",
             "## Validation Summary",
             "",
@@ -981,15 +1019,32 @@ def _xml_row_count(path: Path) -> int:
     return count
 
 
+def _clean_exclusion_lines(
+    config: DataDumpPilotConfig,
+    selection: SelectionResult | None,
+) -> list[str]:
+    if config.sample_profile != ANSWERABLE_CLEAN_PROFILE:
+        return []
+    return [
+        f"- Clean negative-score exclusions: {_excluded(selection, 'clean_negative_score')}.",
+        f"- Clean missing-tag exclusions: {_excluded(selection, 'clean_missing_tags')}.",
+        "- Clean missing first-answer timing exclusions: "
+        f"{_excluded(selection, 'clean_missing_first_answer_timing')}.",
+        "- Clean long-answer-latency exclusions: "
+        f"{_excluded(selection, 'clean_long_answer_latency')}.",
+    ]
+
+
 def _is_required_file(filename: str, *, sample_profile: str, include_post_history: bool) -> bool:
     return filename == "Posts.xml" or (
-        filename == "PostLinks.xml" and sample_profile == "answerable_pilot"
+        filename == "PostLinks.xml" and sample_profile in ANSWERABLE_PROFILES
     ) or (filename == "PostHistory.xml" and include_post_history)
 
 
 def _validate_sample_profile(value: str) -> str:
     if value not in SUPPORTED_SAMPLE_PROFILES:
-        raise DataDumpError("sample profile must be answerable_pilot")
+        supported = ", ".join(sorted(SUPPORTED_SAMPLE_PROFILES))
+        raise DataDumpError(f"sample profile must be one of: {supported}")
     return value
 
 
