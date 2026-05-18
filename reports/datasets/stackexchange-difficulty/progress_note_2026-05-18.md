@@ -5,7 +5,7 @@
 The project now has a local reproducible workflow from Stack Exchange Data Dump
 XML to canonical tables, derived indicators, JSONL, provenance, and aggregate
 audits. The workflow has been exercised on Mathematics Stack Exchange with an
-answerable-first profile.
+answerable-first profile and a stricter clean answerable profile.
 
 This is still a local validation milestone. It is not a public corpus release,
 and no raw or processed Stack Exchange content has been committed.
@@ -51,7 +51,7 @@ Important validated parser properties:
 - `PostHistory.xml` is excluded by default.
 - Canonical validation checks pass before derived outputs are accepted.
 
-## Target-Scale Local Sample
+## Target-Scale Inspection Finding
 
 A 100,000-question local Mathematics Data Dump sample was generated with:
 
@@ -67,17 +67,9 @@ A 100,000-question local Mathematics Data Dump sample was generated with:
 - JSONL thread rows: `100000`;
 - parser decision: `data_dump_parser_validated`.
 
-The target-scale parser run validates that the Data Dump workflow can produce a
+The target-scale parser run validated that the Data Dump workflow can produce a
 large local answerable Mathematics sample without committing raw XML, processed
-tables, comments, or JSONL threads.
-
-## Inspection Result
-
-A 100-record LLM-assisted inspection sample was prepared from the 100,000-record
-local sample. The row-level review and label files remain ignored under
-`data/processed/`.
-
-Aggregate inspection result:
+tables, comments, or JSONL threads. Its inspection result was not yet accepted:
 
 - inspected records: `100`;
 - suitable records: `yes=78, no=8, uncertain=14`;
@@ -86,9 +78,86 @@ Aggregate inspection result:
 - needs comments: `yes=1, no=96, uncertain=3`;
 - recommendation: `target_scale_revise_sampling`.
 
-The parser-scale milestone is valid, but the 100,000-record answerable sample is
-not yet accepted as a target-scale sample. Suitability and answerability-clear
-counts were just below the threshold of 80 yes labels each.
+The aggregate diagnostic report recommended moving to
+`sample_profile=answerable_clean` for the next target-scale run.
+
+## Sampling Revision
+
+The `answerable_clean` profile tightened the sampling strategy using only
+metadata available before sampling. It preserves the answerable profile rules
+and additionally requires:
+
+- nonnegative question score;
+- nonblank tags;
+- available first-answer timing;
+- first-answer latency no greater than 168 hours.
+
+It does not use question title text, question body text, answer body text,
+comment text, usernames, URLs, or post history for candidate selection.
+
+## Clean Validation Run
+
+The 5,000-question `answerable_clean` validation run completed with:
+
+- site: Mathematics;
+- site slug: `math`;
+- pilot slug: `math-answerable-clean`;
+- dump date: `2026-04-20`;
+- sample profile: `answerable_clean`;
+- selected questions: `5000`;
+- parser decision: `data_dump_parser_validated`;
+- inspection labeler: `llm_assisted_xhigh`;
+- inspection recommendation: `target_scale_sample_accepted`.
+
+Aggregate clean 5,000-record inspection result:
+
+- inspected records: `100`;
+- suitable records: `yes=87, no=8, uncertain=5`;
+- answerability clear: `yes=88, no=6, uncertain=6`;
+- math notation readable: `yes=98, no=2, uncertain=0`;
+- needs comments: `yes=2, no=98, uncertain=0`.
+
+This result justified rerunning the target-scale sample with the clean profile.
+
+## Clean Target-Scale Run
+
+The 100,000-question `answerable_clean` target-scale run completed with:
+
+- site: Mathematics;
+- site slug: `math`;
+- pilot slug: `math-answerable-clean-100k`;
+- dump date: `2026-04-20`;
+- sample profile: `answerable_clean`;
+- selected questions: `100000`;
+- answer rows: `168253`;
+- comment rows: `546586`;
+- derived indicator rows: `100000`;
+- JSONL thread rows: `100000`;
+- parser decision: `data_dump_parser_validated`;
+- validation issue count: `0`;
+- inspection labeler: `llm_assisted_xhigh`;
+- inspection recommendation: `target_scale_sample_accepted`.
+
+Aggregate clean 100,000-record inspection result:
+
+- inspected records: `100`;
+- suitable records: `yes=87, no=7, uncertain=6`;
+- answerability clear: `yes=89, no=5, uncertain=6`;
+- math notation readable: `yes=100, no=0, uncertain=0`;
+- needs comments: `yes=5, no=95, uncertain=0`.
+
+This is the accepted local target-scale Mathematics sample milestone.
+
+## Inspection Decision
+
+The clean target-scale sample met the acceptance thresholds:
+
+- suitable yes labels are at least `80`;
+- answerability-clear yes labels are at least `80`;
+- notation-readable yes labels are at least `95`;
+- needs-comments yes labels are at most `10`.
+
+The current aggregate recommendation is `target_scale_sample_accepted`.
 
 ## Content Safety
 
@@ -119,13 +188,13 @@ that design is implemented and tested.
 
 ## Remaining Risks
 
-The current answerable-first Mathematics profile excludes closed, unanswered,
-duplicate, and no-accepted-answer cases. That is useful for constructing a clean
+The clean answerable Mathematics profile excludes closed, unanswered, duplicate,
+and no-accepted-answer cases. That is useful for constructing a clean
 answerability baseline, but it does not yet cover hard diagnostic cases.
 
-The target-scale inspection showed that a larger sample can contain more
-unsuitable or unclear records than the smaller pilot. The next work should
-therefore revise sampling or filtering before public release planning.
+The accepted clean target-scale sample is local validation evidence, not a
+public corpus release. Public distribution still requires attribution design,
+release packaging, and a policy for what content can be redistributed.
 
 Mathematics Stack Exchange may not generalize to all technical Stack Exchange
 communities. Later work still needs cross-site design, model-evaluation
@@ -134,17 +203,18 @@ attribution handling.
 
 ## Next Technical Step
 
-The next technical step is to revise the target-scale sampling strategy before
-preparing a public or Hugging Face release.
+The next technical step is to design metadata-only Hugging Face preparation for
+Data Dump audits and then plan the 100,000-500,000 record production corpus
+workflow.
 
 Recommended next actions:
 
-1. Inspect aggregate strata from the 100-record target-scale sample to identify
-   where unsuitable and unclear cases concentrate.
-2. Adjust the answerable Data Dump sampling profile or create a stricter
-   `math-answerable-clean` profile.
-3. Rerun a smaller validation sample first, then rerun the 100,000-question
-   target-scale sample.
-4. Repeat the 100-record aggregate inspection.
-5. Proceed to metadata-release planning only after the recommendation becomes
-   `target_scale_sample_accepted`.
+1. Extend metadata packaging so Data Dump audits and provenance can be prepared
+   without including raw XML, processed TSVs, comments, JSONL threads, review
+   files, label files, or post text.
+2. Draft the production-corpus plan around the accepted
+   `math-answerable-clean-100k` milestone.
+3. Define attribution, licensing, redistribution, and contamination-risk
+   handling before any public content release.
+4. Keep API crawling, HTML scraping, and multi-site expansion out of scope until
+   the metadata-only release path is implemented and tested.
