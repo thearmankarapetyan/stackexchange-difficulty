@@ -40,6 +40,16 @@ from stackexchange_difficulty.provenance import (
     sha256_file,
     write_provenance_json,
 )
+from stackexchange_difficulty.puzzling import (
+    PUZZLING_RIDDLE_CLEAN_PROFILE,
+    PuzzlingError,
+    PuzzlingPilotConfig,
+    PuzzlingPreflightConfig,
+    preflight_puzzling_dump,
+    prepare_puzzling_qualitative_sample,
+    run_puzzling_pilot,
+    summarize_puzzling_qualitative_coding,
+)
 from stackexchange_difficulty.qualitative import (
     QualitativeError,
     prepare_qualitative_sample,
@@ -158,6 +168,44 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     run_dump.set_defaults(func=cmd_run_data_dump_pilot)
+
+    preflight_puzzling = subparsers.add_parser(
+        "preflight-puzzling-dump",
+        help="Validate local extracted Puzzling Data Dump XML files.",
+    )
+    preflight_puzzling.add_argument("--dump-dir", required=True)
+    preflight_puzzling.add_argument("--dump-date", required=True)
+    preflight_puzzling.add_argument(
+        "--project-root",
+        help=(
+            "Project root. Defaults to auto-detection from the current "
+            "directory or a projects/stackexchange-difficulty child."
+        ),
+    )
+    preflight_puzzling.set_defaults(func=cmd_preflight_puzzling_dump)
+
+    run_puzzling = subparsers.add_parser(
+        "run-puzzling-pilot",
+        help="Run the separate Puzzling/riddle Data Dump pilot pipeline.",
+    )
+    run_puzzling.add_argument("--dump-dir", required=True)
+    run_puzzling.add_argument("--dump-date", required=True)
+    run_puzzling.add_argument("--pilot-slug", default="puzzling-riddle-clean")
+    run_puzzling.add_argument(
+        "--sample-profile",
+        default=PUZZLING_RIDDLE_CLEAN_PROFILE,
+        help="Supported profiles: puzzling_riddle_clean.",
+    )
+    run_puzzling.add_argument("--sample-size", type=int, default=2000)
+    run_puzzling.add_argument("--sample-seed", type=int, default=20260518)
+    run_puzzling.add_argument(
+        "--project-root",
+        help=(
+            "Project root. Defaults to auto-detection from the current "
+            "directory or a projects/stackexchange-difficulty child."
+        ),
+    )
+    run_puzzling.set_defaults(func=cmd_run_puzzling_pilot)
 
     run_sede = subparsers.add_parser(
         "run-sede-pilot",
@@ -344,6 +392,32 @@ def build_parser() -> argparse.ArgumentParser:
     summarize_qualitative.add_argument("--labeler", required=True)
     summarize_qualitative.add_argument("--sample-size", type=int)
     summarize_qualitative.set_defaults(func=cmd_summarize_qualitative_coding)
+
+    prepare_puzzling_qualitative = subparsers.add_parser(
+        "prepare-puzzling-qualitative-sample",
+        help="Prepare ignored local files for recent Puzzling/riddle qualitative analysis.",
+    )
+    prepare_puzzling_qualitative.add_argument("--questions", required=True)
+    prepare_puzzling_qualitative.add_argument("--answers", required=True)
+    prepare_puzzling_qualitative.add_argument("--comments", required=True)
+    prepare_puzzling_qualitative.add_argument("--indicators", required=True)
+    prepare_puzzling_qualitative.add_argument("--date-from", required=True)
+    prepare_puzzling_qualitative.add_argument("--date-to", required=True)
+    prepare_puzzling_qualitative.add_argument("--sample-size", type=int, default=50)
+    prepare_puzzling_qualitative.add_argument("--seed", type=int, default=20260518)
+    prepare_puzzling_qualitative.add_argument("--out-dir", required=True)
+    prepare_puzzling_qualitative.set_defaults(func=cmd_prepare_puzzling_qualitative_sample)
+
+    summarize_puzzling_qualitative = subparsers.add_parser(
+        "summarize-puzzling-qualitative-coding",
+        help="Write an aggregate-only memo from local Puzzling qualitative coding.",
+    )
+    summarize_puzzling_qualitative.add_argument("--codes", required=True)
+    summarize_puzzling_qualitative.add_argument("--manifest", required=True)
+    summarize_puzzling_qualitative.add_argument("--out", required=True)
+    summarize_puzzling_qualitative.add_argument("--labeler", required=True)
+    summarize_puzzling_qualitative.add_argument("--sample-size", type=int)
+    summarize_puzzling_qualitative.set_defaults(func=cmd_summarize_puzzling_qualitative_coding)
 
     prepare_reinspection = subparsers.add_parser(
         "prepare-comment-reinspection",
@@ -572,6 +646,44 @@ def cmd_run_data_dump_pilot(args: argparse.Namespace) -> int:
     return 0 if result.ok else 1
 
 
+def cmd_preflight_puzzling_dump(args: argparse.Namespace) -> int:
+    try:
+        root = resolve_project_root(args.project_root)
+        result = preflight_puzzling_dump(
+            PuzzlingPreflightConfig(
+                project_root=root,
+                dump_dir=_resolve_cli_path(args.dump_dir, root),
+                dump_date=args.dump_date,
+            )
+        )
+    except PuzzlingError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0 if result.ok else 1
+
+
+def cmd_run_puzzling_pilot(args: argparse.Namespace) -> int:
+    try:
+        root = resolve_project_root(args.project_root)
+        result = run_puzzling_pilot(
+            PuzzlingPilotConfig(
+                project_root=root,
+                dump_dir=_resolve_cli_path(args.dump_dir, root),
+                dump_date=args.dump_date,
+                pilot_slug=args.pilot_slug,
+                sample_profile=args.sample_profile,
+                sample_size=args.sample_size,
+                sample_seed=args.sample_seed,
+            )
+        )
+    except PuzzlingError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0 if result.ok else 1
+
+
 def cmd_finalize_provenance(args: argparse.Namespace) -> int:
     provenance = load_provenance(args.provenance)
     finalized = finalize_processed_hashes(provenance, args.hash_file)
@@ -741,6 +853,42 @@ def cmd_summarize_qualitative_coding(args: argparse.Namespace) -> int:
             sample_size=args.sample_size,
         )
     except QualitativeError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0
+
+
+def cmd_prepare_puzzling_qualitative_sample(args: argparse.Namespace) -> int:
+    try:
+        result = prepare_puzzling_qualitative_sample(
+            questions=read_table(args.questions, name="questions"),
+            answers=read_table(args.answers, name="answers"),
+            comments=read_table(args.comments, name="comments"),
+            indicators=read_table(args.indicators, name="derived_thread_indicators"),
+            date_from=args.date_from,
+            date_to=args.date_to,
+            sample_size=args.sample_size,
+            out_dir=Path(args.out_dir),
+            seed=args.seed,
+        )
+    except PuzzlingError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0
+
+
+def cmd_summarize_puzzling_qualitative_coding(args: argparse.Namespace) -> int:
+    try:
+        result = summarize_puzzling_qualitative_coding(
+            codes=read_table(args.codes, name="puzzling_qualitative_codes"),
+            manifest_path=Path(args.manifest),
+            output_path=Path(args.out),
+            labeler=args.labeler,
+            sample_size=args.sample_size,
+        )
+    except PuzzlingError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
         return 1
     print(json.dumps(result.to_payload(), sort_keys=True))
