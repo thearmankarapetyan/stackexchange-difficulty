@@ -40,6 +40,11 @@ from stackexchange_difficulty.provenance import (
     sha256_file,
     write_provenance_json,
 )
+from stackexchange_difficulty.qualitative import (
+    QualitativeError,
+    prepare_qualitative_sample,
+    summarize_qualitative_coding,
+)
 from stackexchange_difficulty.sede import normalize_sede_export, validate_sede_export
 from stackexchange_difficulty.sede_comments import (
     SedeCommentConfig,
@@ -311,6 +316,34 @@ def build_parser() -> argparse.ArgumentParser:
     diagnose_inspection.add_argument("--labels", required=True)
     diagnose_inspection.add_argument("--out", required=True)
     diagnose_inspection.set_defaults(func=cmd_diagnose_inspection_strata)
+
+    prepare_qualitative = subparsers.add_parser(
+        "prepare-qualitative-sample",
+        help="Prepare ignored local files for recent qualitative thread analysis.",
+    )
+    prepare_qualitative.add_argument("--questions", required=True)
+    prepare_qualitative.add_argument("--answers", required=True)
+    prepare_qualitative.add_argument("--comments", required=True)
+    prepare_qualitative.add_argument("--indicators", required=True)
+    prepare_qualitative.add_argument("--site-slug", required=True)
+    prepare_qualitative.add_argument("--source-slug", required=True)
+    prepare_qualitative.add_argument("--date-from", required=True)
+    prepare_qualitative.add_argument("--date-to", required=True)
+    prepare_qualitative.add_argument("--sample-size", type=int, default=30)
+    prepare_qualitative.add_argument("--seed", type=int, default=20260518)
+    prepare_qualitative.add_argument("--out-dir", required=True)
+    prepare_qualitative.set_defaults(func=cmd_prepare_qualitative_sample)
+
+    summarize_qualitative = subparsers.add_parser(
+        "summarize-qualitative-coding",
+        help="Write an aggregate-only memo from local qualitative coding.",
+    )
+    summarize_qualitative.add_argument("--codes", required=True)
+    summarize_qualitative.add_argument("--manifest", required=True)
+    summarize_qualitative.add_argument("--out", required=True)
+    summarize_qualitative.add_argument("--labeler", required=True)
+    summarize_qualitative.add_argument("--sample-size", type=int)
+    summarize_qualitative.set_defaults(func=cmd_summarize_qualitative_coding)
 
     prepare_reinspection = subparsers.add_parser(
         "prepare-comment-reinspection",
@@ -670,6 +703,44 @@ def cmd_diagnose_inspection_strata(args: argparse.Namespace) -> int:
             output_path=Path(args.out),
         )
     except InspectionDiagnosticsError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0
+
+
+def cmd_prepare_qualitative_sample(args: argparse.Namespace) -> int:
+    try:
+        result = prepare_qualitative_sample(
+            questions=read_table(args.questions, name="questions"),
+            answers=read_table(args.answers, name="answers"),
+            comments=read_table(args.comments, name="comments"),
+            indicators=read_table(args.indicators, name="derived_thread_indicators"),
+            site_slug=args.site_slug,
+            source_slug=args.source_slug,
+            date_from=args.date_from,
+            date_to=args.date_to,
+            sample_size=args.sample_size,
+            out_dir=Path(args.out_dir),
+            seed=args.seed,
+        )
+    except QualitativeError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
+        return 1
+    print(json.dumps(result.to_payload(), sort_keys=True))
+    return 0
+
+
+def cmd_summarize_qualitative_coding(args: argparse.Namespace) -> int:
+    try:
+        result = summarize_qualitative_coding(
+            codes=read_table(args.codes, name="qualitative_codes"),
+            manifest_path=Path(args.manifest),
+            output_path=Path(args.out),
+            labeler=args.labeler,
+            sample_size=args.sample_size,
+        )
+    except QualitativeError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, sort_keys=True))
         return 1
     print(json.dumps(result.to_payload(), sort_keys=True))
