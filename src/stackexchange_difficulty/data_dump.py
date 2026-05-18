@@ -1001,8 +1001,8 @@ def _build_audit(
             "## Content Safety",
             "",
             "- This audit contains aggregate counts and hashes only. It does not include "
-            "titles, bodies, formulas, code snippets, answers, comments, usernames, URLs, "
-            "row IDs, labels, credentials, or copied Stack Exchange post content.",
+            "record-level Stack Exchange content, per-record identifiers, annotation files, "
+            "credentials, or release artifacts.",
             "",
             "## Decision",
             "",
