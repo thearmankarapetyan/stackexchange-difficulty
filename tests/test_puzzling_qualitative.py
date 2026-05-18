@@ -138,8 +138,8 @@ def test_prepare_puzzling_qualitative_cli_does_not_print_sampled_content(tmp_pat
 
 def test_summarize_puzzling_qualitative_coding_writes_aggregate_memo(tmp_path):
     codes_path = tmp_path / "qualitative_codes.tsv"
-    manifest_path = write_manifest(tmp_path, selected_records=6)
-    write_codes(codes_path, rows=6)
+    manifest_path = write_manifest(tmp_path, selected_records=30)
+    write_codes(codes_path, rows=30)
     out = tmp_path / "qualitative_puzzling_riddle_recent_2026-04-21.md"
 
     result = summarize_puzzling_qualitative_coding(
@@ -150,12 +150,13 @@ def test_summarize_puzzling_qualitative_coding_writes_aggregate_memo(tmp_path):
     )
 
     text = out.read_text(encoding="utf-8")
-    assert result.coded_records == 6
+    assert result.coded_records == 30
     assert result.unsafe_content_markers == 0
     assert "# Qualitative Analysis Of Recent Puzzling/Riddle Threads - 2026-04-21" in text
     assert "llm_assisted_xhigh" in text
-    assert "model_evaluation_suitability: good=4, diagnostic_only=2" in text
-    assert "puzzle_type: lateral_thinking=2, riddle=2, wordplay=2" in text
+    assert "model_evaluation_suitability: good=20, diagnostic_only=10" in text
+    assert "puzzle_type: lateral_thinking=10, riddle=10, wordplay=10" in text
+    assert "Qualitative acceptance gate: accepted" in text
     assert (
         "Puzzling accepted answers are treated as accepted or intended solution candidates"
         in text

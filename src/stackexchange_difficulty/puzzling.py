@@ -1382,6 +1382,12 @@ def _puzzling_qualitative_memo(
     accepted_or_diagnostic = suitability["good"] + suitability["diagnostic_only"]
     exclude_count = suitability["exclude"]
     unclear_solution = counters["solution_clarity"]["unclear_solution"]
+    gate = _puzzling_qualitative_acceptance_gate(
+        coded_records=len(rows),
+        accepted_or_diagnostic=accepted_or_diagnostic,
+        exclude_count=exclude_count,
+        unclear_solution=unclear_solution,
+    )
     return "\n".join(
         [
             "# Qualitative Analysis Of Recent Puzzling/Riddle Threads - 2026-04-21",
@@ -1448,6 +1454,7 @@ def _puzzling_qualitative_memo(
             f"- Good or diagnostic-only records: {accepted_or_diagnostic}.",
             f"- Excluded records: {exclude_count}.",
             f"- Unclear-solution records: {unclear_solution}.",
+            f"- Qualitative acceptance gate: {gate}.",
             "",
             "## Corpus-Design Implications",
             "",
@@ -1855,6 +1862,24 @@ def _int_or_text(value: Any) -> tuple[int, str]:
         return (int(text), text)
     except ValueError:
         return (0, text)
+
+
+def _puzzling_qualitative_acceptance_gate(
+    *,
+    coded_records: int,
+    accepted_or_diagnostic: int,
+    exclude_count: int,
+    unclear_solution: int,
+) -> str:
+    if coded_records < 30:
+        return "not_accepted"
+    if accepted_or_diagnostic / coded_records < 0.70:
+        return "not_accepted"
+    if exclude_count / coded_records > 0.20:
+        return "not_accepted"
+    if unclear_solution / coded_records > 0.30:
+        return "not_accepted"
+    return "accepted"
 
 
 def _format_counter(counter: Counter[str], *, top_n: int | None = None) -> str:
