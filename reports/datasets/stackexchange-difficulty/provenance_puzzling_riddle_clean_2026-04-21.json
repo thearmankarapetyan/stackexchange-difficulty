@@ -1,0 +1,40 @@
+{
+  "dataset_name": "stackexchange-difficulty",
+  "dataset_version": "puzzling-riddle-clean-2026-04-21",
+  "source_method": "stack_exchange_data_dump",
+  "source_site_slug": "puzzling",
+  "source_site_name": "Puzzling",
+  "pilot_slug": "puzzling-riddle-clean",
+  "sample_profile": "puzzling_riddle_clean",
+  "sample_size": 2000,
+  "sample_seed": 20260518,
+  "dump_date": "2026-04-21",
+  "dump_dir": "data/raw/stackexchange-difficulty/data-dump/puzzling-2026-04-21",
+  "source_version": "Stack Exchange Data Dump 2026-04-21",
+  "access_date": "2026-04-21",
+  "official_source_checked_at": "2026-04-21",
+  "license": "CC BY-SA, version determined by each post ContentLicense",
+  "transformation_steps": [
+    "read local extracted Puzzling Stack Exchange Data Dump XML files",
+    "excluded artificial post IDs 1000000001 and 1000000010",
+    "filtered answerable riddle/language puzzle candidates",
+    "excluded closed, duplicate, unanswered, and no-accepted-answer records",
+    "excluded visual/cipher/math/programming-heavy first-pass tags",
+    "sampled deterministically across Puzzling metadata strata",
+    "validated canonical tables and accepted-answer consistency",
+    "derived indicators and JSONL locally",
+    "wrote aggregate audit without copied Puzzling post content"
+  ],
+  "raw_file_hashes": {
+    "Posts.xml": "sha256:eeb58bdfb22704c2f0c5c6876eadc3069000477ec2cd90c370ccfbabb19b8314",
+    "PostLinks.xml": "sha256:4aa85fac5fca29000600f096db88800667be36f308541240cd25d7e0c1af3c30",
+    "Comments.xml": "sha256:dbb43ad4bf9b8b14858655473ae9fd74f0505dfe92f6f2fccf5403671c28ee5e",
+    "Tags.xml": "sha256:3a3e94628d8e7dbe931a0ad7e8f740184a4066de901c9f9c2e0fdffae45072ac"
+  },
+  "processed_output_hash": "sha256:e8f067e90c30820c7911052b5c8a784db6fd120c4c69ca438aff9eddfb827766",
+  "output_hash": "sha256:e8f067e90c30820c7911052b5c8a784db6fd120c4c69ca438aff9eddfb827766",
+  "script_version": "0.1.0",
+  "source_url": "https://puzzling.stackexchange.com/",
+  "sede_url": "https://data.stackexchange.com/puzzling/query/new",
+  "processed_hash_manifest": "data/processed/stackexchange-difficulty/puzzling-riddle-clean-2026-04-21/processed-output.sha256"
+}
