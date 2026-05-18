@@ -1060,8 +1060,6 @@ def _build_puzzling_audit(
             "## Source And Scope",
             "",
             "- Source: Puzzling Stack Exchange Data Dump.",
-            f"- Source URL: `{PUZZLING_SOURCE_URL}`.",
-            f"- SEDE URL: `{PUZZLING_SEDE_URL}`.",
             f"- Site slug: `{PUZZLING_SITE_SLUG}`.",
             f"- Pilot slug: `{config.pilot_slug}`.",
             f"- Dump date: `{config.dump_date}`.",
