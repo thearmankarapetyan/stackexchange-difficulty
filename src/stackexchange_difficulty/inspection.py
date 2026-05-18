@@ -58,7 +58,12 @@ COMMENT_ENRICHED_DECISION_HEADING = "## Comment-Enriched Decision"
 FINAL_DECISION_HEADING = "## Decision"
 STANDARD_DECISION_PROFILE = "standard"
 ANSWERABLE_DECISION_PROFILE = "answerable_pilot"
-DECISION_PROFILES = {STANDARD_DECISION_PROFILE, ANSWERABLE_DECISION_PROFILE}
+TARGET_SCALE_DECISION_PROFILE = "target_scale_answerable"
+DECISION_PROFILES = {
+    STANDARD_DECISION_PROFILE,
+    ANSWERABLE_DECISION_PROFILE,
+    TARGET_SCALE_DECISION_PROFILE,
+}
 REASON_CODE_PATTERN = re.compile(r"^[a-z0-9_-]+$")
 
 
@@ -831,6 +836,14 @@ def _recommendation(
             notation=notation,
             needs_comments=needs_comments,
         )
+    if decision_profile == TARGET_SCALE_DECISION_PROFILE:
+        return _target_scale_answerable_recommendation(
+            inspected=inspected,
+            suitable=suitable,
+            answerability=answerability,
+            notation=notation,
+            needs_comments=needs_comments,
+        )
     if decision_profile != STANDARD_DECISION_PROFILE:
         raise InspectionError(f"unknown decision profile: {decision_profile}")
     if inspected == 0:
@@ -864,6 +877,27 @@ def _answerable_pilot_recommendation(
     if notation["yes"] < 95:
         return "revise_sede_query"
     return "ready_for_data_dump_design"
+
+
+def _target_scale_answerable_recommendation(
+    *,
+    inspected: int,
+    suitable: Counter[str],
+    answerability: Counter[str],
+    notation: Counter[str],
+    needs_comments: Counter[str],
+) -> str:
+    if inspected < 100:
+        return "target_scale_inspection_required"
+    if needs_comments["yes"] > 10:
+        return "target_scale_needs_comment_enrichment"
+    if suitable["yes"] < 80:
+        return "target_scale_revise_sampling"
+    if answerability["yes"] < 80:
+        return "target_scale_revise_sampling"
+    if notation["yes"] < 95:
+        return "target_scale_revise_sampling"
+    return "target_scale_sample_accepted"
 
 
 def _comment_reinspection_recommendation(

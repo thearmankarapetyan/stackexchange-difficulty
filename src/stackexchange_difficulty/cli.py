@@ -284,7 +284,10 @@ def build_parser() -> argparse.ArgumentParser:
     summarize_inspection.add_argument(
         "--decision-profile",
         default="standard",
-        help="Decision policy for aggregate inspection results: standard or answerable_pilot.",
+        help=(
+            "Decision policy for aggregate inspection results: standard, "
+            "answerable_pilot, or target_scale_answerable."
+        ),
     )
     summarize_inspection.set_defaults(func=cmd_summarize_inspection)
 

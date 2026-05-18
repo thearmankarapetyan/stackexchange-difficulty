@@ -360,6 +360,108 @@ def test_answerable_pilot_profile_revises_query_when_thresholds_fail(
     assert result.recommendation == "revise_sede_query"
 
 
+def test_target_scale_answerable_profile_accepts_sample_when_thresholds_pass(tmp_path):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(
+        labels_path,
+        rows=100,
+        suitable_yes=90,
+        answerability_yes=92,
+        notation_yes=98,
+        needs_comments_yes=5,
+        copied_note="Do not leak this formula or answer text",
+    )
+    audit = write_pending_audit(tmp_path)
+
+    result = summarize_inspection_labels(
+        labels=read_table(labels_path, name="inspection_labels"),
+        audit_path=audit,
+        labeler="llm_assisted",
+        decision_profile="target_scale_answerable",
+    )
+
+    text = audit.read_text(encoding="utf-8")
+    assert result.inspected == 100
+    assert result.recommendation == "target_scale_sample_accepted"
+    assert "Labeling method: llm_assisted" in text
+    assert "Decision profile: target_scale_answerable" in text
+    assert "Suitable records: yes=90, no=10, uncertain=0" in text
+    assert "Answerability clear: yes=92, no=8, uncertain=0" in text
+    assert "Math notation readable: yes=98, no=2, uncertain=0" in text
+    assert "Needs comments: yes=5, no=95, uncertain=0" in text
+    assert "Recommendation: target_scale_sample_accepted" in text
+    assert "Decision: target_scale_sample_accepted" not in text
+    assert "Do not leak this formula" not in text
+
+
+def test_target_scale_answerable_profile_requires_100_records(tmp_path):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(labels_path, rows=99, suitable_yes=99, answerability_yes=99, notation_yes=99)
+    audit = write_pending_audit(tmp_path)
+
+    result = summarize_inspection_labels(
+        labels=read_table(labels_path, name="inspection_labels"),
+        audit_path=audit,
+        decision_profile="target_scale_answerable",
+    )
+
+    assert result.recommendation == "target_scale_inspection_required"
+
+
+def test_target_scale_answerable_profile_requests_comment_enrichment(tmp_path):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(
+        labels_path,
+        rows=100,
+        suitable_yes=100,
+        answerability_yes=100,
+        notation_yes=100,
+        needs_comments_yes=11,
+    )
+    audit = write_pending_audit(tmp_path)
+
+    result = summarize_inspection_labels(
+        labels=read_table(labels_path, name="inspection_labels"),
+        audit_path=audit,
+        decision_profile="target_scale_answerable",
+    )
+
+    assert result.recommendation == "target_scale_needs_comment_enrichment"
+
+
+@pytest.mark.parametrize(
+    ("suitable_yes", "answerability_yes", "notation_yes"),
+    [
+        (79, 100, 100),
+        (100, 79, 100),
+        (100, 100, 94),
+    ],
+)
+def test_target_scale_answerable_profile_revises_sampling_when_thresholds_fail(
+    tmp_path,
+    suitable_yes,
+    answerability_yes,
+    notation_yes,
+):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(
+        labels_path,
+        rows=100,
+        suitable_yes=suitable_yes,
+        answerability_yes=answerability_yes,
+        notation_yes=notation_yes,
+    )
+    audit = write_pending_audit(tmp_path)
+
+    result = summarize_inspection_labels(
+        labels=read_table(labels_path, name="inspection_labels"),
+        audit_path=audit,
+        decision_profile="target_scale_answerable",
+    )
+
+    assert result.recommendation == "target_scale_revise_sampling"
+
+
 def test_summarize_inspection_rejects_unknown_decision_profile(tmp_path):
     labels_path = tmp_path / "labels.tsv"
     write_labels(labels_path, rows=1)
@@ -403,6 +505,38 @@ def test_summarize_inspection_cli_accepts_answerable_profile(tmp_path):
     assert result.returncode == 0
     assert payload["recommendation"] == "ready_for_data_dump_design"
     assert "Decision profile: answerable_pilot" in text
+
+
+def test_summarize_inspection_cli_accepts_target_scale_profile(tmp_path):
+    labels_path = tmp_path / "labels.tsv"
+    write_labels(
+        labels_path,
+        rows=100,
+        suitable_yes=100,
+        answerability_yes=100,
+        notation_yes=100,
+    )
+    audit = write_pending_audit(tmp_path)
+
+    result = run_cli(
+        [
+            "summarize-inspection",
+            "--labels",
+            str(labels_path),
+            "--audit",
+            str(audit),
+            "--labeler",
+            "llm_assisted",
+            "--decision-profile",
+            "target_scale_answerable",
+        ]
+    )
+
+    payload = json.loads(result.stdout)
+    text = audit.read_text(encoding="utf-8")
+    assert result.returncode == 0
+    assert payload["recommendation"] == "target_scale_sample_accepted"
+    assert "Decision profile: target_scale_answerable" in text
 
 
 def test_summarize_inspection_missing_columns_fails(tmp_path):
