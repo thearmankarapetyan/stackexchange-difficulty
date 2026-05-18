@@ -205,8 +205,8 @@ def _diagnostic_markdown(rows: list[dict[str, Any]]) -> str:
             "## Content Safety",
             "",
             "- This diagnostic contains aggregate counts only. It does not include "
-            "individual row identifiers, titles, bodies, answers, comments, formulas, "
-            "URLs, usernames, labels notes, or copied Stack Exchange post content.",
+            "individual row identifiers, row-level text fields, formulas, links, user "
+            "handles, label notes, or copied Stack Exchange post content.",
             "",
         ]
     )
