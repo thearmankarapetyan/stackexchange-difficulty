@@ -11,5 +11,5 @@ IPython>=8.20,<10
 
 # Open and execute the notebook
 ipykernel>=6.29,<7
-jupyterlab>=4.2,<5
+jupyterlab>=4.6.1,<5
 nbconvert>=6.5,<8
