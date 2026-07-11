@@ -1,17 +1,9 @@
 version: 2
 
+# Python dependencies use compatibility ranges that are verified together on
+# Python 3.10 and 3.12. Vulnerability alerts remain enabled in repository
+# settings; range changes are reviewed through the clean-environment gate.
 updates:
-  - package-ecosystem: pip
-    directory: /
-    schedule:
-      interval: weekly
-      day: monday
-      time: "06:00"
-      timezone: Europe/Paris
-    open-pull-requests-limit: 5
-    labels:
-      - dependencies
-
   - package-ecosystem: github-actions
     directory: /
     schedule:

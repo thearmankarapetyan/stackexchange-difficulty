@@ -258,8 +258,9 @@ Status: **Complete**
 - [x] The clean CI matrix passed on Python 3.10 and 3.12; it compiled all source,
   ran Ruff, checked all three command-line interfaces, and executed the bundled
   pilot notebook on Python 3.12.
-- [x] Dependabot checks Python and GitHub Actions dependencies weekly;
-  vulnerability alerts and automated security fixes are enabled.
+- [x] Dependabot checks GitHub Actions weekly. Python vulnerability alerts and
+  automated security fixes are enabled; compatibility ranges are reviewed on
+  both supported Python versions through the clean-environment gate.
 - [x] `CONTRIBUTING.md`, `SECURITY.md`, `CODEOWNERS`, a pull-request template,
   and focused issue labels support controlled collaboration.
 - [x] `main` is the default branch, squash is the only merge method, branches
@@ -274,7 +275,7 @@ Status: **Complete**
 
 Evidence: publication commit `2e934430`, GitHub Actions run `29151176595`,
 `.github/`, `CONTRIBUTING.md`, `SECURITY.md`, repository settings, and checks
-`GH-01`–`GH-06` in the release evidence.
+`GH-01`–`GH-07` in the release evidence.
 
 ## Repeatable change verification gate
 
