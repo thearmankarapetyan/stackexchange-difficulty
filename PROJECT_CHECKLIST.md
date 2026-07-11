@@ -11,12 +11,9 @@ material retain their original form.
 
 - Canonical private repository:
   `https://github.com/thearmankarapetyan/stackexchange-difficulty`.
-- Reviewed base `main` commit:
-  `491a1baba60489969b93d1bfe94d6a6399bee211`.
-- Repository-comprehension implementation commit: `7c50682` in pull request
-  `#8`.
-- Repository-comprehension GitHub Actions run: `29164604048` (**2 jobs
-  passed**).
+- Repository-comprehension pull request: `#8`, merged as
+  `c8577ce7a436be2ffa96e89f81fd3be1fcc4b2ce`.
+- Post-merge GitHub Actions run: `29164761612` (**2 jobs passed**).
 - Verified release tag: `verified-release-2026-07-11`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
