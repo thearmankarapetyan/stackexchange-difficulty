@@ -22,7 +22,7 @@ material retain their original form.
 - GitHub Markdown migration commit: `fac76b617be420824ff4cd4a0d5dbcf38e8a1b79`.
 - GitHub Markdown verification run: `29152702947` (**2 jobs passed**).
 - Single-page README implementation commit:
-  `f910e243e0eda5290a80664b8ca28874291623c1`.
+  `f910e247b9865032d4d9b696e8b1f8045c183b88`.
 - Single-page README pull request: `#6`.
 - Single-page README verification run: `29156971069` (**2 jobs passed**).
 - Detailed evidence: `docs/reference/release-verification.tsv`.
