@@ -9,32 +9,16 @@ material retain their original form.
 
 ## Release record
 
-- Initial baseline commit:
-  `97555e6cda56d9c76293d995d01e07cf2291e728`.
-- Completed implementation commit:
-  `53212ec15000635d17743a74a5c6adb3f7f9ac16`.
-- Verified release tag: `verified-release-2026-07-11`.
-- Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
-- GitHub publication commit: `2e934430`.
 - Canonical private repository:
   `https://github.com/thearmankarapetyan/stackexchange-difficulty`.
-- GitHub Actions publication run: `29151176595` (**2 jobs passed**).
-- GitHub Markdown migration commit: `fac76b617be420824ff4cd4a0d5dbcf38e8a1b79`.
-- GitHub Markdown verification run: `29152702947` (**2 jobs passed**).
-- Single-page README implementation commit:
-  `f910e247b9865032d4d9b696e8b1f8045c183b88`.
-- Single-page README pull request: `#6`.
-- Single-page README verification run: `29156971069` (**2 jobs passed**).
-- Thirteen-task completion implementation commit:
-  `3a92d889a05321c6f539ead30627726185a416bf`.
-- Thirteen-task completion pull request: `#7`.
-- Thirteen-task completion verification run: `29160466571` (**2 jobs passed**).
+- Current reviewed `main` commit:
+  `491a1baba60489969b93d1bfe94d6a6399bee211`.
+- Current reviewed GitHub Actions run: `29160586054` (**2 jobs passed**).
+- Verified release tag: `verified-release-2026-07-11`.
+- Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Current evidence matrix: **83 PASS, 0 FAIL**.
-- Final committed-state audit: **25 PASS, 0 FAIL**.
-- Previous DOCX guide audit: **25 PASS, 0 FAIL**.
-- GitHub Markdown documentation audit: **28 PASS, 0 FAIL**.
-- Single-page README audit: **18 PASS, 0 FAIL**.
+- Evidence matrix: **83 PASS, 0 FAIL** — **61 current-release** rows and
+  **22 historical-transition** rows.
 - Thirteen-task completion audit: **14 PASS, 0 FAIL**.
 
 ## Task 1 — Maintain the main project documentation

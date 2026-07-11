@@ -16,11 +16,16 @@
   behavior free of site-specific constants.
 - Prefer simple code and concise documentation that can be understood by
   someone unfamiliar with the implementation.
+- Treat unfamiliar-reader comprehension as an acceptance condition: define a
+  term before relying on it, explain which values may change in a routine run,
+  use concrete examples, and link to the exact heading that answers a question.
 - Maintain `README.md` as the single English project-documentation page. Add
   stable contents links, same-page cross-references, and glossary links so a
   reader can reach an exact answer directly. Treat linked headings as stable
   navigation targets and update every incoming link when a heading changes.
   Avoid duplicate documentation pages.
+- Keep any folder-level README as a short orientation and set of direct links to
+  the canonical root README instead of recreating project documentation.
 - Apply Diátaxis within the README: keep the tutorial concrete and choice-free,
   keep how-to sections focused on goals and actions, keep reference sections
   neutral and system-shaped, and reserve reasons, context, alternatives, and

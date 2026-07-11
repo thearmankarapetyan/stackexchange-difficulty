@@ -22,4 +22,5 @@ List the commands run and their results.
 - [ ] Changed visual and office documents were inspected when affected.
 - [ ] `git diff --check` passes.
 - [ ] Documentation, examples, evidence, and checklist are synchronized.
+- [ ] Changed terms, settings, commands, and outputs are understandable from the linked documentation alone.
 - [ ] No raw dump, credential, cache, or regenerated annual output is included.
