@@ -48,6 +48,12 @@ jobs:
       - name: Run Ruff
         run: python -m ruff check src
 
+      - name: Check Markdown documentation
+        if: matrix.python-version == '3.12'
+        run: >-
+          npx --yes markdownlint-cli2@0.23.0
+          '**/*.md' '.github/**/*.md'
+
       - name: Check command-line interfaces
         run: |
           python src/extract_threads.py --help

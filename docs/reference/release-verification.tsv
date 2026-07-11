@@ -23,28 +23,30 @@ NB-02	Notebook	Check generic self-contained behavior	PASS	Direct pandas, Matplot
 NB-03	Notebook	Inspect figures at normal reading size	PASS	Four pilot figures readable; Figure 2 legend moved outside the data; Sections 5 and 6 provide clear availability messages for the small pilot
 FLOW-01	Flowchart	Validate editable source and publication export	PASS	SVG parses successfully; PNG is 4800 by 3400 pixels
 FLOW-02	Flowchart	Verify labels and route behavior	PASS	All entry points, inputs, outputs, arrows, checks, and official access steps match current source and Stack Exchange help
-FLOW-03	Flowchart	Inspect at full size and in the guide	PASS	No overlap, clipping, terminal command, personal path, fixed community, date, period, or question ID
-GUIDE-01	Project guide	Check structure and navigation	PASS	19-page rendered preview; 227 paragraphs; 39 tables; 4 OOXML sections; brief orientation and four ordered Diátaxis parts in one DOCX
-GUIDE-02	Project guide	Check operational completeness	PASS	Official access, setup, bundled pilot, three routes, exact parameters, outputs, glossary, components, limitations, troubleshooting, deliverables, examples, and verification are present
-GUIDE-03	Project guide	Inspect layout	PASS	All 19 rendered pages inspected; A3 workflow, tables, tree, code blocks, headings, hyperlinks, and page numbers are readable without blank pages, clipping, overlap, or duplicate headers/footers
+FLOW-03	Flowchart	Inspect at full size and on the documentation home	PASS	No overlap, clipping, terminal command, personal path, fixed community, date, period, or question ID; tracked PNG renders through GitHub Markdown
+GUIDE-01	GitHub documentation	Check structure and navigation	PASS	One documentation home links one tutorial, six how-to guides, one system reference, and one explanation page in separate Diátaxis directories
+GUIDE-02	GitHub documentation	Check operational completeness	PASS	Official access, setup, bundled pilot, three routes, exact parameters, outputs, glossary, components, GitHub contract, limitations, troubleshooting, deliverables, examples, and verification are present
+GUIDE-03	GitHub documentation	Inspect Markdown structure and rendering	PASS	Markdownlint 0.41.0 reports 0 error; Pandoc renders 10 of 10 pages; GitHub Markdown API renders 10 of 10 pages
 DICT-01	Data dictionary	Compare workbook with schema	PASS	47 rows; exact field-name order; three requested calculation groups; no empty required definition cell
 DICT-02	Data dictionary	Inspect workbook rendering	PASS	Read-me page and dictionary pages are readable at A3 layout
 STATS-01	Published statistics	Preserve workbook content while improving print layout	PASS	All cell values, types, styles, links, filters, and frozen panes preserved; six sheets set to one A3 landscape page wide
 STATS-02	Published statistics	Inspect workbook rendering	PASS	PDF preview reduced from 75 fragmented pages to 9 complete-width pages
 ARCHIVE-01	Archive	Archive superseded workflow and documentation artifacts	PASS	10 files copied and verified before active copies were removed
 ARCHIVE-02	Archive	Validate archive manifest	PASS	Every size and SHA-256 value in archive/canonical-project-consolidation-2026-07-11/manifest.tsv matches its archived file
-PATH-01	Deliverables	Validate canonical locations	PASS	All active source, config, example, notebook, guide, workflow, workbook, and report paths exist
-LANG-01	Language	Check active authored material	PASS	No French project term or personal filesystem path found in README, checklist, instructions, source, notebook source, guide, dictionary, or statistics workbook
+ARCHIVE-03	Archive	Archive superseded Word documentation	PASS	Central guide and historical recovery audit copied to archive/github-markdown-documentation-2026-07-11 before active removal
+ARCHIVE-04	Archive	Validate Word-documentation archive	PASS	Two archived DOCX files match manifest size and SHA-256; active repository contains zero DOCX
+PATH-01	Deliverables	Validate canonical locations	PASS	All active source, config, example, notebook, Markdown documentation, workflow, workbook, and report paths exist
+LANG-01	Language	Check active authored material	PASS	No French project term or personal filesystem path found in README, checklist, instructions, source, notebook source, Markdown documentation, dictionary, or statistics workbook
 CLEAN-01	Cleanup	Remove disposable verification material	PASS	No temporary test, generator, preview, cache, bytecode, office lock, or notebook checkpoint remains in the project
 GIT-01	Version control	Create initial baseline	PASS	97555e6cda56d9c76293d995d01e07cf2291e728
 GIT-02	Version control	Commit completed implementation	PASS	53212ec15000635d17743a74a5c6adb3f7f9ac16
 AUDIT-01	Independent final audit	Recheck the committed result	PASS	25 of 25 artifact checks passed after the implementation commit
 AUDIT-02	Independent final audit	Run Git whitespace validation	PASS	git diff --check completed without an error
-GUIDE-04	Project guide	Verify the tutorial as a Diátaxis tutorial	PASS	One fixed bundled 20-question path; six expected-result checkpoints; early visible evidence; repeatability check; no dump, date, community, field, or question-ID choice
-GUIDE-05	Project guide	Verify the how-to part as Diátaxis how-to guidance	PASS	Six goal-named guides; each has prerequisites, actions, a completion check, and a reference link; no explanatory digression marker
-GUIDE-06	Project guide	Verify the reference part as Diátaxis reference	PASS	Neutral system-shaped component, dependency, CLI, XML, output, configuration, notebook, validation, error, deliverable, evidence, glossary, and location contracts; no ordered procedure
-GUIDE-07	Project guide	Verify the explanation part as Diátaxis explanation	PASS	Bounded research, route, provenance, snapshot, configurability, validation, and scope discussions; no command, code block, or ordered procedure
-GUIDE-08	Project guide	Run strict single-document guide audit	PASS	25 of 25 structural, content, contract, genericity, language, hyperlink, pilot-result, rendering, and header/footer checks passed; every rendered page was visually reviewed
+GUIDE-04	GitHub documentation	Verify the tutorial as a Diátaxis tutorial	PASS	One fixed bundled 20-question path; six expected-result checkpoints; early visible evidence; repeatability check; no dump, date, community, field, or question-ID choice
+GUIDE-05	GitHub documentation	Verify the how-to pages as Diátaxis how-to guidance	PASS	Six goal-named pages; each has prerequisites, actions, a completion check, navigation, and links to exact reference contracts
+GUIDE-06	GitHub documentation	Verify the system reference as Diátaxis reference	PASS	Neutral component, dependency, GitHub, CLI, XML, output, configuration, notebook, validation, error, deliverable, evidence, glossary, and location contracts
+GUIDE-07	GitHub documentation	Verify the explanation page as Diátaxis explanation	PASS	Bounded research, route, provenance, snapshot, configurability, validation, and scope discussions; no command or procedural code block
+GUIDE-08	GitHub documentation	Run strict Markdown documentation audit	PASS	28 of 28 structural, content, contract, genericity, link, archive, and rendering checks passed
 GH-01	GitHub publication	Preserve the superseded remote before publishing current main	PASS	44-commit scaffold retained on archive/legacy-corpus-scaffold and tag legacy-corpus-scaffold-2026-05-18; current history published independently on main
 GH-02	GitHub publication	Scan active history and publication tree for secrets and oversized files	PASS	Gitleaks 8.30.1 found no leak; largest active-history object remains far below GitHub's 50 MiB warning threshold; raw dumps and regenerated outputs are ignored
 GH-03	GitHub automation	Validate repository automation locally	PASS	actionlint 1.7.12 passed; clean Python 3.12.3 environment compiled source, passed Ruff 0.15.21, checked three CLIs, and executed the pilot notebook
@@ -52,3 +54,9 @@ GH-04	GitHub automation	Run continuous integration on supported Python versions	
 GH-05	GitHub security	Apply compatible repository and supply-chain controls	PASS	Private repository; read-only workflow token; GitHub-owned actions only; full-SHA pinning required; weekly GitHub Actions updates; Python vulnerability alerts and automated fixes enabled
 GH-06	GitHub collaboration	Configure the canonical branch and collaboration surface	PASS	main is default; squash-only merge; automatic branch deletion; CODEOWNERS, contribution and security policies, PR template, focused labels, description, and topics configured
 GH-07	GitHub dependency policy	Validate automated updates against supported Python versions	PASS	Initial independent pip lower-bound proposals included two Python 3.10 failures; all five proposals were closed; Actions updates remain automated and Python range changes remain in the clean-environment gate
+MD-01	Markdown migration	Preserve verified guide content in native pages	PASS	Ten pages retain the tutorial, six procedures, system contracts, deliverables, glossary, explanation, and route navigation
+MD-02	Markdown migration	Correct conversion artifacts	PASS	Commands use fenced Bash blocks; XML hierarchy uses a text block; section-number links, temporary media paths, Word part markers, and DOCX references are absent
+MD-03	Markdown migration	Validate Markdown quality	PASS	markdownlint-cli2 0.23.0 with markdownlint 0.41.0 reports 0 error across all 18 project Markdown files
+MD-04	Markdown migration	Validate links, headings, and rendering	PASS	One H1 per documentation page; balanced fences; 0 broken local path or anchor; 10 of 10 Pandoc and GitHub Markdown renders pass
+MD-05	Markdown migration	Validate documented interfaces	PASS	All 17 documented long CLI options occur in successful current --help output; three command examples and twelve default summary fields are present
+MD-06	Markdown migration	Validate archive and active formats	PASS	Two DOCX files preserved with matching size and SHA-256; active repository has zero DOCX; PDF, XLSX, SVG, PNG, XML, TSV, JSON, and IPYNB retain appropriate formats

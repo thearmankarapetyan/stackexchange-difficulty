@@ -20,8 +20,10 @@ material retain their original form.
   `https://github.com/thearmankarapetyan/stackexchange-difficulty`.
 - GitHub Actions publication run: `29151176595` (**2 jobs passed**).
 - Detailed evidence: `docs/reference/release-verification.tsv`.
+- Current evidence matrix: **61 PASS, 0 FAIL**.
 - Final committed-state audit: **25 PASS, 0 FAIL**.
-- Strict single-document guide audit: **25 PASS, 0 FAIL**.
+- Previous DOCX guide audit: **25 PASS, 0 FAIL**.
+- GitHub Markdown documentation audit: **28 PASS, 0 FAIL**.
 
 ## Task 1 — Finalize and integrate the canonical overview flowchart
 
@@ -41,33 +43,33 @@ Status: **Complete**
   fixed date, fixed period, or fixed question ID.
 - [x] Every label and route was checked against current source and the official
   Stack Exchange data-dump help page.
-- [x] The full-size PNG and the A3 guide page were visually inspected for font
-  size, clipping, overlap, arrow direction, and missing information.
+- [x] The full-size PNG and its rendering on the Markdown documentation home
+  were inspected for readability, clipping, arrow direction, and missing
+  information.
 
 Evidence: `docs/project-workflow-overview.svg`,
-`docs/project-workflow-overview.png`, page 3 of
-`docs/stackexchange-project-guide.docx`, and checks `FLOW-01`–`FLOW-03` in the
-release evidence.
+`docs/project-workflow-overview.png`, `docs/README.md`, and checks `FLOW-01`–
+`FLOW-03` in the release evidence.
 
-## Task 2 — Create one central English project guide
+## Task 2 — Create the English GitHub documentation
 
 Status: **Complete**
 
-- [x] `docs/stackexchange-project-guide.docx` is the primary handover document.
-- [x] It explains the research purpose, implemented scope, components, inputs,
-  outputs, workflow, validation rules, current evidence, and limitations.
-- [x] It contains the canonical flowchart on a readable A3 landscape page.
-- [x] It provides environment preparation, official dump access, a first pilot,
-  all three processing routes, and generic notebook execution.
-- [x] It contains one component reference for all five Python modules and the
-  generic notebook.
-- [x] It contains a complete deliverables register with purpose, location,
-  format, generator, inputs, contents, opening method, validation, and
-  version-control status.
-- [x] Useful verified information from the four former French documents was
-  consolidated into clear English sections.
-- [x] A brief orientation directs each documentation need to one of four
-  deliberately separated Diátaxis parts in the same DOCX.
+- [x] `docs/README.md` is the primary documentation and handover entry point.
+- [x] Ten linked Markdown pages explain the research purpose, implemented scope,
+  components, inputs, outputs, workflow, validation, current evidence, and
+  limitations.
+- [x] The documentation home displays the canonical workflow and links its
+  editable SVG source.
+- [x] The pages cover environment preparation, official dump access, a first
+  pilot, all three processing routes, and generic notebook execution.
+- [x] `docs/reference/system-reference.md` documents all five Python modules,
+  the generic notebook, exact interfaces, contracts, errors, deliverables, and
+  canonical locations.
+- [x] Verified information from the former central guide is preserved in native
+  GitHub Markdown with working relative links and fenced command examples.
+- [x] The documentation home directs each need to a separate Diátaxis page:
+  tutorial, how-to, reference, or explanation.
 - [x] The tutorial follows one fixed bundled pilot, produces visible results
   early, gives an expected result after every stage, and contains no dump,
   community, date, field, or plotting choice.
@@ -77,20 +79,19 @@ Status: **Complete**
   facts about components, dependencies, commands, XML, outputs,
   configurations, notebook behavior, validation, errors, deliverables, and
   terminology.
-- [x] The explanation part contains the research context, design reasoning,
+- [x] The explanation page contains the research context, design reasoning,
   interpretation boundaries, and scope without procedural commands.
-- [x] A LibreOffice PDF preview produced 19 pages, including the A3 workflow;
-  every page was visually inspected and no blank, clipped, overlapping, or
-  duplicated header/footer content remains.
+- [x] Markdown linting, local-link validation, heading and fence checks, Pandoc
+  rendering, command checks, and GitHub rendering checks pass.
 
-Evidence: `docs/stackexchange-project-guide.docx` and checks `GUIDE-01`–
-`GUIDE-08` in the release evidence.
+Evidence: `docs/README.md` and its linked pages; checks `GUIDE-01`–`GUIDE-08`
+in the release evidence.
 
 ## Task 3 — Add the glossary and one verified practical walkthrough
 
 Status: **Complete**
 
-- [x] The guide defines community, dump, snapshot, question period, thread,
+- [x] The system reference defines community, dump, snapshot, question period, thread,
   question ID, direct question comment, accepted answer, characteristic,
   schemas, validation, metadata, EDA, source-data folder, and results folder.
 - [x] One uninterrupted tutorial covers the bundled 20-question input,
@@ -101,16 +102,17 @@ Status: **Complete**
 - [x] `data/examples/characteristics_pilot.tsv` provides a real 20×47 notebook
   input and `characteristics_pilot_validation.tsv` records 9 PASS, 0 WARN, and
   0 FAIL.
-- [x] The guide links the complete-thread, default-summary, configurable-summary,
+- [x] The documentation links the complete-thread, default-summary, configurable-summary,
   characteristic, dictionary, notebook, and release examples.
 - [x] Success indicators cover generated files, row and column counts,
   validation, metadata, conditional figures, interpretations, and cell errors.
-- [x] The opening route map and Parts II–III locate direct answers for the three
-  routes, their inputs and outputs, question-ID meaning, configuration, and
-  acceptance checks.
+- [x] The documentation home and linked how-to and reference pages locate direct
+  answers for the three routes, their inputs and outputs, question-ID meaning,
+  configuration, and acceptance checks.
 
-Evidence: Section 1 and Parts II–III of the guide; `data/examples/`; checks
-`BUILD-01`–`BUILD-04`, `NB-01`, and `PATH-01`.
+Evidence: `docs/tutorials/first-analysis.md`, `docs/how-to/`,
+`docs/reference/system-reference.md`, `data/examples/`, and checks `BUILD-01`–
+`BUILD-04`, `NB-01`, and `PATH-01`.
 
 ## Task 4 — Make summary-field selection genuinely configurable
 
@@ -168,11 +170,13 @@ Status: **Complete**
 
 - [x] The active project keeps one editable workflow source and one publication
   export.
-- [x] The central guide replaces the former overview and four language-specific
-  documentation copies.
+- [x] The GitHub Markdown documentation replaces the former central DOCX and
+  language-specific documentation copies.
 - [x] Superseded HTML, spreadsheet, image, overview, tutorial, how-to,
   reference, and explanation variants were copied before removal.
 - [x] Ten archived files have matching recorded sizes and SHA-256 values.
+- [x] The two superseded DOCX files have matching recorded sizes and SHA-256
+  values in the Markdown-migration archive.
 - [x] The initial Git baseline also preserves the pre-consolidation state.
 - [x] Raw public dumps are classified as external ignored inputs.
 - [x] Regenerated annual outputs are ignored and remain reproducible from source
@@ -183,7 +187,8 @@ Status: **Complete**
 
 Evidence:
 `../../archive/canonical-project-consolidation-2026-07-11/manifest.tsv`,
-`.gitignore`, `.gitattributes`, and checks `ARCHIVE-01`, `ARCHIVE-02`, and
+`../../archive/github-markdown-documentation-2026-07-11/manifest.tsv`,
+`.gitignore`, `.gitattributes`, and checks `ARCHIVE-01`–`ARCHIVE-04` and
 `CLEAN-01`.
 
 ## Task 7 — Create and record the first Git baseline
@@ -223,9 +228,9 @@ Status: **Complete**
   Engineering rows and 11,578 Super User rows with no FAIL.
 - [x] The notebook executed through the clean environment kernel with 21 cells,
   10 executed code cells, and no error.
-- [x] Flowchart, guide, notebook figures, data dictionary, statistics workbook,
-  XML examples, TSV examples, and archive were visually or structurally
-  inspected.
+- [x] Flowchart, Markdown documentation, notebook figures, data dictionary,
+  statistics workbook, XML examples, TSV examples, and archives were visually
+  or structurally inspected.
 - [x] Every canonical deliverable path exists or is explicitly classified as an
   external/ignored input or regenerated output.
 - [x] Cleanup removed all disposable project material.
@@ -277,6 +282,35 @@ Evidence: publication commit `2e934430`, GitHub Actions run `29151176595`,
 `.github/`, `CONTRIBUTING.md`, `SECURITY.md`, repository settings, and checks
 `GH-01`–`GH-07` in the release evidence.
 
+## Task 10 — Migrate the project documentation to GitHub Markdown
+
+Status: **Complete**
+
+- [x] `docs/README.md` provides one concise documentation home and route map.
+- [x] The verified central-guide content is distributed across one tutorial, six
+  how-to guides, one system reference, and one explanation page.
+- [x] Commands use fenced Bash blocks, the XML hierarchy uses a text block, and
+  Word section references were replaced by working relative links.
+- [x] The workflow uses the tracked PNG and SVG, with no extracted duplicate or
+  temporary absolute media path.
+- [x] The superseded central DOCX and historical recovery-audit DOCX were copied
+  to a checksum-verified archive before removal from the active project.
+- [x] No DOCX remains in the active repository; PDFs and XLSX files retain their
+  appropriate publication and tabular formats.
+- [x] Markdownlint, heading hierarchy, fence balance, local links and anchors,
+  Pandoc HTML rendering, English and genericity scans, and documented commands
+  pass.
+- [x] Root navigation, contributor guidance, project instructions, canonical
+  locations, deliverables, checklist, and release evidence point to the Markdown
+  documentation.
+- [x] The GitHub `main` rendering exposes the documentation home and all linked
+  pages without a broken local target.
+
+Evidence: `docs/README.md`, `docs/tutorials/`, `docs/how-to/`,
+`docs/reference/system-reference.md`, `docs/explanation/design-and-scope.md`,
+`../../archive/github-markdown-documentation-2026-07-11/manifest.tsv`, and
+checks `MD-01`–`MD-06` in the release evidence.
+
 ## Repeatable change verification gate
 
 Apply this gate to later changes and update the evidence file when release
@@ -288,7 +322,7 @@ behavior changes.
 - [x] Compare generated columns with `config/characteristics.tsv`.
 - [x] Confirm validation has no FAIL and review every WARN.
 - [x] Execute the notebook from a clean kernel.
-- [x] Inspect changed DOCX, XLSX, SVG, PNG, XML, TSV, and notebook figures.
+- [x] Inspect changed Markdown, XLSX, SVG, PNG, XML, TSV, and notebook figures.
 - [x] Use temporary tests for risky behavior and remove them after verification.
 - [x] Remove previews, caches, bytecode, office locks, and checkpoints.
 - [x] Run `git diff --check`, review the complete change list, and update this

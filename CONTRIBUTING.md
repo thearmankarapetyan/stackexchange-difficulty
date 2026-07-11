@@ -6,8 +6,8 @@ that follow the expected XML structure.
 
 ## Before making a change
 
-1. Read `README.md`, `PROJECT_CHECKLIST.md`, and the relevant part of
-   `docs/stackexchange-project-guide.docx`.
+1. Read `README.md`, `PROJECT_CHECKLIST.md`, and the relevant page linked from
+   `docs/README.md`.
 2. Create a short-lived branch from `main`, using a descriptive prefix such as
    `feature/`, `fix/`, or `docs/`.
 3. Create and activate a virtual environment, then install the development
@@ -42,6 +42,8 @@ python -m ruff check src
 python src/extract_threads.py --help
 python src/extract_request_summary.py --help
 python src/build_characteristics.py --help
+npx --yes markdownlint-cli2@0.23.0 \
+  '**/*.md' '.github/**/*.md'
 git diff --check
 ```
 
@@ -57,7 +59,8 @@ python -m nbconvert \
 ```
 
 For extraction, schema, or calculation changes, also run the controlled pilot
-described in the central guide and inspect its validation and metadata files.
+described in the Markdown documentation and inspect its validation and metadata
+files.
 Record release-level evidence in `docs/reference/release-verification.tsv` and
 update `PROJECT_CHECKLIST.md` when a verified completion claim changes.
 

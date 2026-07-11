@@ -2,7 +2,6 @@
 * text=auto eol=lf
 
 # Declare binary deliverables explicitly so Git does not attempt text merges.
-*.docx binary
 *.xlsx binary
 *.pdf binary
 *.png binary

@@ -22,8 +22,8 @@ cd stackexchange-difficulty
 
 ## Start here
 
-1. Read the complete operating guide:
-   [`docs/stackexchange-project-guide.docx`](docs/stackexchange-project-guide.docx).
+1. Open the documentation home:
+   [`docs/README.md`](docs/README.md).
 2. Open the canonical workflow:
    [`docs/project-workflow-overview.png`](docs/project-workflow-overview.png).
    Its editable source is
@@ -31,10 +31,9 @@ cd stackexchange-difficulty
 3. Check current status and evidence in
    [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md).
 
-The guide applies Diátaxis inside one document. A short orientation points to
-four deliberately separated parts: one fixed first-run tutorial, goal-oriented
-how-to guides, system-shaped reference material, and explanations of the
-scientific and technical choices.
+The documentation applies Diátaxis across linked Markdown pages: one fixed
+first-run tutorial, six goal-oriented how-to guides, system-shaped reference
+material, and an explanation of the scientific and technical choices.
 
 ## Implemented routes
 
@@ -65,9 +64,9 @@ python -m pip install -r requirements.txt
 python -m nbconvert --to notebook --execute --inplace notebooks/stackexchange_eda.ipynb
 ```
 
-The project guide explains how to download a community dump, build a new pilot,
-read `validation.tsv` and `run_metadata.json`, and switch the notebook to the
-new TSV.
+The Markdown documentation explains how to download a community dump, build a
+new pilot, read `validation.tsv` and `run_metadata.json`, and switch the
+notebook to the new TSV.
 
 ## Canonical structure
 
@@ -77,9 +76,10 @@ new TSV.
 - `data/raw/` — ignored location available for local source dumps;
 - `data/processed/` — ignored location for regenerated analytical runs;
 - `notebooks/stackexchange_eda.ipynb` — the single generic, self-contained EDA;
+- `docs/README.md` — the GitHub documentation home;
+- `docs/tutorials/` and `docs/how-to/` — the first analysis and task procedures;
 - `docs/reference/` — data dictionary, published statistics, and release evidence;
-- `docs/explanation/` — recovery audit and scientific review;
-- `docs/stackexchange-project-guide.docx` — the central project guide.
+- `docs/explanation/` — project design, scientific scope, and scientific review.
 
 ## Verification and version control
 
@@ -90,6 +90,8 @@ new TSV.
 - Replaced documentation and workflow drafts are preserved in the
   checksum-verified archive under
   `../../archive/canonical-project-consolidation-2026-07-11/`.
+- Superseded Word documentation is preserved under
+  `../../archive/github-markdown-documentation-2026-07-11/`.
 
 The current comparable annual evidence uses questions created from 1 January
 through 31 December 2024 and the 20 April 2026 dump snapshot. The local annual
