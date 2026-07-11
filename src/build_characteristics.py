@@ -15,6 +15,10 @@ Example:
         --start-date YYYY-MM-DD \
         --end-date YYYY-MM-DD \
         --output-dir data/processed/example-run
+
+Requires Python 3.10 or newer and the dependencies in ``requirements.txt``.
+Source XML and the characteristic schema remain unchanged.  Canonical outputs
+are published only after internal validation contains no failure.
 """
 
 from __future__ import annotations
@@ -60,7 +64,12 @@ SITE_PATTERN = re.compile(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?")
 
 # 1. Read the user-supplied run settings.
 def parse_args(arguments: Sequence[str] | None = None) -> argparse.Namespace:
-    """Read and validate the command-line parameters."""
+    """Read, normalize, and validate the command-line parameters.
+
+    The returned namespace includes parsed date values used by ``run``.
+    ``argparse`` reports an invalid host, limit, date, or date order and exits
+    with its standard nonzero status.
+    """
     parser = argparse.ArgumentParser(
         description="Build a verified question-level TSV from a Stack Exchange XML dump."
     )
@@ -143,7 +152,12 @@ def select_questions(
     end: datetime,
     limit: int | None,
 ) -> list[dict[str, str]]:
-    """Select question rows in chronological order for the requested period."""
+    """Select question rows in chronological order for an inclusive period.
+
+    The complete ``Posts.xml`` file is streamed.  The optional limit is applied
+    after sorting by full creation time and numeric ID.  Invalid selected-row
+    IDs or dates raise contextual ``ValueError``.
+    """
     selected: list[tuple[datetime, Decimal, int, dict[str, str]]] = []
     for row in stream_rows(posts_path):
         if row.get("PostTypeId") != "1":
@@ -167,7 +181,11 @@ def select_questions(
 def read_answers(
     posts_path: Path, question_ids: set[str]
 ) -> dict[str, list[dict[str, str]]]:
-    """Read every available answer whose parent is a selected question."""
+    """Read and order every answer whose parent is a selected question.
+
+    The complete ``Posts.xml`` file is streamed.  Invalid selected-answer IDs,
+    dates, or scores raise contextual ``ValueError``.
+    """
     answers: dict[str, list[dict[str, str]]] = defaultdict(list)
     for row in stream_rows(posts_path):
         parent_id = row.get("ParentId")
@@ -187,7 +205,12 @@ def read_answers(
 def read_acceptance_dates(
     votes_path: Path, accepted_answer_ids: set[str]
 ) -> dict[str, date]:
-    """Read the earliest acceptance day for each currently accepted answer."""
+    """Read the earliest acceptance day for each currently accepted answer.
+
+    Only ``VoteTypeId=1`` rows associated with supplied accepted-answer IDs are
+    selected.  Public vote timestamps provide calendar-day precision.  Invalid
+    selected-row dates raise contextual ``ValueError``.
+    """
     dates: dict[str, date] = {}
     for row in stream_rows(votes_path):
         answer_id = row.get("PostId")
@@ -204,7 +227,12 @@ def read_acceptance_dates(
 
 # 3. Check and write the three canonical output files.
 def load_schema(path: Path) -> list[str]:
-    """Load the versioned characteristic order and validate its basic shape."""
+    """Load and validate the ordered characteristic names from a schema TSV.
+
+    Positions must be consecutive from one, and names must be present and
+    unique.  An absent schema raises ``FileNotFoundError``; malformed content
+    raises a contextual ``ValueError``.
+    """
     if not path.is_file():
         raise FileNotFoundError(f"Characteristic schema not found: {path}")
     with path.open(encoding="utf-8", newline="") as file:
@@ -236,7 +264,13 @@ def load_schema(path: Path) -> list[str]:
 def validation_rows(
     rows: list[dict[str, Any]], columns: list[str]
 ) -> list[dict[str, str]]:
-    """Return independent structural checks and source-difference warnings."""
+    """Return structural checks and explicit source-difference warnings.
+
+    Each returned row has a check name, ``PASS``/``WARN``/``FAIL`` status,
+    observed value, and interpretation.  Platform counters can differ from
+    available XML rows, so those differences are warnings while broken output
+    structure is a failure.  Input rows remain unchanged.
+    """
     expected_keys = set(columns)
     ids = [str(row.get("question_id") or "") for row in rows]
     answer_differences = sum(
@@ -347,7 +381,13 @@ def tsv_value(value: Any) -> Any:
 
 
 def atomic_write(path: Path, write: Callable[[Any], None], newline: str | None = None) -> None:
-    """Write a complete temporary file beside the destination, then publish it."""
+    """Publish output through a complete temporary destination-side file.
+
+    Parent folders are created when needed.  ``write`` receives an open UTF-8
+    text stream.  ``os.replace`` publishes the result only after writing
+    succeeds, and the temporary file is removed after success or failure.
+    Filesystem and callback errors propagate to the caller.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary_path: Path | None = None
     try:
@@ -409,7 +449,12 @@ def output_paths(output_dir: Path) -> dict[str, Path]:
 
 
 def ensure_paths(args: argparse.Namespace) -> tuple[dict[str, Path], dict[str, Path]]:
-    """Check source files and protect existing outputs."""
+    """Verify required source files and determine canonical output paths.
+
+    Missing XML raises ``FileNotFoundError``.  Existing canonical output raises
+    ``FileExistsError`` unless ``args.overwrite`` is true.  This function checks
+    paths only and writes no file.
+    """
     sources = {name: args.dump_dir / name for name in SOURCE_FILENAMES}
     missing = [str(path) for path in sources.values() if not path.is_file()]
     if missing:
@@ -425,7 +470,14 @@ def ensure_paths(args: argparse.Namespace) -> tuple[dict[str, Path], dict[str, P
 
 # 4. Run the complete workflow in a visible, predictable order.
 def run(args: argparse.Namespace) -> int:
-    """Run extraction, validation, and output writing."""
+    """Build, validate, and publish one complete characteristic run.
+
+    ``args`` must come from ``parse_args`` because it contains normalized date
+    values.  The function streams the three source XML files, builds one row per
+    selected question, stops before publication when an internal check fails,
+    and writes the TSV, validation, and metadata files atomically.  It returns
+    ``0`` on success and lets contextual input or filesystem errors propagate.
+    """
     started = time.perf_counter()
     sources, paths = ensure_paths(args)
     columns = load_schema(args.schema)
@@ -506,7 +558,12 @@ def run(args: argparse.Namespace) -> int:
 
 
 def main(arguments: Sequence[str] | None = None) -> int:
-    """Run the command-line program and return a process exit code."""
+    """Run the command-line program and return a process exit code.
+
+    Successful execution returns ``0``.  Handled input, validation, XML, and
+    filesystem errors print one contextual message to standard error and return
+    ``1``; argument errors retain standard ``argparse`` behavior.
+    """
     try:
         return run(parse_args(arguments))
     except (

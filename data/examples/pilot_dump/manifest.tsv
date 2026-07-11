@@ -1,0 +1,15 @@
+field	value
+source	Official Stack Exchange public data dump
+community	softwareengineering.stackexchange.com
+dump_snapshot_date	2026-04-20
+question_start_date	2024-01-01
+question_end_date	2024-12-31
+selection	First 20 questions in chronological order
+question_rows	20
+post_rows	74
+direct_question_comment_rows	75
+acceptance_vote_rows	12
+question_ids	450355;450356;450359;450360;450361;450363;450374;450379;450386;450393;450402;450403;450414;450418;450423;450436;450443;450445;450448;450449
+source_files	Posts.xml;Comments.xml;Votes.xml
+content_licence	Preserved in the ContentLicense attribute of each available post and comment row
+scope	Selected questions, their answers, direct question comments, and acceptance votes

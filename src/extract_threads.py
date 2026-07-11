@@ -8,6 +8,9 @@ one thread; several IDs create several threads in the same output file.
 Example:
     python src/extract_threads.py --dump-dir /path/to/site-dump \
         --output data/examples/threads.xml 123 456
+
+Requires Python 3.10 or newer and ``lxml``.  Source dump files remain
+unchanged, and the destination XML is published atomically.
 """
 
 from __future__ import annotations
@@ -35,7 +38,12 @@ def build_thread_tree(
     comments: dict[str, list[dict[str, str]]],
     answers: dict[str, list[dict[str, str]]],
 ) -> etree._ElementTree:
-    """Build ``threads/thread/question/comments+answers`` in request order."""
+    """Build ``threads/thread/question/comments+answers`` in request order.
+
+    The input dictionaries must already contain every requested question, and
+    related rows must already be chronologically ordered.  Empty ``comments``
+    and ``answers`` containers are retained in the returned tree.
+    """
     root = etree.Element("threads")
     for question_id in question_ids:
         thread = etree.SubElement(root, "thread")
@@ -52,7 +60,13 @@ def build_thread_tree(
 def extract_threads(
     dump_dir: Path, question_ids: Sequence[str], output_path: Path
 ) -> Path:
-    """Extract one or more requested question threads into one XML file."""
+    """Extract one or more requested question threads into one XML file.
+
+    IDs are validated and deduplicated in request order.  The function reads
+    ``Posts.xml`` and ``Comments.xml``, protects both source paths, and
+    atomically publishes the result.  Input, XML, validation, and filesystem
+    errors propagate to the caller; the returned path identifies the result.
+    """
     requested_ids = normalize_question_ids(question_ids)
     posts_path, comments_path = source_paths(Path(dump_dir))
     output_path = Path(output_path)
@@ -67,7 +81,12 @@ def extract_threads(
 
 
 def main(arguments: Sequence[str] | None = None) -> int:
-    """Run the command-line interface and return its process exit code."""
+    """Run the command-line interface and return its process exit code.
+
+    Success prints the destination and returns ``0``.  Handled input,
+    validation, XML, and filesystem errors print one contextual message to
+    standard error and return ``1``.
+    """
     parser = argparse.ArgumentParser(
         description="Reconstruct complete Stack Exchange question threads."
     )

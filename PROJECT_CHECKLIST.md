@@ -25,289 +25,259 @@ material retain their original form.
   `f910e247b9865032d4d9b696e8b1f8045c183b88`.
 - Single-page README pull request: `#6`.
 - Single-page README verification run: `29156971069` (**2 jobs passed**).
+- Thirteen-task completion implementation commit:
+  `3a92d889a05321c6f539ead30627726185a416bf`.
+- Thirteen-task completion pull request: `#7`.
+- Thirteen-task completion verification run: `29160466571` (**2 jobs passed**).
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Current evidence matrix: **69 PASS, 0 FAIL**.
+- Current evidence matrix: **83 PASS, 0 FAIL**.
 - Final committed-state audit: **25 PASS, 0 FAIL**.
 - Previous DOCX guide audit: **25 PASS, 0 FAIL**.
 - GitHub Markdown documentation audit: **28 PASS, 0 FAIL**.
 - Single-page README audit: **18 PASS, 0 FAIL**.
+- Thirteen-task completion audit: **14 PASS, 0 FAIL**.
 
-## Task 1 — Finalize and integrate the canonical overview flowchart
+## Task 1 — Maintain the main project documentation
 
 Status: **Complete**
 
-- [x] One editable source exists at
-  `docs/project-workflow-overview.svg`.
-- [x] One 4800×3400 publication export exists at
-  `docs/project-workflow-overview.png`.
-- [x] The flowchart starts with community selection, account access, profile
-  settings, data-dump access, download, extraction, and environment setup.
-- [x] The three implemented routes identify their real entry points, required
-  inputs, configurable settings, outputs, and completion checks.
-- [x] The summary route uses `config/summary_fields.tsv` and supports a copied
-  selection.
-- [x] The diagram contains no terminal command, personal path, fixed community,
-  fixed date, fixed period, or fixed question ID.
-- [x] Every label and route was checked against current source and the official
-  Stack Exchange data-dump help page.
-- [x] The full-size PNG and its rendering in `README.md` were inspected for
-  readability, clipping, arrow direction, and missing information.
+- [x] `README.md` is the single technical documentation and handover page.
+- [x] It explains the research objective, addressed problem, implemented scope,
+  three result routes, components, inputs, outputs, workflow, current evidence,
+  and scope boundaries.
+- [x] Its contents, task index, inline cross-references, and glossary links lead
+  directly to the relevant same-page heading.
+- [x] Supporting figures, spreadsheets, TSV evidence, examples, and scientific
+  material remain linked in their appropriate formats.
+
+Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08`, `README-01`–`README-07`,
+and `T13-01` in the release evidence.
+
+## Task 2 — Document the project structure and architecture
+
+Status: **Complete**
+
+- [x] The README tree identifies every important source, configuration, data,
+  notebook, documentation, dependency, contribution, and security location.
+- [x] The architecture and component tables explain all five Python modules and
+  the generic notebook, including their relationships.
+- [x] One editable SVG and one 4800×3400 PNG show the sequence from Stack
+  Exchange access through environment preparation, the three implemented
+  routes, validation, EDA, and final results.
+- [x] The diagram contains route decisions, data-flow arrows, execution order,
+  completion checks, and the corrective path after a failed check.
+- [x] Diagram labels use configurable concepts and contain no personal path,
+  fixed production community, fixed period, or fixed question ID.
+
+Evidence: `README.md#repository-structure`,
+`README.md#architecture-and-components`,
+`docs/project-workflow-overview.svg`, `docs/project-workflow-overview.png`,
+checks `FLOW-01`–`FLOW-03`, and `T13-02`.
+
+## Task 3 — Provide a complete getting-started guide
+
+Status: **Complete**
+
+- [x] The README lists Git, archive extraction, Python, runtime libraries, and
+  the permissions and storage required by the workflow.
+- [x] It gives the repository URL, clone command, virtual-environment commands,
+  dependency installation, and POSIX and PowerShell activation commands.
+- [x] It explains official Stack Exchange dump origin, account access, archive
+  extraction, required XML files, and source-data placement.
+- [x] The fixed tutorial states the first command, generated files, expected
+  totals, validation checks, metadata checks, notebook steps, and success
+  indicators.
+- [x] The tutorial starts with a small controlled run before any complete-period
+  execution.
+
+Evidence: `README.md#environment-and-installation`,
+`README.md#access-and-prepare-a-data-dump`,
+`README.md#tutorial-run-the-bundled-analysis`, and `T13-03`.
+
+## Task 4 — Document every script and notebook
+
+Status: **Complete**
+
+- [x] The component reference gives a dedicated, directly linkable section to
+  each of the five Python modules and the generic notebook.
+- [x] Each executable component documents its purpose, required source files,
+  accepted settings, validation, outputs, side effects, handled failures,
+  command, process status, and expected result.
+- [x] Library modules document their role, callers, inputs, returned values,
+  assumptions, side effects, and error propagation.
+- [x] Source XML, output XML, TSV, JSON, configuration, and notebook contracts
+  state exact formats, fields, defaults, and ordering behavior.
+
+Evidence: `README.md#component-reference` through
+`README.md#validation-and-errors`, the three current `--help` outputs, and
+`T13-04`.
+
+## Task 5 — Keep useful introductions in every Python module
+
+Status: **Complete**
+
+- [x] All five modules begin with English module docstrings.
+- [x] Executable-module introductions state purpose, workflow role, required
+  inputs, generated outputs, dependency source, a basic command, source-file
+  safety, and important scope limitations.
+- [x] Library-module introductions state their caller, responsibility,
+  dependencies, data effects, and reason for existing; they do not invent a
+  command-line interface.
+
+Evidence: `src/*.py`, the module-docstring audit, and `T13-05`.
+
+## Task 6 — Document important functions and classes
+
+Status: **Complete**
+
+- [x] All 43 current functions have complete parameter and return type
+  annotations and a concise English docstring; the project defines no classes.
+- [x] Non-obvious streaming, row selection, schema loading, summary mapping,
+  characteristic calculation, validation, orchestration, and atomic-writing
+  functions explain their assumptions, returned result, side effects, and
+  contextual failure behavior.
+- [x] Obvious helpers retain short docstrings so documentation does not obscure
+  simple code.
+- [x] Module-level command examples cover behavior whose use is not evident from
+  a function signature alone.
+
+Evidence: `src/*.py`, AST documentation audit, compile and Ruff checks, and
+`T13-06`.
+
+## Task 7 — Maintain process diagrams for important workflows
+
+Status: **Complete**
+
+- [x] The integrated workflow diagram covers official data access, local input
+  preparation, environment setup, route selection, complete-thread extraction,
+  configurable summary extraction, characteristic construction, validation,
+  EDA, outputs, and error recovery.
+- [x] Inputs, processing stages, decisions, outputs, completion conditions, and
+  principal failure corrections are visible in one non-repetitive diagram.
+- [x] The editable SVG and publication PNG contain matching labels and have been
+  inspected at full size and in the README.
 
 Evidence: `docs/project-workflow-overview.svg`,
-`docs/project-workflow-overview.png`, `README.md`, and checks `FLOW-01`–
-`FLOW-03` in the release evidence.
+`docs/project-workflow-overview.png`, `README.md#workflow-overview`, checks
+`FLOW-01`–`FLOW-03`, and `T13-07`.
 
-## Task 2 — Create the single-page English GitHub documentation
-
-Status: **Complete**
-
-- [x] `README.md` is the single project-documentation and handover page.
-- [x] Its contents, task index, inline cross-references, and glossary links lead
-  directly to the relevant heading on the same page.
-- [x] The README explains the research purpose, implemented scope, components,
-  inputs, outputs, workflow, validation, current evidence, and limitations.
-- [x] The canonical workflow image and editable SVG are available from the page.
-- [x] Diátaxis is preserved as one fixed tutorial, six goal-oriented how-to
-  sections, one system-shaped reference section, and one scientific and design
-  explanation section.
-- [x] The fixed tutorial produces visible results early, gives expected evidence,
-  and includes a repeatability check.
-- [x] The how-to sections cover official dump access, complete-thread XML,
-  configurable summary XML, characteristic construction, generic notebook
-  execution, and change verification.
-- [x] The reference documents all five Python modules, the notebook, exact
-  interfaces, XML and output contracts, configuration, errors, deliverables,
-  verified results, and canonical locations.
-- [x] Markdown linting, same-page anchor validation, local-link checks, heading
-  and fence checks, rendering, command checks, and English/genericity checks
-  pass.
-
-Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08` and `README-01`–
-`README-07` in the release evidence.
-
-## Task 3 — Add the glossary and one verified practical walkthrough
+## Task 8 — Keep notebook code organized for this project
 
 Status: **Complete**
 
-- [x] The README glossary defines community, dump, snapshot, question period,
-  thread, question ID, direct question comment, accepted answer,
-  characteristic, schemas, validation, metadata, EDA, source-data folder, and
-  results folder.
-- [x] Important terms in the overview and procedures link directly to their
-  same-page definitions.
-- [x] One uninterrupted tutorial covers the bundled 20-question input,
-  environment creation, notebook execution, expected evidence,
-  interpretation, and a repeatability check.
-- [x] Generic placeholders explain what must be selected for each production
-  run; production behavior remains independent of a personal machine or site.
-- [x] `data/examples/characteristics_pilot.tsv` provides a real 20×47 notebook
-  input and `characteristics_pilot_validation.tsv` records 9 PASS, 0 WARN, and
-  0 FAIL.
-- [x] The README links the complete-thread, default-summary,
-  configurable-summary, characteristic, dictionary, notebook, and release
-  examples.
-- [x] Success indicators cover generated files, row and column counts,
-  validation, metadata, conditional figures, interpretations, and cell errors.
+- [x] One generic, self-contained notebook contains the analysis sequence,
+  editable settings, direct pandas/Matplotlib/SciPy code, results, figures, and
+  plain-language interpretations together.
+- [x] The active project contains no site-specific notebook copy, notebook
+  generator, large plotting-helper module, hidden display fallback, or stale
+  legacy analysis path.
+- [x] Logic shared by production routes lives in focused Python modules; code
+  used only to explain the one notebook remains visible in that notebook.
+- [x] A clean-kernel execution verifies cell order and independence from hidden
+  state.
 
-Evidence: `README.md`, `data/examples/`, and checks `BUILD-01`–`BUILD-04`,
-`NB-01`, `PATH-01`, `README-02`, and `README-03`.
+Evidence: `notebooks/stackexchange_eda.ipynb`, `src/`, checks `NB-01`,
+`SRC-06`, and `T13-08`.
 
-## Task 4 — Make summary-field selection genuinely configurable
+## Task 9 — Keep scripts generic and configurable
 
 Status: **Complete**
 
-- [x] `config/summary_fields.tsv` documents 27 supported fields, source records,
-  source attributes, meanings, and default inclusion.
-- [x] Its 12 enabled rows preserve the original requested output and order.
-- [x] `--fields` accepts a copied TSV whose TRUE/FALSE values and row order
-  select the XML elements.
-- [x] One or more question IDs remain supported in requested order with
-  deduplication.
-- [x] Unknown fields, duplicate fields, changed source mappings, invalid include
-  values, and empty selections produce contextual errors.
-- [x] Chronological first-comment and first-answer selection, accepted-answer
-  lookup, empty elements, safe writing, and source protection remain intact.
-- [x] `data/examples/summary_fields_compact.tsv` and
-  `configurable_request_summary_example.xml` demonstrate a six-field result.
-- [x] Real default outputs match both original examples byte for byte; the
-  configured output matches its new example byte for byte.
+- [x] Dump folders, output locations, community host, dump date, question
+  period, row limit, schema, question IDs, summary selection, and notebook TSV
+  are supplied through commands, configuration TSV files, or the visible
+  notebook settings cell.
+- [x] Production source contains no personal directory, verified-site constant,
+  fixed production date, or fixed question ID.
+- [x] The same source has been verified with compatible Super User and Software
+  Engineering dumps and with temporary or selected output locations.
+- [x] Defaults are limited to version-controlled project contracts and the
+  bundled tutorial input.
 
-Evidence: `src/extract_request_summary.py`, `config/summary_fields.tsv`,
-`config/README.md`, `data/examples/`, and checks `XML-02`–`XML-04`.
+Evidence: `src/`, `config/`, `notebooks/stackexchange_eda.ipynb`, cross-site
+checks `BUILD-02`–`BUILD-04`, `SRC-03`, and `T13-09`.
 
-## Task 5 — Finish the focused source and maintainability audit
+## Task 10 — Maintain reusability and code quality
 
 Status: **Complete**
 
-- [x] All five modules compile and pass Ruff static checks.
-- [x] Every current function has a concise docstring and complete type
-  annotations.
-- [x] Production source contains no personal path, verified-site constant,
-  fixed analysis year, or fixed dump date.
-- [x] The duplicate characteristic comment reader was removed and the shared
-  bounded-memory reader is used.
-- [x] Exact-time question sorting now includes the documented numeric ID
-  tie-break.
-- [x] Schema header, position, empty-name, and duplicate-name errors now include
-  the schema path and a clear explanation.
-- [x] The nested TSV writer callback has a direct name and concise explanation.
-- [x] The notebook audit corrected source-column reporting, empty-tag behavior,
-  input validation, and the Figure 2 legend overlap.
-- [x] Thirteen temporary characterization tests covered public behavior,
-  configuration errors, source-date errors, output preservation, ordering,
-  multiple IDs, and bounded-memory scaling; the full suite passed repeatedly
-  and was removed.
-- [x] The independent committed-state audit passed 25 of 25 checks.
+- [x] Five modules have focused responsibilities, common XML rules are shared,
+  characteristic calculations follow one 47-field specification, and summary
+  mappings follow one 27-field catalogue.
+- [x] Names and errors are descriptive, inputs are validated, configuration is
+  separated from processing, source XML is protected, and canonical files are
+  written atomically.
+- [x] Duplicate logic, stale helpers, notebook generators, previews, caches,
+  bytecode, and obsolete active documentation paths are absent.
+- [x] The repeatable change gate covers compilation, Ruff, controlled behavior,
+  schema comparison, validation, metadata, clean-kernel execution, visual
+  inspection, cleanup, and Git diff review.
+- [x] Git history, pull requests, CI, dependency automation, security guidance,
+  and checksum archives preserve maintainable project evolution.
 
-Evidence: `src/`, `notebooks/stackexchange_eda.ipynb`, checks `SRC-01`–`SRC-06`,
-`TEST-01`–`TEST-02`, and `AUDIT-01`.
+Evidence: `src/`, `config/`, `AGENTS.md`, `CONTRIBUTING.md`, `.github/`, the
+repeatable gate below, checks `SRC-01`–`SRC-06`, `AUDIT-01`, `GH-01`–`GH-07`,
+and `T13-10`.
 
-## Task 6 — Consolidate and archive duplicate project artifacts
+## Task 11 — Provide a complete practical example
 
 Status: **Complete**
 
-- [x] The active project keeps one editable workflow source and one publication
-  export.
-- [x] One canonical README replaces the former central DOCX, language-specific
-  copies, and split Markdown documentation pages.
-- [x] Superseded HTML, spreadsheet, image, overview, tutorial, how-to,
-  reference, and explanation variants were copied before removal.
-- [x] Ten archived files have matching recorded sizes and SHA-256 values.
-- [x] The two superseded DOCX files and eleven superseded Markdown pages have
-  matching recorded sizes and SHA-256 values in their migration archives.
-- [x] The initial Git baseline also preserves the pre-consolidation state.
-- [x] Raw public dumps are classified as external ignored inputs.
-- [x] Regenerated annual outputs are ignored and remain reproducible from source
-  dumps and recorded metadata.
-- [x] Temporary tests, generators, previews, caches, bytecode, office locks, and
-  notebook checkpoints are classified as disposable and absent from the active
-  project.
+- [x] `data/examples/pilot_dump/` contains a small real XML subset with 20
+  questions, 74 question-or-answer rows, 75 direct question comments, 12
+  acceptance-vote rows, and a provenance manifest.
+- [x] The fixed tutorial gives one uninterrupted sequence from bundled
+  `Posts.xml`, `Comments.xml`, and `Votes.xml` through characteristic building,
+  validation, metadata inspection, notebook execution, figures, and
+  interpretation.
+- [x] Generated pilot characteristics and validation match their tracked targets
+  byte for byte: 20 rows, 47 columns, 9 PASS, 0 WARN, and 0 FAIL.
+- [x] The tutorial identifies inputs, locations, commands, intermediate outputs,
+  final results, success indicators, and the expected repeatability boundary for
+  metadata timestamps and paths.
 
-Evidence:
-`../../archive/canonical-project-consolidation-2026-07-11/manifest.tsv`,
-`../../archive/github-markdown-documentation-2026-07-11/manifest.tsv`,
-`../../archive/single-page-readme-2026-07-11/manifest.tsv`, `.gitignore`,
-`.gitattributes`, and checks `ARCHIVE-01`–`ARCHIVE-04`, `README-04`, and
-`CLEAN-01`.
+Evidence: `data/examples/pilot_dump/`,
+`data/examples/characteristics_pilot.tsv`,
+`data/examples/characteristics_pilot_validation.tsv`,
+`README.md#tutorial-run-the-bundled-analysis`, and `T13-11`.
 
-## Task 7 — Create and record the first Git baseline
+## Task 12 — Maintain a complete deliverables register
 
 Status: **Complete**
 
-- [x] `.gitignore` excludes raw dumps, regenerated outputs, Python environments,
-  caches, editor settings, lock files, and temporary verification material.
-- [x] `.gitattributes` preserves meaningful whitespace in copied source-content
-  examples while allowing strict checks on authored text.
-- [x] The complete initial file list passed `git diff --cached --check` before
-  the baseline commit.
-- [x] Baseline commit
-  `97555e6cda56d9c76293d995d01e07cf2291e728` preserves the recovered canonical
-  project before this release pass.
-- [x] Implementation commit
-  `53212ec15000635d17743a74a5c6adb3f7f9ac16` records the completed code,
-  documentation, notebook, examples, and consolidation.
-- [x] The final verified state is tagged `verified-release-2026-07-11`.
+- [x] The README separately registers maintained project artifacts and input,
+  example, or generated artifacts.
+- [x] Every registered deliverable states its canonical location, format,
+  purpose, maintainer or generator, required input, opening or use method, and
+  version-control status where applicable.
+- [x] Source, configuration, documentation, workflow, XML examples, pilot XML,
+  characteristic tables, validation, metadata, notebook, dictionary,
+  statistics, scientific review, dependencies, and release evidence are
+  covered.
+- [x] Raw dumps are identified as external inputs, regenerated analytical runs
+  as ignored outputs, and temporary verification material as disposable.
 
-Evidence: Git history, `.gitignore`, `.gitattributes`, and checks `GIT-01`–
-`GIT-02`.
+Evidence: `README.md#deliverables-register`, `.gitignore`, canonical-location
+checks `PATH-01`, and `T13-12`.
 
-## Task 8 — Perform final clean-environment release verification
+## Task 13 — Maintain installation and dependency files
 
 Status: **Complete**
 
-- [x] `requirements.txt` installed in a new Python 3.12.3 environment.
-- [x] Direct versions were recorded for lxml, Beautiful Soup, NumPy, pandas,
-  Matplotlib, SciPy, IPython, ipykernel, JupyterLab, and nbconvert.
-- [x] A controlled real complete-thread extraction matched its tracked example.
-- [x] Two real default summaries and one configured summary matched their
-  tracked examples.
-- [x] A controlled 20-question characteristic build produced 47 columns, 9 PASS,
-  0 WARN, and 0 FAIL; metadata matches its intended source and settings.
-- [x] Existing annual metadata and validation were rechecked for 950 Software
-  Engineering rows and 11,578 Super User rows with no FAIL.
-- [x] The notebook executed through the clean environment kernel with 21 cells,
-  10 executed code cells, and no error.
-- [x] Flowchart, Markdown documentation, notebook figures, data dictionary,
-  statistics workbook, XML examples, TSV examples, and archives were visually
-  or structurally inspected.
-- [x] Every canonical deliverable path exists or is explicitly classified as an
-  external/ignored input or regenerated output.
-- [x] Cleanup removed all disposable project material.
-- [x] `git diff --check` passed and the release change list was reviewed.
+- [x] `requirements.txt` declares compatible ranges for every runtime, XML,
+  notebook, numerical, plotting, and statistical dependency.
+- [x] `requirements-dev.txt` includes the runtime set and declares Ruff for
+  repository checks.
+- [x] The README documents Python 3.10 or newer, environment creation,
+  installation, shell activation, permissions, storage, and external tools.
+- [x] Installation and execution were verified in a clean Python 3.12.3
+  environment, and the exact observed package versions remain recorded.
+- [x] GitHub CI repeats installation and source/interface checks on Python 3.10
+  and 3.12 and executes the notebook on Python 3.12.
 
-Evidence: `docs/reference/release-verification.tsv` and final tag
-`verified-release-2026-07-11`.
-
-## Task 9 — Publish and configure the canonical GitHub repository
-
-Status: **Complete**
-
-- [x] The canonical project is available in the private repository
-  `https://github.com/thearmankarapetyan/stackexchange-difficulty`.
-- [x] `main` contains only the current verified extraction, characteristic,
-  validation, documentation, and generic EDA workflow.
-- [x] The superseded 44-commit corpus scaffold remains recoverable on
-  `archive/legacy-corpus-scaffold` and at tag
-  `legacy-corpus-scaffold-2026-05-18`; it was not merged into active history.
-- [x] Gitleaks 8.30.1 found no secret in the complete active history or the
-  publication tree, and the local commit identity now uses the GitHub no-reply
-  address.
-- [x] Raw dumps, regenerated annual outputs, environments, caches, credentials,
-  keys, and local secret files are excluded from version control.
-- [x] The largest object in active history is far below GitHub's warning and
-  rejection limits, so this repository does not need Git LFS.
-- [x] GitHub Actions uses read-only workflow permissions, allows GitHub-owned
-  actions only, requires full commit-SHA action references, and retains logs for
-  30 days.
-- [x] The clean CI matrix passed on Python 3.10 and 3.12; it compiled all source,
-  ran Ruff, checked all three command-line interfaces, and executed the bundled
-  pilot notebook on Python 3.12.
-- [x] Dependabot checks GitHub Actions weekly. Python vulnerability alerts and
-  automated security fixes are enabled; compatibility ranges are reviewed on
-  both supported Python versions through the clean-environment gate.
-- [x] `CONTRIBUTING.md`, `SECURITY.md`, `CODEOWNERS`, a pull-request template,
-  and focused issue labels support controlled collaboration.
-- [x] `main` is the default branch, squash is the only merge method, branches
-  are deleted after merging, the wiki and unused project board are disabled,
-  and repository purpose and topics are recorded.
-- [x] Branch-protection compatibility was tested. GitHub returned the documented
-  private-repository plan restriction, so the repository remains private and
-  the successful CI checks remain available for pull-request review.
-- [x] No public software license or citation authorship file was inferred. Those
-  require an explicit institutional and authorship decision before a public
-  release.
-
-Evidence: publication commit `2e934430`, GitHub Actions run `29151176595`,
-`.github/`, `CONTRIBUTING.md`, `SECURITY.md`, repository settings, and checks
-`GH-01`–`GH-07` in the release evidence.
-
-## Task 10 — Consolidate the project documentation into one linked README
-
-Status: **Complete**
-
-- [x] `README.md` contains the project overview, workflow, tutorial, six
-  procedures, system reference, scientific and design explanation, glossary,
-  deliverables, evidence, and canonical locations.
-- [x] A linked contents list and a task-and-term index provide direct same-page
-  navigation.
-- [x] Important terms link to exact glossary definitions, and procedural text
-  links to exact interface and contract sections.
-- [x] Diátaxis roles remain visibly separated within the single page.
-- [x] Commands use fenced Bash blocks and the XML hierarchy uses a text block.
-- [x] The workflow uses the tracked PNG and SVG, with no duplicate extracted
-  image or temporary absolute media path.
-- [x] The eleven superseded Markdown pages were copied to a checksum-verified
-  archive before removal from the active repository.
-- [x] The active `docs/` tree retains supporting SVG, PNG, XLSX, TSV, and PDF
-  artifacts and contains no competing Markdown documentation page.
-- [x] Project instructions, contributor guidance, checklist evidence, and
-  canonical locations identify the root README as the documentation source.
-- [x] Markdownlint, heading hierarchy, fence balance, local links and anchors,
-  rendering, English and genericity scans, and documented command checks pass.
-
-Evidence: `README.md`,
-`../../archive/single-page-readme-2026-07-11/manifest.tsv`, and checks
-`README-01`–`README-07` in the release evidence.
+Evidence: `requirements.txt`, `requirements-dev.txt`,
+`README.md#environment-and-installation`, checks `ENV-01`–`ENV-03`, `GH-06`,
+and `T13-13`.
 
 ## Repeatable change verification gate
 
