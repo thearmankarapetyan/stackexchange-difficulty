@@ -1,3 +1,12 @@
+# Keep authored text consistent across operating systems.
+* text=auto eol=lf
+
+# Declare binary deliverables explicitly so Git does not attempt text merges.
+*.docx binary
+*.xlsx binary
+*.pdf binary
+*.png binary
+
 # Verified examples preserve source whitespace inside copied post bodies.
 data/examples/*.xml -diff
 data/examples/characteristics_pilot.tsv -diff

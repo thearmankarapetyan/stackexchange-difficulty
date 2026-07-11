@@ -85,3 +85,14 @@ The current comparable annual evidence uses questions created from 1 January
 through 31 December 2024 and the 20 April 2026 dump snapshot. The local annual
 runs contain 950 Software Engineering questions and 11,578 Super User
 questions, with no validation failure.
+
+## Collaboration on GitHub
+
+`main` is the canonical branch. Develop changes on a short-lived branch and
+submit a pull request. GitHub Actions compiles the source, runs Ruff, checks the
+three command-line interfaces, and executes the bundled pilot notebook on the
+supported Python versions.
+
+Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before changing code, schemas,
+documentation, or notebook behavior. Raw dumps, credentials, environments, and
+regenerated annual outputs must remain outside version control.

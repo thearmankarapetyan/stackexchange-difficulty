@@ -1,0 +1,4 @@
+-r requirements.txt
+
+# Repository quality checks
+ruff>=0.15,<1

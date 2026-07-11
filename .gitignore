@@ -25,4 +25,10 @@ data/processed/*
 
 # Local or secret configuration
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+credentials*.json
 *.log
