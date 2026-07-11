@@ -1,11 +1,303 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1697" viewBox="0 0 2400 1697">
+<svg xmlns="http://www.w3.org/2000/svg" width="4800" height="3400" viewBox="0 0 4800 3400" role="img" aria-labelledby="title description">
+<title id="title">From Stack Exchange access to verified project results</title>
+<desc id="description">Step-by-step flowchart for accessing a Stack Exchange data dump and using the three implemented project routes.</desc>
 <defs>
-  <marker id="arrow" markerWidth="6" markerHeight="6" refX="5.5" refY="3" orient="auto" markerUnits="strokeWidth">
-    <path d="M0,0 L6,3 L0,6 z" fill="#29495c"/>
-  </marker>
-  <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-    <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#17313d" flood-opacity="0.10"/>
-  </filter>
-</defs>
-<rect width="100%" height="100%" fill="#ffffff"/>
-<text x="1200.0" y="58" font-family="DejaVu Sans, Arial, sans-serif" font-size="44" font-weight="800" fill="#102f40" text-anchor="middle">Stack Exchange Data Workflow — From Official Access to Verified Results</text><text x="1200.0" y="100" font-family="DejaVu Sans, Arial, sans-serif" font-size="23" font-weight="400" fill="#526975" text-anchor="middle">Reusable workflow: community, dates, question IDs, input folders and output locations are configurable.</text><rect x="70" y="135" width="520" height="285" rx="18" fill="#edf6ff" stroke="#2f6eb5" stroke-width="3"/><rect x="650" y="135" width="520" height="285" rx="18" fill="#edf6ff" stroke="#2f6eb5" stroke-width="3"/><rect x="1230" y="135" width="520" height="285" rx="18" fill="#edf6ff" stroke="#2f6eb5" stroke-width="3"/><rect x="1810" y="135" width="520" height="285" rx="18" fill="#f4f6f8" stroke="#7d8b99" stroke-width="3"/><circle cx="118" cy="183" r="23" fill="#2f6eb5"/><text x="118" y="191" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="700" fill="white" text-anchor="middle">1</text><text x="156" y="193" font-family="DejaVu Sans, Arial, sans-serif" font-size="28" font-weight="700" fill="#17313d" text-anchor="start">Stack Exchange access</text><text x="100" y="240" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Selected Stack Exchange community</text><text x="100" y="280" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Account creation or sign-in on that community</text><text x="100" y="320" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Community profile and settings</text><circle cx="698" cy="183" r="23" fill="#2f6eb5"/><text x="698" y="191" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="700" fill="white" text-anchor="middle">2</text><text x="736" y="193" font-family="DejaVu Sans, Arial, sans-serif" font-size="28" font-weight="700" fill="#17313d" text-anchor="start">Official data dump</text><text x="680" y="231" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="400" fill="#17313d" text-anchor="start">Profile → Settings → Access → Data dump access</text><text x="680" y="263" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Quarterly, site-specific snapshot</text><text x="680" y="295" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Displayed snapshot date and archive size</text><text x="680" y="327" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Access declaration reviewed</text><text x="680" y="359" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Archive downloaded</text><text x="680" y="402" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="650" fill="#245d8f" text-anchor="start">Provenance: source, snapshot date and download date</text><circle cx="1278" cy="183" r="23" fill="#2f6eb5"/><text x="1278" y="191" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="700" fill="white" text-anchor="middle">3</text><text x="1316" y="193" font-family="DejaVu Sans, Arial, sans-serif" font-size="28" font-weight="700" fill="#17313d" text-anchor="start">Raw XML preparation</text><text x="1260" y="231" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Original archive retained unchanged</text><text x="1260" y="263" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">XML extracted to a configurable dump folder</text><text x="1260" y="295" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Posts.xml — questions and answers</text><text x="1260" y="327" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Comments.xml — comments linked to posts</text><text x="1260" y="359" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Votes.xml — acceptance events for characteristics</text><text x="1260" y="402" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" font-weight="650" fill="#245d8f" text-anchor="start">Posts: PostTypeId: 1 = question; 2 = answer</text><circle cx="1858" cy="183" r="23" fill="#687887"/><text x="1858" y="191" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="700" fill="white" text-anchor="middle">4</text><text x="1896" y="193" font-family="DejaVu Sans, Arial, sans-serif" font-size="27" font-weight="700" fill="#17313d" text-anchor="start">Reproducible run definition</text><text x="1840" y="229" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Python 3.10+ virtual environment</text><text x="1840" y="260" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Dependencies from requirements.txt</text><text x="1840" y="291" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Parameters: dump folder, site, snapshot date,</text><text x="1840" y="322" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">question period, question ID(s), output location</text><text x="1840" y="353" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Optional --limit pilot</text><rect x="1834" y="371" width="472" height="36" rx="8" fill="#ffffff" stroke="#a7b2bb" stroke-width="1.5"/><text x="1850" y="397" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" font-weight="650" fill="#17313d" text-anchor="start">config/characteristics.tsv — versioned 47-field specification</text><line x1="602" y1="277.5" x2="621.0" y2="277.5" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="634.0,277.5 620.0,268.5 620.0,286.5" fill="#29495c"/><line x1="1182" y1="277.5" x2="1201.0" y2="277.5" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="1214.0,277.5 1200.0,268.5 1200.0,286.5" fill="#29495c"/><line x1="1762" y1="277.5" x2="1781.0" y2="277.5" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="1794.0,277.5 1780.0,268.5 1780.0,286.5" fill="#29495c"/><line x1="2070.0" y1="420" x2="2070.0" y2="472" stroke="#29495c" stroke-width="4" fill="none"/><line x1="420" y1="472" x2="2070.0" y2="472" stroke="#29495c" stroke-width="4" fill="none"/><rect x="850" y="438" width="700" height="54" rx="12" fill="#ffffff" stroke="#29495c" stroke-width="2"/><text x="1200" y="474" font-family="DejaVu Sans, Arial, sans-serif" font-size="25" font-weight="750" fill="#17313d" text-anchor="middle">5 — Choose an implemented processing route</text><line x1="420" y1="472" x2="420" y2="499.0" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="420.0,512.0 411.0,498.0 429.0,498.0" fill="#29495c"/><line x1="1200" y1="472" x2="1200" y2="499.0" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="1200.0,512.0 1191.0,498.0 1209.0,498.0" fill="#29495c"/><line x1="1980" y1="472" x2="1980" y2="499.0" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="1980.0,512.0 1971.0,498.0 1989.0,498.0" fill="#29495c"/><rect x="70" y="520" width="700" height="500" rx="18" fill="#f7f4ff" stroke="#6c4ab6" stroke-width="3"/><rect x="850" y="520" width="700" height="500" rx="18" fill="#f7f4ff" stroke="#6c4ab6" stroke-width="3"/><rect x="1630" y="520" width="700" height="500" rx="18" fill="#f7f4ff" stroke="#6c4ab6" stroke-width="3"/><rect x="70" y="520" width="700" height="76" rx="16" fill="#6c4ab6"/><circle cx="110" cy="558" r="25" fill="#ffffff"/><text x="110" y="567" font-family="DejaVu Sans, Arial, sans-serif" font-size="27" font-weight="800" fill="#6c4ab6" text-anchor="middle">A</text><text x="152" y="567" font-family="DejaVu Sans, Arial, sans-serif" font-size="30" font-weight="750" fill="white" text-anchor="start">Complete-thread XML</text><text x="102" y="628" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="650" fill="#5b3fa1" text-anchor="start">src/extract_threads.py</text><rect x="94" y="648" width="652" height="70" rx="10" fill="#ffffff" stroke="#cbbbea" stroke-width="1.5"/><text x="112" y="677" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="800" fill="#5b3fa1" text-anchor="start">INPUTS</text><text x="112" y="704" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Posts.xml + Comments.xml + one or more question IDs</text><text x="100" y="755" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="800" fill="#5b3fa1" text-anchor="start">PROCESSING</text><text x="112" y="790" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">• Validate positive IDs and question post type</text><text x="112" y="825" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">• Read large XML files progressively</text><text x="112" y="860" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">• Preserve original source attributes</text><text x="112" y="895" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">• Collect comments attached directly to each question</text><text x="112" y="930" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">• Collect every answer and order records chronologically</text><rect x="94" y="958" width="652" height="44" rx="10" fill="#ffffff" stroke="#9a83cf" stroke-width="1.5"/><text x="420" y="987" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="700" fill="#17313d" text-anchor="middle">Thread scope: question + direct question comments + all answers</text><rect x="850" y="520" width="700" height="76" rx="16" fill="#6c4ab6"/><circle cx="890" cy="558" r="25" fill="#ffffff"/><text x="890" y="567" font-family="DejaVu Sans, Arial, sans-serif" font-size="27" font-weight="800" fill="#6c4ab6" text-anchor="middle">B</text><text x="932" y="567" font-family="DejaVu Sans, Arial, sans-serif" font-size="30" font-weight="750" fill="white" text-anchor="start">Twelve-field summary XML</text><text x="882" y="628" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="650" fill="#5b3fa1" text-anchor="start">src/extract_request_summary.py</text><rect x="874" y="648" width="652" height="70" rx="10" fill="#ffffff" stroke="#cbbbea" stroke-width="1.5"/><text x="892" y="677" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="800" fill="#5b3fa1" text-anchor="start">INPUTS</text><text x="892" y="704" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Posts.xml + Comments.xml + one or more question IDs</text><text x="880" y="755" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="800" fill="#5b3fa1" text-anchor="start">PROCESSING</text><text x="892" y="790" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">• Question — ID, body, creation date</text><text x="892" y="828" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">• First direct comment — ID, text, creation date</text><text x="892" y="866" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">• First answer — ID, body, creation date</text><text x="892" y="904" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">• Accepted answer — ID, body, creation date</text><rect x="874" y="942" width="652" height="60" rx="10" fill="#ffffff" stroke="#9a83cf" stroke-width="1.5"/><text x="892" y="969" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="650" fill="#17313d" text-anchor="start">“First” means earliest chronologically.</text><text x="892" y="993" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="400" fill="#17313d" text-anchor="start">Unavailable related records produce empty XML elements.</text><rect x="1630" y="520" width="700" height="76" rx="16" fill="#6c4ab6"/><circle cx="1670" cy="558" r="25" fill="#ffffff"/><text x="1670" y="567" font-family="DejaVu Sans, Arial, sans-serif" font-size="27" font-weight="800" fill="#6c4ab6" text-anchor="middle">C</text><text x="1712" y="567" font-family="DejaVu Sans, Arial, sans-serif" font-size="30" font-weight="750" fill="white" text-anchor="start">Characteristics and generic EDA</text><text x="1662" y="628" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="650" fill="#5b3fa1" text-anchor="start">src/build_characteristics.py  •  notebooks/stackexchange_eda.ipynb</text><rect x="1654" y="648" width="652" height="90" rx="10" fill="#ffffff" stroke="#cbbbea" stroke-width="1.5"/><text x="1672" y="677" font-family="DejaVu Sans, Arial, sans-serif" font-size="18" font-weight="800" fill="#5b3fa1" text-anchor="start">INPUTS</text><text x="1672" y="704" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="400" fill="#17313d" text-anchor="start">Posts.xml + Comments.xml + Votes.xml</text><text x="1672" y="729" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="400" fill="#17313d" text-anchor="start">Site + snapshot date + inclusive period + 47-field schema</text><text x="1660" y="772" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="800" fill="#5b3fa1" text-anchor="start">PROCESSING</text><text x="1672" y="806" font-family="DejaVu Sans, Arial, sans-serif" font-size="21" font-weight="400" fill="#17313d" text-anchor="start">• Select questions by CreationDate</text><text x="1672" y="841" font-family="DejaVu Sans, Arial, sans-serif" font-size="21" font-weight="400" fill="#17313d" text-anchor="start">• Read answers, direct comments and acceptance events</text><text x="1672" y="876" font-family="DejaVu Sans, Arial, sans-serif" font-size="21" font-weight="400" fill="#17313d" text-anchor="start">• Calculate one ordered 47-field row per question</text><text x="1672" y="911" font-family="DejaVu Sans, Arial, sans-serif" font-size="21" font-weight="400" fill="#17313d" text-anchor="start">• Validate the table and record run metadata</text><text x="1672" y="946" font-family="DejaVu Sans, Arial, sans-serif" font-size="21" font-weight="400" fill="#17313d" text-anchor="start">• Execute the generic EDA from the verified TSV</text><rect x="1654" y="958" width="652" height="44" rx="10" fill="#ffffff" stroke="#9a83cf" stroke-width="1.5"/><text x="1980" y="987" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="700" fill="#17313d" text-anchor="middle">Data dictionary: meaning • source • calculation • reading • empty value</text><line x1="420" y1="1020" x2="420" y2="1035.0" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="420.0,1048.0 411.0,1034.0 429.0,1034.0" fill="#29495c"/><line x1="1200" y1="1020" x2="1200" y2="1035.0" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="1200.0,1048.0 1191.0,1034.0 1209.0,1034.0" fill="#29495c"/><line x1="1980" y1="1020" x2="1980" y2="1035.0" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="1980.0,1048.0 1971.0,1034.0 1989.0,1034.0" fill="#29495c"/><rect x="70" y="1055" width="2260" height="190" rx="18" fill="#fff4db" stroke="#c47a00" stroke-width="3"/><text x="95" y="1093" font-family="DejaVu Sans, Arial, sans-serif" font-size="29" font-weight="800" fill="#704400" text-anchor="start">6 — Verification gate</text><line x1="820" y1="1107" x2="820" y2="1209" stroke="#d9a44b" stroke-width="2" fill="none"/><line x1="1570" y1="1107" x2="1570" y2="1209" stroke="#d9a44b" stroke-width="2" fill="none"/><text x="105" y="1132" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="800" fill="#704400" text-anchor="start">THREAD AND SUMMARY XML</text><text x="105" y="1162" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="400" fill="#17313d" text-anchor="start">IDs exist and represent questions</text><text x="105" y="1191" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="400" fill="#17313d" text-anchor="start">Dates are valid; XML opens; every request is present</text><text x="855" y="1132" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="800" fill="#704400" text-anchor="start">CHARACTERISTIC TABLE</text><text x="855" y="1162" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="400" fill="#17313d" text-anchor="start">validation.tsv contains no FAIL</text><text x="855" y="1191" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="400" fill="#17313d" text-anchor="start">Every WARN and run_metadata.json are reviewed</text><text x="1605" y="1132" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="800" fill="#704400" text-anchor="start">GENERIC EDA</text><text x="1605" y="1162" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="400" fill="#17313d" text-anchor="start">Clean-kernel execution completes without cell errors</text><text x="1605" y="1191" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="400" fill="#17313d" text-anchor="start">Tables, figures and interpretations remain readable</text><text x="1200" y="1233" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="650" fill="#704400" text-anchor="middle">A failed check returns to the inputs or run settings. Complete temporary files protect existing outputs.</text><line x1="420" y1="1245" x2="420" y2="1272.0" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="420.0,1285.0 411.0,1271.0 429.0,1271.0" fill="#29495c"/><line x1="1200" y1="1245" x2="1200" y2="1272.0" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="1200.0,1285.0 1191.0,1271.0 1209.0,1271.0" fill="#29495c"/><line x1="1980" y1="1245" x2="1980" y2="1272.0" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="1980.0,1285.0 1971.0,1271.0 1989.0,1271.0" fill="#29495c"/><text x="70" y="1280" font-family="DejaVu Sans, Arial, sans-serif" font-size="29" font-weight="800" fill="#235d39" text-anchor="start">7 — Verified results</text><rect x="70" y="1295" width="700" height="145" rx="16" fill="#eaf7ee" stroke="#2d7d46" stroke-width="3"/><rect x="850" y="1295" width="700" height="145" rx="16" fill="#eaf7ee" stroke="#2d7d46" stroke-width="3"/><rect x="1630" y="1295" width="700" height="145" rx="16" fill="#eaf7ee" stroke="#2d7d46" stroke-width="3"/><text x="98" y="1331" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="800" fill="#235d39" text-anchor="start">A — Complete-thread XML</text><text x="98" y="1363" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="400" fill="#17313d" text-anchor="start">One file containing one or several threads</text><text x="98" y="1388" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="400" fill="#17313d" text-anchor="start">threads → thread → question → comments + answers</text><text x="98" y="1413" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="400" fill="#17313d" text-anchor="start">Configured destination XML path</text><text x="878" y="1331" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="800" fill="#235d39" text-anchor="start">B — Twelve-field summary XML</text><text x="878" y="1363" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="400" fill="#17313d" text-anchor="start">One request element per question; twelve named fields</text><text x="878" y="1388" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="400" fill="#17313d" text-anchor="start">Empty elements record unavailable related information</text><text x="878" y="1413" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="400" fill="#17313d" text-anchor="start">Configured destination XML path</text><text x="1658" y="1331" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" font-weight="800" fill="#235d39" text-anchor="start">C — Verified dataset and executed EDA</text><text x="1658" y="1363" font-family="DejaVu Sans, Arial, sans-serif" font-size="18.5" font-weight="400" fill="#17313d" text-anchor="start">thread_characteristics.tsv + validation.tsv + run_metadata.json</text><text x="1658" y="1388" font-family="DejaVu Sans, Arial, sans-serif" font-size="18.5" font-weight="400" fill="#17313d" text-anchor="start">Outcome totals, cumulative timeline, distributions, tags,</text><text x="1658" y="1413" font-family="DejaVu Sans, Arial, sans-serif" font-size="18.5" font-weight="400" fill="#17313d" text-anchor="start">meaningful correlations, selected cases and interpretations</text><text x="70" y="1472" font-family="DejaVu Sans, Arial, sans-serif" font-size="25" font-weight="800" fill="#245d8f" text-anchor="start">Parallel public-statistics route</text><rect x="70" y="1490" width="520" height="122" rx="16" fill="#edf6ff" stroke="#2f6eb5" stroke-width="3"/><rect x="660" y="1490" width="980" height="122" rx="16" fill="#f7f4ff" stroke="#6c4ab6" stroke-width="3"/><rect x="1710" y="1490" width="620" height="122" rx="16" fill="#eaf7ee" stroke="#2d7d46" stroke-width="3"/><text x="95" y="1528" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="800" fill="#245d8f" text-anchor="start">Published Stack Exchange pages</text><text x="95" y="1560" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="400" fill="#17313d" text-anchor="start">stackexchange.com/sites</text><text x="95" y="1587" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" font-weight="400" fill="#17313d" text-anchor="start">Public “Tags — Popular” pages</text><line x1="600" y1="1551" x2="635.0" y2="1551" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="648.0,1551.0 634.0,1542.0 634.0,1560.0" fill="#29495c"/><text x="685" y="1528" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="800" fill="#5b3fa1" text-anchor="start">Record published values with provenance</text><text x="685" y="1560" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="400" fill="#17313d" text-anchor="start">Questions • answers • answered percentage • users • questions/day • site age</text><text x="685" y="1587" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="400" fill="#17313d" text-anchor="start">Frequent-tag question counts • source URL • retrieval date</text><line x1="1650" y1="1551" x2="1685.0" y2="1551" stroke="#29495c" stroke-width="4" fill="none"/><polygon points="1698.0,1551.0 1684.0,1542.0 1684.0,1560.0" fill="#29495c"/><text x="1735" y="1532" font-family="DejaVu Sans, Arial, sans-serif" font-size="22" font-weight="800" fill="#235d39" text-anchor="start">Published statistics workbook</text><text x="1735" y="1569" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="650" fill="#235d39" text-anchor="start">docs/reference/</text><text x="1735" y="1595" font-family="DejaVu Sans, Arial, sans-serif" font-size="19" font-weight="650" fill="#235d39" text-anchor="start">stackexchange-published-statistics.xlsx</text><line x1="70" y1="1640" x2="2330" y2="1640" stroke="#b7c7cf" stroke-width="2" fill="none"/><text x="1200" y="1673" font-family="DejaVu Sans, Arial, sans-serif" font-size="21" font-weight="650" fill="#425b67" text-anchor="middle">Every result remains linked to its source community, dump snapshot, run parameters, validation evidence and documented field meanings.</text></svg>
+      <marker id="arrow" markerWidth="18" markerHeight="18" refX="13" refY="6"
+              orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,12 L15,6 z" fill="#35506b"/>
+      </marker>
+      <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+        <feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#17324d"
+                      flood-opacity="0.16"/>
+      </filter>
+      <style>
+        text { font-family: "DejaVu Sans", Arial, sans-serif; fill: #18324b; }
+        .phase { font-size: 48px; font-weight: 700; fill: white; }
+        .box-title { font-size: 42px; font-weight: 700; }
+        .box-body { font-size: 36px; font-weight: 400; font-style: normal; }
+        .route-title { font-size: 42px; font-weight: 700; fill: white; }
+        .small { font-size: 34px; font-style: normal; }
+        .arrow { stroke: #35506b; stroke-width: 11; fill: none;
+                 marker-end: url(#arrow); stroke-linecap: round;
+                 stroke-linejoin: round; }
+      </style>
+    </defs>
+<rect width="4800" height="3400" fill="#f5f8fb"/>
+<rect x="70" y="55" width="4660" height="82" rx="24" fill="#315f85"/>
+<text x="130" y="111" text-anchor="start" class="phase">
+<tspan x="130" dy="0">1</tspan>
+</text>
+<text x="285" y="111" text-anchor="start" class="phase">
+<tspan x="285" dy="0">Access the selected Stack Exchange community data</tspan>
+</text>
+<rect x="110" y="180" width="1070" height="250" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
+<text x="645" y="236" text-anchor="middle" class="box-title">
+<tspan x="645" dy="0">Choose a community</tspan>
+</text>
+<text x="645" y="285" text-anchor="middle" class="box-body">
+<tspan x="645" dy="0">Select the compatible Stack Exchange</tspan>
+<tspan x="645" dy="46">community whose data will be analysed.</tspan>
+</text>
+<rect x="1280" y="180" width="1070" height="250" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
+<text x="1815" y="236" text-anchor="middle" class="box-title">
+<tspan x="1815" dy="0">Sign in</tspan>
+</text>
+<text x="1815" y="285" text-anchor="middle" class="box-body">
+<tspan x="1815" dy="0">Create an account on that community</tspan>
+<tspan x="1815" dy="46">or sign in with an existing account.</tspan>
+</text>
+<rect x="2450" y="180" width="1070" height="250" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
+<text x="2985" y="236" text-anchor="middle" class="box-title">
+<tspan x="2985" dy="0">Open dump access</tspan>
+</text>
+<text x="2985" y="285" text-anchor="middle" class="box-body">
+<tspan x="2985" dy="0">Open the profile, then Settings, then Access,</tspan>
+<tspan x="2985" dy="46">and select Data dump access.</tspan>
+</text>
+<rect x="3620" y="180" width="1070" height="250" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
+<text x="4155" y="236" text-anchor="middle" class="box-title">
+<tspan x="4155" dy="0">Download the dump</tspan>
+</text>
+<text x="4155" y="285" text-anchor="middle" class="box-body">
+<tspan x="4155" dy="0">Review the permitted-use declaration</tspan>
+<tspan x="4155" dy="46">and start the current dump download.</tspan>
+</text>
+<path class="arrow" d="M1180,305 L1265,305"/>
+<polygon points="1241,287 1241,323 1271,305" fill="#35506b"/>
+<path class="arrow" d="M2350,305 L2435,305"/>
+<polygon points="2411,287 2411,323 2441,305" fill="#35506b"/>
+<path class="arrow" d="M3520,305 L3605,305"/>
+<polygon points="3581,287 3581,323 3611,305" fill="#35506b"/>
+<rect x="70" y="500" width="4660" height="82" rx="24" fill="#467994"/>
+<text x="130" y="556" text-anchor="start" class="phase">
+<tspan x="130" dy="0">2</tspan>
+</text>
+<text x="285" y="556" text-anchor="start" class="phase">
+<tspan x="285" dy="0">Prepare the local inputs and project environment</tspan>
+</text>
+<rect x="170" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
+<text x="850" y="681" text-anchor="middle" class="box-title">
+<tspan x="850" dy="0">Extract the downloaded archive</tspan>
+</text>
+<text x="850" y="730" text-anchor="middle" class="box-body">
+<tspan x="850" dy="0">Use a source-data folder selected</tspan>
+<tspan x="850" dy="46">for the current run.</tspan>
+</text>
+<rect x="1720" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
+<text x="2400" y="681" text-anchor="middle" class="box-title">
+<tspan x="2400" dy="0">Confirm the required XML files</tspan>
+</text>
+<text x="2400" y="730" text-anchor="middle" class="box-body">
+<tspan x="2400" dy="0">Posts.xml and Comments.xml support</tspan>
+<tspan x="2400" dy="46">Routes A and B. Route C also uses Votes.xml.</tspan>
+</text>
+<rect x="3270" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
+<text x="3950" y="681" text-anchor="middle" class="box-title">
+<tspan x="3950" dy="0">Prepare the project</tspan>
+</text>
+<text x="3950" y="730" text-anchor="middle" class="box-body">
+<tspan x="3950" dy="0">Use Python 3.10 or newer, install</tspan>
+<tspan x="3950" dy="46">requirements.txt, and open the project root.</tspan>
+</text>
+<path class="arrow" d="M1530,768 L1705,768"/>
+<polygon points="1681,750 1681,786 1711,768" fill="#35506b"/>
+<path class="arrow" d="M3080,768 L3255,768"/>
+<polygon points="3231,750 3231,786 3261,768" fill="#35506b"/>
+<rect x="70" y="980" width="4660" height="82" rx="24" fill="#2d6f66"/>
+<text x="130" y="1036" text-anchor="start" class="phase">
+<tspan x="130" dy="0">3</tspan>
+</text>
+<text x="285" y="1036" text-anchor="start" class="phase">
+<tspan x="285" dy="0">Choose and run one or more implemented result routes</tspan>
+</text>
+<path d="M2400,1110 L2820,1285 L2400,1460 L1980,1285 Z" fill="#fff4cc" stroke="#b88900" stroke-width="7" filter="url(#shadow)"/>
+<text x="2400" y="1269" text-anchor="middle" class="box-title">
+<tspan x="2400" dy="0">Which result</tspan>
+<tspan x="2400" dy="43">is needed?</tspan>
+</text>
+<path class="arrow" d="M2400,910 L2400,1095"/>
+<polygon points="2382,1071 2418,1071 2400,1101" fill="#35506b"/>
+<path class="arrow" d="M2200,1438 L830,1438 L830,1510 L830,1560"/>
+<polygon points="812,1536 848,1536 830,1566" fill="#35506b"/>
+<path class="arrow" d="M2400,1460 L2400,1560"/>
+<polygon points="2382,1536 2418,1536 2400,1566" fill="#35506b"/>
+<path class="arrow" d="M2600,1438 L3970,1438 L3970,1510 L3970,1560"/>
+<polygon points="3952,1536 3988,1536 3970,1566" fill="#35506b"/>
+<rect x="70" y="1580" width="1460" height="1160" rx="34" fill="#ffffff" stroke="#3e73a8" stroke-width="8" filter="url(#shadow)"/>
+<rect x="70" y="1580" width="1460" height="105" rx="30" fill="#3e73a8"/>
+<rect x="70" y="1645" width="1460" height="40" fill="#3e73a8"/>
+<text x="800" y="1649" text-anchor="middle" class="route-title">
+<tspan x="800" dy="0">Route A — Complete thread XML</tspan>
+</text>
+<rect x="125" y="1725" width="1350" height="205" rx="28" fill="#eef5fb" stroke="#6e9bc5" stroke-width="6" filter="url(#shadow)"/>
+<text x="800" y="1781" text-anchor="middle" class="box-title">
+<tspan x="800" dy="0">Select the question posts</tspan>
+</text>
+<text x="800" y="1830" text-anchor="middle" class="box-body">
+<tspan x="800" dy="0">Choose one or more question post IDs</tspan>
+<tspan x="800" dy="46">from the selected community.</tspan>
+</text>
+<rect x="125" y="1965" width="1350" height="235" rx="28" fill="#ffffff" stroke="#6e9bc5" stroke-width="6" filter="url(#shadow)"/>
+<text x="800" y="2021" text-anchor="middle" class="box-title">
+<tspan x="800" dy="0">Run the complete-thread extractor</tspan>
+</text>
+<text x="800" y="2070" text-anchor="middle" class="box-body">
+<tspan x="800" dy="0">src/extract_threads.py</tspan>
+<tspan x="800" dy="46">Provide the source-data folder, output XML,</tspan>
+<tspan x="800" dy="46">and selected question IDs.</tspan>
+</text>
+<rect x="125" y="2235" width="1350" height="260" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
+<text x="800" y="2291" text-anchor="middle" class="box-title">
+<tspan x="800" dy="0">Result</tspan>
+</text>
+<text x="800" y="2340" text-anchor="middle" class="box-body">
+<tspan x="800" dy="0">One XML file. Each thread contains the</tspan>
+<tspan x="800" dy="46">question source attributes, direct question</tspan>
+<tspan x="800" dy="46">comments, and all available answers.</tspan>
+</text>
+<rect x="125" y="2510" width="1350" height="180" rx="28" fill="#fff8e1" stroke="#c79b2d" stroke-width="6" filter="url(#shadow)"/>
+<text x="800" y="2566" text-anchor="middle" class="box-title">
+<tspan x="800" dy="0">Completion check</tspan>
+</text>
+<text x="800" y="2615" text-anchor="middle" class="box-body">
+<tspan x="800" dy="0">Requested unique IDs are present;</tspan>
+<tspan x="800" dy="46">comments and answers are chronological.</tspan>
+</text>
+<path class="arrow" d="M800,1930 L800,1950"/>
+<polygon points="782,1926 818,1926 800,1956" fill="#35506b"/>
+<path class="arrow" d="M800,2200 L800,2220"/>
+<polygon points="782,2196 818,2196 800,2226" fill="#35506b"/>
+<path class="arrow" d="M800,2495 L800,2500"/>
+<polygon points="782,2476 818,2476 800,2506" fill="#35506b"/>
+<rect x="1670" y="1580" width="1460" height="1160" rx="34" fill="#ffffff" stroke="#7b5ba7" stroke-width="8" filter="url(#shadow)"/>
+<rect x="1670" y="1580" width="1460" height="105" rx="30" fill="#7b5ba7"/>
+<rect x="1670" y="1645" width="1460" height="40" fill="#7b5ba7"/>
+<text x="2400" y="1649" text-anchor="middle" class="route-title">
+<tspan x="2400" dy="0">Route B — Configurable summary XML</tspan>
+</text>
+<rect x="1725" y="1725" width="1350" height="205" rx="28" fill="#f5f0fa" stroke="#9a7bbb" stroke-width="6" filter="url(#shadow)"/>
+<text x="2400" y="1781" text-anchor="middle" class="box-title">
+<tspan x="2400" dy="0">Select questions and fields</tspan>
+</text>
+<text x="2400" y="1830" text-anchor="middle" class="box-body">
+<tspan x="2400" dy="0">Choose question post IDs and use</tspan>
+<tspan x="2400" dy="46">config/summary_fields.tsv or a copied selection.</tspan>
+</text>
+<rect x="1725" y="1965" width="1350" height="235" rx="28" fill="#ffffff" stroke="#9a7bbb" stroke-width="6" filter="url(#shadow)"/>
+<text x="2400" y="2021" text-anchor="middle" class="box-title">
+<tspan x="2400" dy="0">Run the summary extractor</tspan>
+</text>
+<text x="2400" y="2070" text-anchor="middle" class="box-body">
+<tspan x="2400" dy="0">src/extract_request_summary.py</tspan>
+<tspan x="2400" dy="46">Provide the source-data folder, output XML,</tspan>
+<tspan x="2400" dy="46">IDs, and field selection when customized.</tspan>
+</text>
+<rect x="1725" y="2235" width="1350" height="260" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
+<text x="2400" y="2291" text-anchor="middle" class="box-title">
+<tspan x="2400" dy="0">Result</tspan>
+</text>
+<text x="2400" y="2340" text-anchor="middle" class="box-body">
+<tspan x="2400" dy="0">One XML file with one request per question.</tspan>
+<tspan x="2400" dy="46">Selected fields follow the configured order;</tspan>
+<tspan x="2400" dy="46">unavailable source values create empty elements.</tspan>
+</text>
+<rect x="1725" y="2510" width="1350" height="180" rx="28" fill="#fff8e1" stroke="#c79b2d" stroke-width="6" filter="url(#shadow)"/>
+<text x="2400" y="2566" text-anchor="middle" class="box-title">
+<tspan x="2400" dy="0">Completion check</tspan>
+</text>
+<text x="2400" y="2615" text-anchor="middle" class="box-body">
+<tspan x="2400" dy="0">Question IDs, field names, and field order</tspan>
+<tspan x="2400" dy="46">match the selected configuration.</tspan>
+</text>
+<path class="arrow" d="M2400,1930 L2400,1950"/>
+<polygon points="2382,1926 2418,1926 2400,1956" fill="#35506b"/>
+<path class="arrow" d="M2400,2200 L2400,2220"/>
+<polygon points="2382,2196 2418,2196 2400,2226" fill="#35506b"/>
+<path class="arrow" d="M2400,2495 L2400,2500"/>
+<polygon points="2382,2476 2418,2476 2400,2506" fill="#35506b"/>
+<rect x="3270" y="1580" width="1460" height="1160" rx="34" fill="#ffffff" stroke="#b05f35" stroke-width="8" filter="url(#shadow)"/>
+<rect x="3270" y="1580" width="1460" height="105" rx="30" fill="#b05f35"/>
+<rect x="3270" y="1645" width="1460" height="40" fill="#b05f35"/>
+<text x="4000" y="1649" text-anchor="middle" class="route-title">
+<tspan x="4000" dy="0">Route C — Characteristics and EDA</tspan>
+</text>
+<rect x="3325" y="1725" width="1350" height="225" rx="28" fill="#fbf1eb" stroke="#c47c54" stroke-width="6" filter="url(#shadow)"/>
+<text x="4000" y="1781" text-anchor="middle" class="box-title">
+<tspan x="4000" dy="0">Select the analysis settings</tspan>
+</text>
+<text x="4000" y="1830" text-anchor="middle" class="box-body">
+<tspan x="4000" dy="0">Choose community host, dump snapshot date,</tspan>
+<tspan x="4000" dy="46">question period, and output folder.</tspan>
+<tspan x="4000" dy="46">A row limit and schema are optional.</tspan>
+</text>
+<rect x="3325" y="1985" width="1350" height="220" rx="28" fill="#ffffff" stroke="#c47c54" stroke-width="6" filter="url(#shadow)"/>
+<text x="4000" y="2041" text-anchor="middle" class="box-title">
+<tspan x="4000" dy="0">Build the characteristic table</tspan>
+</text>
+<text x="4000" y="2090" text-anchor="middle" class="box-body">
+<tspan x="4000" dy="0">src/build_characteristics.py</tspan>
+<tspan x="4000" dy="46">The builder reads Posts.xml, Comments.xml,</tspan>
+<tspan x="4000" dy="46">Votes.xml, and the characteristic schema.</tspan>
+</text>
+<rect x="3325" y="2240" width="1350" height="215" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
+<text x="4000" y="2296" text-anchor="middle" class="box-title">
+<tspan x="4000" dy="0">Generated files</tspan>
+</text>
+<text x="4000" y="2345" text-anchor="middle" class="box-body">
+<tspan x="4000" dy="0">thread_characteristics.tsv</tspan>
+<tspan x="4000" dy="46">validation.tsv</tspan>
+<tspan x="4000" dy="46">run_metadata.json</tspan>
+</text>
+<rect x="3325" y="2480" width="1350" height="220" rx="28" fill="#fff8e1" stroke="#c79b2d" stroke-width="6" filter="url(#shadow)"/>
+<text x="4000" y="2536" text-anchor="middle" class="box-title">
+<tspan x="4000" dy="0">Validate and analyse</tspan>
+</text>
+<text x="4000" y="2585" text-anchor="middle" class="box-body">
+<tspan x="4000" dy="0">Confirm no FAIL, review WARN, check metadata.</tspan>
+<tspan x="4000" dy="46">Open notebooks/stackexchange_eda.ipynb, set DATA_FILE,</tspan>
+<tspan x="4000" dy="46">and run every cell from a clean kernel.</tspan>
+</text>
+<path class="arrow" d="M4000,1950 L4000,1970"/>
+<polygon points="3982,1946 4018,1946 4000,1976" fill="#35506b"/>
+<path class="arrow" d="M4000,2205 L4000,2225"/>
+<polygon points="3982,2201 4018,2201 4000,2231" fill="#35506b"/>
+<path class="arrow" d="M4000,2455 L4000,2470"/>
+<polygon points="3982,2446 4018,2446 4000,2476" fill="#35506b"/>
+<rect x="70" y="2810" width="4660" height="82" rx="24" fill="#35506b"/>
+<text x="130" y="2866" text-anchor="start" class="phase">
+<tspan x="130" dy="0">4</tspan>
+</text>
+<text x="285" y="2866" text-anchor="start" class="phase">
+<tspan x="285" dy="0">Verify the result and keep the evidence needed to reproduce it</tspan>
+</text>
+<rect x="165" y="2940" width="1420" height="290" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
+<text x="875" y="2996" text-anchor="middle" class="box-title">
+<tspan x="875" dy="0">Successful XML routes</tspan>
+</text>
+<text x="875" y="3045" text-anchor="middle" class="box-body">
+<tspan x="875" dy="0">The XML opens, requested question IDs are</tspan>
+<tspan x="875" dy="46">present, and its contents match the selected</tspan>
+<tspan x="875" dy="46">route and summary field configuration.</tspan>
+</text>
+<rect x="1690" y="2940" width="1420" height="290" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
+<text x="2400" y="2996" text-anchor="middle" class="box-title">
+<tspan x="2400" dy="0">Successful characteristic route</tspan>
+</text>
+<text x="2400" y="3045" text-anchor="middle" class="box-body">
+<tspan x="2400" dy="0">Validation contains no FAIL, metadata matches</tspan>
+<tspan x="2400" dy="46">the run settings, and the notebook completes</tspan>
+<tspan x="2400" dy="46">with readable tables, figures, and interpretations.</tspan>
+</text>
+<rect x="3215" y="2940" width="1420" height="290" rx="28" fill="#fff0ef" stroke="#ba5b55" stroke-width="6" filter="url(#shadow)"/>
+<text x="3925" y="2996" text-anchor="middle" class="box-title">
+<tspan x="3925" dy="0">When a check fails</tspan>
+</text>
+<text x="3925" y="3045" text-anchor="middle" class="box-body">
+<tspan x="3925" dy="0">Correct the community, input files, question IDs,</tspan>
+<tspan x="3925" dy="46">field selection, dates, or output location, then</tspan>
+<tspan x="3925" dy="46">run the affected route again.</tspan>
+</text>
+<text x="2400" y="3340" text-anchor="middle" class="small">
+<tspan x="2400" dy="0">Source dump files are read without modification. Input and output locations are selected for each run.</tspan>
+</text>
+</svg>

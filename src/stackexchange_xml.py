@@ -14,7 +14,7 @@ from contextlib import suppress
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Iterator, Sequence
+from typing import Collection, Iterator, Sequence
 
 from lxml import etree
 
@@ -135,7 +135,7 @@ def read_posts(
 
 
 def read_question_comments(
-    comments_path: Path, question_ids: Sequence[str]
+    comments_path: Path, question_ids: Collection[str]
 ) -> dict[str, list[XmlRow]]:
     """Read comments attached directly to the requested questions."""
     requested = set(question_ids)

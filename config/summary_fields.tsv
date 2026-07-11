@@ -1,0 +1,28 @@
+field	include	source_record	source_attribute	meaning
+question_id	TRUE	question	Id	Identifier of the question post.
+question_title	FALSE	question	Title	Title displayed above the question body.
+question_body	TRUE	question	Body	Question body stored as rendered HTML in the dump snapshot.
+question_date	TRUE	question	CreationDate	Date and time when the question was posted.
+question_last_edit_date	FALSE	question	LastEditDate	Most recent recorded edit date and time.
+question_tags	FALSE	question	Tags	Source tag string stored on the question.
+question_score	FALSE	question	Score	Net community vote score at the dump snapshot.
+question_view_count	FALSE	question	ViewCount	Views recorded by the dump snapshot.
+question_answer_count	FALSE	question	AnswerCount	Answer count maintained on the question row by Stack Exchange.
+question_comment_count	FALSE	question	CommentCount	Comment count maintained on the question row by Stack Exchange.
+question_closed_date	FALSE	question	ClosedDate	Date and time when the question was closed, when present.
+question_owner_user_id	FALSE	question	OwnerUserId	Identifier of the question author when available.
+first_comment_id	TRUE	first_comment	Id	Identifier of the earliest direct question comment.
+first_comment_text	TRUE	first_comment	Text	Text of the earliest direct question comment.
+first_comment_date	TRUE	first_comment	CreationDate	Posting date and time of the earliest direct question comment.
+first_comment_score	FALSE	first_comment	Score	Score of the earliest direct question comment.
+first_comment_user_id	FALSE	first_comment	UserId	Author identifier of the earliest direct question comment when available.
+first_answer_id	TRUE	first_answer	Id	Identifier of the earliest available answer.
+first_answer_body	TRUE	first_answer	Body	Body of the earliest available answer as rendered HTML.
+first_answer_date	TRUE	first_answer	CreationDate	Posting date and time of the earliest available answer.
+first_answer_score	FALSE	first_answer	Score	Net community vote score of the earliest available answer.
+first_answer_owner_user_id	FALSE	first_answer	OwnerUserId	Author identifier of the earliest available answer when available.
+accepted_answer_id	TRUE	question	AcceptedAnswerId	Identifier recorded by the question for its accepted answer.
+accepted_answer_body	TRUE	accepted_answer	Body	Body of the available accepted answer as rendered HTML.
+accepted_answer_date	TRUE	accepted_answer	CreationDate	Posting date and time of the available accepted answer.
+accepted_answer_score	FALSE	accepted_answer	Score	Net community vote score of the available accepted answer.
+accepted_answer_owner_user_id	FALSE	accepted_answer	OwnerUserId	Author identifier of the available accepted answer when available.

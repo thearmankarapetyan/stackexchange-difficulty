@@ -9,12 +9,12 @@ Posts.xml, Comments.xml, and Votes.xml. It creates:
 
 Example:
     python src/build_characteristics.py \
-        --dump-dir /path/to/superuser.com \
-        --site superuser.com \
-        --dump-date 2026-04-20 \
-        --start-date 2024-01-01 \
-        --end-date 2024-12-31 \
-        --output-dir data/processed/superuser-2024
+        --dump-dir /path/to/site-dump \
+        --site selected-community.example \
+        --dump-date YYYY-MM-DD \
+        --start-date YYYY-MM-DD \
+        --end-date YYYY-MM-DD \
+        --output-dir data/processed/example-run
 """
 
 from __future__ import annotations
@@ -43,10 +43,11 @@ from question_characteristics import (
 )
 from stackexchange_xml import (
     chronological_key,
-    describe_row as row_context,
-    parse_stack_datetime as stack_datetime,
+    describe_row,
+    parse_stack_datetime,
     positive_id,
-    stream_rows as xml_rows,
+    read_question_comments,
+    stream_rows,
 )
 
 
@@ -72,7 +73,7 @@ def parse_args(arguments: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--site",
         required=True,
-        help="Site host name used in provenance and question URLs, for example superuser.com.",
+        help="Community host used in provenance and URLs, without https:// or a path.",
     )
     parser.add_argument(
         "--dump-date",
@@ -114,7 +115,7 @@ def parse_args(arguments: Sequence[str] | None = None) -> argparse.Namespace:
     values = parser.parse_args(arguments)
 
     if SITE_PATTERN.fullmatch(values.site) is None:
-        parser.error("--site must be a plain host name such as superuser.com")
+        parser.error("--site must be a plain host name without https:// or a path")
     if values.limit is not None and values.limit <= 0:
         parser.error("--limit must be a positive integer")
 
@@ -144,18 +145,20 @@ def select_questions(
 ) -> list[dict[str, str]]:
     """Select question rows in chronological order for the requested period."""
     selected: list[tuple[datetime, Decimal, int, dict[str, str]]] = []
-    for row in xml_rows(posts_path):
+    for row in stream_rows(posts_path):
         if row.get("PostTypeId") != "1":
             continue
-        context = row_context(posts_path, row)
+        context = describe_row(posts_path, row)
         positive_id(row.get("Id"), context)
-        created = stack_datetime(row.get("CreationDate"), context, "CreationDate")
+        created = parse_stack_datetime(
+            row.get("CreationDate"), context, "CreationDate"
+        )
         if start <= created <= end:
             optional_stack_datetime(row.get("LastEditDate"), context, "LastEditDate")
             optional_stack_datetime(row.get("ClosedDate"), context, "ClosedDate")
             selected.append((*chronological_key(posts_path, row), row))
 
-    selected.sort(key=lambda item: (item[0], item[1]))
+    selected.sort(key=lambda item: item[:3])
     if limit is not None:
         selected = selected[:limit]
     return [row for _, _, _, row in selected]
@@ -166,13 +169,13 @@ def read_answers(
 ) -> dict[str, list[dict[str, str]]]:
     """Read every available answer whose parent is a selected question."""
     answers: dict[str, list[dict[str, str]]] = defaultdict(list)
-    for row in xml_rows(posts_path):
+    for row in stream_rows(posts_path):
         parent_id = row.get("ParentId")
         if row.get("PostTypeId") != "2" or parent_id not in question_ids:
             continue
-        context = row_context(posts_path, row)
+        context = describe_row(posts_path, row)
         positive_id(row.get("Id"), context)
-        stack_datetime(row.get("CreationDate"), context, "CreationDate")
+        parse_stack_datetime(row.get("CreationDate"), context, "CreationDate")
         optional_integer(row.get("Score"), context, "Score")
         answers[parent_id].append(row)
 
@@ -181,57 +184,53 @@ def read_answers(
     return answers
 
 
-def read_question_comments(
-    comments_path: Path, question_ids: set[str]
-) -> dict[str, list[dict[str, str]]]:
-    """Read comments attached directly to selected questions."""
-    comments: dict[str, list[dict[str, str]]] = defaultdict(list)
-    for row in xml_rows(comments_path):
-        question_id = row.get("PostId")
-        if question_id not in question_ids:
-            continue
-        context = row_context(comments_path, row)
-        positive_id(row.get("Id"), context)
-        stack_datetime(row.get("CreationDate"), context, "CreationDate")
-        comments[question_id].append(row)
-
-    for rows in comments.values():
-        rows.sort(key=lambda row: chronological_key(comments_path, row))
-    return comments
-
-
 def read_acceptance_dates(
     votes_path: Path, accepted_answer_ids: set[str]
 ) -> dict[str, date]:
     """Read the earliest acceptance day for each currently accepted answer."""
     dates: dict[str, date] = {}
-    for row in xml_rows(votes_path):
+    for row in stream_rows(votes_path):
         answer_id = row.get("PostId")
         if row.get("VoteTypeId") != "1" or answer_id not in accepted_answer_ids:
             continue
-        context = row_context(votes_path, row)
-        created = stack_datetime(row.get("CreationDate"), context, "CreationDate").date()
+        context = describe_row(votes_path, row)
+        created = parse_stack_datetime(
+            row.get("CreationDate"), context, "CreationDate"
+        ).date()
         if answer_id not in dates or created < dates[answer_id]:
             dates[answer_id] = created
     return dates
 
 
 # 3. Check and write the three canonical output files.
-def load_schema(path: Path) -> tuple[list[str], list[dict[str, str]]]:
+def load_schema(path: Path) -> list[str]:
     """Load the versioned characteristic order and validate its basic shape."""
     if not path.is_file():
         raise FileNotFoundError(f"Characteristic schema not found: {path}")
     with path.open(encoding="utf-8", newline="") as file:
-        rows = list(csv.DictReader(file, delimiter="\t"))
+        reader = csv.DictReader(file, delimiter="\t")
+        required = {"position", "characteristic"}
+        if reader.fieldnames is None or not required.issubset(reader.fieldnames):
+            raise ValueError(
+                f"{path}: expected TSV columns: position, characteristic"
+            )
+        rows = list(reader)
     if not rows:
         raise ValueError(f"Characteristic schema is empty: {path}")
-    positions = [int(row["position"]) for row in rows]
+
+    try:
+        positions = [int(row["position"]) for row in rows]
+    except (TypeError, ValueError):
+        raise ValueError(f"{path}: every schema position must be an integer") from None
     if positions != list(range(1, len(rows) + 1)):
-        raise ValueError("Characteristic schema positions must be consecutive from 1")
-    columns = [row["characteristic"] for row in rows]
+        raise ValueError(f"{path}: schema positions must be consecutive from 1")
+
+    columns = [(row["characteristic"] or "").strip() for row in rows]
+    if not all(columns):
+        raise ValueError(f"{path}: characteristic names must not be empty")
     if len(columns) != len(set(columns)):
-        raise ValueError("Characteristic schema contains duplicate names")
-    return columns, rows
+        raise ValueError(f"{path}: characteristic names must be unique")
+    return columns
 
 
 def validation_rows(
@@ -370,13 +369,14 @@ def atomic_write(path: Path, write: Callable[[Any], None], newline: str | None =
 
 def write_tsv(path: Path, rows: Iterable[dict[str, Any]], columns: list[str]) -> None:
     """Write dictionaries to a UTF-8 tab-separated file."""
-    def write(file: Any) -> None:
+    def write_rows(file: Any) -> None:
+        """Write the header and serialized rows to an open temporary file."""
         writer = csv.DictWriter(file, fieldnames=columns, delimiter="\t")
         writer.writeheader()
         for row in rows:
             writer.writerow({column: tsv_value(row.get(column)) for column in columns})
 
-    atomic_write(path, write, newline="")
+    atomic_write(path, write_rows, newline="")
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -428,7 +428,7 @@ def run(args: argparse.Namespace) -> int:
     """Run extraction, validation, and output writing."""
     started = time.perf_counter()
     sources, paths = ensure_paths(args)
-    columns, _ = load_schema(args.schema)
+    columns = load_schema(args.schema)
 
     print("Selecting questions from Posts.xml...")
     questions = select_questions(

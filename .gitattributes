@@ -1,2 +1,4 @@
-# Verified XML examples preserve source whitespace inside copied post bodies.
+# Verified examples preserve source whitespace inside copied post bodies.
 data/examples/*.xml -diff
+data/examples/characteristics_pilot.tsv -diff
+data/examples/characteristics_pilot_validation.tsv -diff

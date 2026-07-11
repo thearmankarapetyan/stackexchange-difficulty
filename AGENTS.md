@@ -17,7 +17,16 @@
   when an existing guide section can carry the information clearly.
 - Maintain one canonical editable overview flowchart and one publication
   export. Archive superseded workflow variants after verification.
+- Keep the default summary behavior in `config/summary_fields.tsv`; use a
+  copied field-selection TSV for run-specific summary outputs.
 - Preserve one generic, self-contained EDA notebook. Do not add site-specific
   notebook copies, a notebook generator, or a large plotting-helper module.
 - Do not modify raw dumps. Archive superseded project material
   non-destructively and record its checksum before removing the canonical copy.
+- Verify a small controlled run before a full-period run. Compile changed
+  modules, inspect validation and metadata, execute the notebook from a clean
+  kernel, inspect changed visual artifacts, remove temporary material, and run
+  `git diff --check` before recording completion.
+- Record release evidence in `docs/reference/release-verification.tsv` and keep
+  the central guide, examples, README, and checklist synchronized with
+  production behavior.

@@ -1,10 +1,21 @@
 .venv/
+venv/
+env/
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
 .pytest_cache/
 .ruff_cache/
+.coverage
+htmlcov/
 tmp/
+
+# Editor, operating-system, and office lock files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.~lock.*#
 
 # Large local inputs and regenerated outputs
 data/raw/*

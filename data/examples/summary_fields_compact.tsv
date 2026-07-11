@@ -1,0 +1,7 @@
+field	include	source_record	source_attribute	meaning
+question_id	TRUE	question	Id	Identifier of the question post.
+question_title	TRUE	question	Title	Title displayed above the question body.
+question_date	TRUE	question	CreationDate	Date and time when the question was posted.
+question_tags	TRUE	question	Tags	Source tag string stored on the question.
+first_answer_id	TRUE	first_answer	Id	Identifier of the earliest available answer.
+accepted_answer_id	TRUE	question	AcceptedAnswerId	Identifier recorded by the question for its accepted answer.
