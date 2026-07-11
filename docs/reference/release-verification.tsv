@@ -23,10 +23,10 @@ NB-02	Notebook	Check generic self-contained behavior	PASS	Direct pandas, Matplot
 NB-03	Notebook	Inspect figures at normal reading size	PASS	Four pilot figures readable; Figure 2 legend moved outside the data; Sections 5 and 6 provide clear availability messages for the small pilot
 FLOW-01	Flowchart	Validate editable source and publication export	PASS	SVG parses successfully; PNG is 4800 by 3400 pixels
 FLOW-02	Flowchart	Verify labels and route behavior	PASS	All entry points, inputs, outputs, arrows, checks, and official access steps match current source and Stack Exchange help
-FLOW-03	Flowchart	Inspect at full size and on the documentation home	PASS	No overlap, clipping, terminal command, personal path, fixed community, date, period, or question ID; tracked PNG renders through GitHub Markdown
-GUIDE-01	GitHub documentation	Check structure and navigation	PASS	One documentation home links one tutorial, six how-to guides, one system reference, and one explanation page in separate Diátaxis directories
-GUIDE-02	GitHub documentation	Check operational completeness	PASS	Official access, setup, bundled pilot, three routes, exact parameters, outputs, glossary, components, GitHub contract, limitations, troubleshooting, deliverables, examples, and verification are present
-GUIDE-03	GitHub documentation	Inspect Markdown structure and rendering	PASS	Markdownlint 0.41.0 reports 0 error; Pandoc renders 10 of 10 pages; GitHub Markdown API renders 10 of 10 pages
+FLOW-03	Flowchart	Inspect at full size and in README.md	PASS	No overlap, clipping, terminal command, personal path, fixed community, date, period, or question ID; tracked PNG renders in the canonical README
+GUIDE-01	GitHub documentation	Check structure and navigation	PASS	README.md is the single documentation page and contains linked contents, a task-and-term index, tutorial, six how-to sections, system reference, explanation, and glossary
+GUIDE-02	GitHub documentation	Check operational completeness	PASS	The single README covers official access, setup, bundled pilot, three routes, exact parameters, outputs, glossary, components, GitHub contract, limitations, troubleshooting, deliverables, examples, and verification
+GUIDE-03	GitHub documentation	Inspect Markdown structure and rendering	PASS	Markdownlint reports 0 error across 7 Markdown files; README.md renders through Pandoc and the GitHub Markdown API
 DICT-01	Data dictionary	Compare workbook with schema	PASS	47 rows; exact field-name order; three requested calculation groups; no empty required definition cell
 DICT-02	Data dictionary	Inspect workbook rendering	PASS	Read-me page and dictionary pages are readable at A3 layout
 STATS-01	Published statistics	Preserve workbook content while improving print layout	PASS	All cell values, types, styles, links, filters, and frozen panes preserved; six sheets set to one A3 landscape page wide
@@ -35,18 +35,18 @@ ARCHIVE-01	Archive	Archive superseded workflow and documentation artifacts	PASS	
 ARCHIVE-02	Archive	Validate archive manifest	PASS	Every size and SHA-256 value in archive/canonical-project-consolidation-2026-07-11/manifest.tsv matches its archived file
 ARCHIVE-03	Archive	Archive superseded Word documentation	PASS	Central guide and historical recovery audit copied to archive/github-markdown-documentation-2026-07-11 before active removal
 ARCHIVE-04	Archive	Validate Word-documentation archive	PASS	Two archived DOCX files match manifest size and SHA-256; active repository contains zero DOCX
-PATH-01	Deliverables	Validate canonical locations	PASS	All active source, config, example, notebook, Markdown documentation, workflow, workbook, and report paths exist
-LANG-01	Language	Check active authored material	PASS	No French project term or personal filesystem path found in README, checklist, instructions, source, notebook source, Markdown documentation, dictionary, or statistics workbook
+PATH-01	Deliverables	Validate canonical locations	PASS	All active source, config, example, notebook, canonical README, workflow, workbook, and report paths exist
+LANG-01	Language	Check active authored material	PASS	No French project term or personal filesystem path found in README, checklist, instructions, source, notebook source, dictionary, or statistics workbook
 CLEAN-01	Cleanup	Remove disposable verification material	PASS	No temporary test, generator, preview, cache, bytecode, office lock, or notebook checkpoint remains in the project
 GIT-01	Version control	Create initial baseline	PASS	97555e6cda56d9c76293d995d01e07cf2291e728
 GIT-02	Version control	Commit completed implementation	PASS	53212ec15000635d17743a74a5c6adb3f7f9ac16
 AUDIT-01	Independent final audit	Recheck the committed result	PASS	25 of 25 artifact checks passed after the implementation commit
 AUDIT-02	Independent final audit	Run Git whitespace validation	PASS	git diff --check completed without an error
-GUIDE-04	GitHub documentation	Verify the tutorial as a Diátaxis tutorial	PASS	One fixed bundled 20-question path; six expected-result checkpoints; early visible evidence; repeatability check; no dump, date, community, field, or question-ID choice
-GUIDE-05	GitHub documentation	Verify the how-to pages as Diátaxis how-to guidance	PASS	Six goal-named pages; each has prerequisites, actions, a completion check, navigation, and links to exact reference contracts
-GUIDE-06	GitHub documentation	Verify the system reference as Diátaxis reference	PASS	Neutral component, dependency, GitHub, CLI, XML, output, configuration, notebook, validation, error, deliverable, evidence, glossary, and location contracts
-GUIDE-07	GitHub documentation	Verify the explanation page as Diátaxis explanation	PASS	Bounded research, route, provenance, snapshot, configurability, validation, and scope discussions; no command or procedural code block
-GUIDE-08	GitHub documentation	Run strict Markdown documentation audit	PASS	28 of 28 structural, content, contract, genericity, link, archive, and rendering checks passed
+GUIDE-04	GitHub documentation	Verify the tutorial as Diátaxis tutorial content	PASS	One fixed bundled 20-question path in README.md; expected evidence, early visible results, and repeatability check; no production dump, date, community, field, or question-ID choice
+GUIDE-05	GitHub documentation	Verify the how-to content as Diátaxis guidance	PASS	Six goal-named README sections have prerequisites, actions, completion checks, and links to exact same-page reference contracts
+GUIDE-06	GitHub documentation	Verify the system reference as Diátaxis reference	PASS	One README section states neutral component, dependency, GitHub, CLI, XML, output, configuration, notebook, validation, error, deliverable, evidence, glossary, and location contracts
+GUIDE-07	GitHub documentation	Verify the explanation as Diátaxis explanation	PASS	One README section covers research scope, routes, provenance, snapshots, configurability, validation, reproducibility, and boundaries without procedural commands
+GUIDE-08	GitHub documentation	Run strict single-page documentation audit	PASS	18 of 18 structure, completeness, genericity, link, anchor, archive, and contract checks passed
 GH-01	GitHub publication	Preserve the superseded remote before publishing current main	PASS	44-commit scaffold retained on archive/legacy-corpus-scaffold and tag legacy-corpus-scaffold-2026-05-18; current history published independently on main
 GH-02	GitHub publication	Scan active history and publication tree for secrets and oversized files	PASS	Gitleaks 8.30.1 found no leak; largest active-history object remains far below GitHub's 50 MiB warning threshold; raw dumps and regenerated outputs are ignored
 GH-03	GitHub automation	Validate repository automation locally	PASS	actionlint 1.7.12 passed; clean Python 3.12.3 environment compiled source, passed Ruff 0.15.21, checked three CLIs, and executed the pilot notebook
@@ -61,3 +61,10 @@ MD-04	Markdown migration	Validate links, headings, and rendering	PASS	One H1 per
 MD-05	Markdown migration	Validate documented interfaces	PASS	All 17 documented long CLI options occur in successful current --help output; three command examples and twelve default summary fields are present
 MD-06	Markdown migration	Validate archive and active formats	PASS	Two DOCX files preserved with matching size and SHA-256; active repository has zero DOCX; PDF, XLSX, SVG, PNG, XML, TSV, JSON, and IPYNB retain appropriate formats
 MD-07	Markdown migration	Verify the published GitHub result	PASS	Commit fac76b617be420824ff4cd4a0d5dbcf38e8a1b79; Actions run 29152702947 passed Python 3.10, Python 3.12, Markdown lint, CLI checks, and pilot notebook execution; remote main has 10 documentation pages and 0 DOCX
+README-01	Single-page README	Validate canonical documentation layout	PASS	README.md contains 10 required major sections, six how-to procedures, and 16 glossary definitions; docs/ and data/ contain zero competing Markdown page
+README-02	Single-page README	Validate same-page navigation	PASS	76 same-page fragment links resolve to existing headings; all local Markdown links resolve; task-and-term index links directly to procedures, contracts, and definitions
+README-03	Single-page README	Compare documented interfaces with implementation	PASS	README covers five modules, three routes, three source XML files, 17 of 17 long CLI options, 12 default summary fields, and six notebook settings
+README-04	Single-page README	Archive superseded documentation	PASS	Eleven superseded Markdown files are preserved in archive/single-page-readme-2026-07-11 with matching size and SHA-256 values
+README-05	Single-page README	Validate Markdown quality and rendering	PASS	markdownlint-cli2 reports 0 error across 7 files; heading, fence, English, genericity, local-link, Pandoc, and GitHub GFM checks pass
+README-06	Single-page README	Reproduce documented executable evidence	PASS	All source compiles; Ruff passes; three CLI help commands match 17 documented long options; clean-kernel pilot executes 21 cells with 10 code cells and 0 error
+README-07	Single-page README	Verify branch publication and continuous integration	PASS	Commit f910e247b9865032d4d9b696e8b1f8045c183b88 is published in pull request 6; Actions run 29156971069 passed Python 3.10 and Python 3.12, including Markdown lint, CLI checks, and pilot notebook execution

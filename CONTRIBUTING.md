@@ -6,8 +6,8 @@ that follow the expected XML structure.
 
 ## Before making a change
 
-1. Read `README.md`, `PROJECT_CHECKLIST.md`, and the relevant page linked from
-   `docs/README.md`.
+1. Read `README.md` and `PROJECT_CHECKLIST.md`. Use the README contents and
+   reference index to open the section affected by the change.
 2. Create a short-lived branch from `main`, using a descriptive prefix such as
    `feature/`, `fix/`, or `docs/`.
 3. Create and activate a virtual environment, then install the development
@@ -59,8 +59,7 @@ python -m nbconvert \
 ```
 
 For extraction, schema, or calculation changes, also run the controlled pilot
-described in the Markdown documentation and inspect its validation and metadata
-files.
+described in `README.md` and inspect its validation and metadata files.
 Record release-level evidence in `docs/reference/release-verification.tsv` and
 update `PROJECT_CHECKLIST.md` when a verified completion claim changes.
 
