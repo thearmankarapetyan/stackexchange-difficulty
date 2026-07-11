@@ -15,6 +15,10 @@ material retain their original form.
   `53212ec15000635d17743a74a5c6adb3f7f9ac16`.
 - Verified release tag: `verified-release-2026-07-11`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
+- GitHub publication commit: `2e934430`.
+- Canonical private repository:
+  `https://github.com/thearmankarapetyan/stackexchange-difficulty`.
+- GitHub Actions publication run: `29151176595` (**2 jobs passed**).
 - Detailed evidence: `docs/reference/release-verification.tsv`.
 - Final committed-state audit: **25 PASS, 0 FAIL**.
 - Strict single-document guide audit: **25 PASS, 0 FAIL**.
@@ -229,6 +233,48 @@ Status: **Complete**
 
 Evidence: `docs/reference/release-verification.tsv` and final tag
 `verified-release-2026-07-11`.
+
+## Task 9 — Publish and configure the canonical GitHub repository
+
+Status: **Complete**
+
+- [x] The canonical project is available in the private repository
+  `https://github.com/thearmankarapetyan/stackexchange-difficulty`.
+- [x] `main` contains only the current verified extraction, characteristic,
+  validation, documentation, and generic EDA workflow.
+- [x] The superseded 44-commit corpus scaffold remains recoverable on
+  `archive/legacy-corpus-scaffold` and at tag
+  `legacy-corpus-scaffold-2026-05-18`; it was not merged into active history.
+- [x] Gitleaks 8.30.1 found no secret in the complete active history or the
+  publication tree, and the local commit identity now uses the GitHub no-reply
+  address.
+- [x] Raw dumps, regenerated annual outputs, environments, caches, credentials,
+  keys, and local secret files are excluded from version control.
+- [x] The largest object in active history is far below GitHub's warning and
+  rejection limits, so this repository does not need Git LFS.
+- [x] GitHub Actions uses read-only workflow permissions, allows GitHub-owned
+  actions only, requires full commit-SHA action references, and retains logs for
+  30 days.
+- [x] The clean CI matrix passed on Python 3.10 and 3.12; it compiled all source,
+  ran Ruff, checked all three command-line interfaces, and executed the bundled
+  pilot notebook on Python 3.12.
+- [x] Dependabot checks Python and GitHub Actions dependencies weekly;
+  vulnerability alerts and automated security fixes are enabled.
+- [x] `CONTRIBUTING.md`, `SECURITY.md`, `CODEOWNERS`, a pull-request template,
+  and focused issue labels support controlled collaboration.
+- [x] `main` is the default branch, squash is the only merge method, branches
+  are deleted after merging, the wiki and unused project board are disabled,
+  and repository purpose and topics are recorded.
+- [x] Branch-protection compatibility was tested. GitHub returned the documented
+  private-repository plan restriction, so the repository remains private and
+  the successful CI checks remain available for pull-request review.
+- [x] No public software license or citation authorship file was inferred. Those
+  require an explicit institutional and authorship decision before a public
+  release.
+
+Evidence: publication commit `2e934430`, GitHub Actions run `29151176595`,
+`.github/`, `CONTRIBUTING.md`, `SECURITY.md`, repository settings, and checks
+`GH-01`–`GH-06` in the release evidence.
 
 ## Repeatable change verification gate
 

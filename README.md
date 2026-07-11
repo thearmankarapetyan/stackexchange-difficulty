@@ -10,6 +10,16 @@ user-selected paths, dates, question IDs, field selections, schemas, and output
 locations. Its behavior has been verified with Super User and Software
 Engineering data.
 
+## Get the repository
+
+The repository is private during active project work. After access has been
+granted, clone it and enter its root folder:
+
+```bash
+git clone https://github.com/thearmankarapetyan/stackexchange-difficulty.git
+cd stackexchange-difficulty
+```
+
 ## Start here
 
 1. Read the complete operating guide:
