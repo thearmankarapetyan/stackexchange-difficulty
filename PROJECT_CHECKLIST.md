@@ -19,8 +19,10 @@ material retain their original form.
 - Canonical private repository:
   `https://github.com/thearmankarapetyan/stackexchange-difficulty`.
 - GitHub Actions publication run: `29151176595` (**2 jobs passed**).
+- GitHub Markdown migration commit: `fac76b617be420824ff4cd4a0d5dbcf38e8a1b79`.
+- GitHub Markdown verification run: `29152702947` (**2 jobs passed**).
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Current evidence matrix: **61 PASS, 0 FAIL**.
+- Current evidence matrix: **62 PASS, 0 FAIL**.
 - Final committed-state audit: **25 PASS, 0 FAIL**.
 - Previous DOCX guide audit: **25 PASS, 0 FAIL**.
 - GitHub Markdown documentation audit: **28 PASS, 0 FAIL**.
@@ -309,7 +311,7 @@ Status: **Complete**
 Evidence: `docs/README.md`, `docs/tutorials/`, `docs/how-to/`,
 `docs/reference/system-reference.md`, `docs/explanation/design-and-scope.md`,
 `../../archive/github-markdown-documentation-2026-07-11/manifest.tsv`, and
-checks `MD-01`–`MD-06` in the release evidence.
+checks `MD-01`–`MD-07` in the release evidence.
 
 ## Repeatable change verification gate
 
