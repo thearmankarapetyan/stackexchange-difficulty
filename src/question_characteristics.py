@@ -126,6 +126,7 @@ def build_characteristic_row(
     source values or events preceding the question raise contextual
     ``ValueError``.  Input rows remain unchanged.
     """
+    # Validate the question and any edit or closure time recorded on it.
     context = describe_row(posts_path, question)
     question_id = positive_id(question.get("Id"), context)
     question_created = parse_stack_datetime(
@@ -136,6 +137,7 @@ def build_characteristic_row(
         if event_time is not None:
             non_negative_hours(event_time, question_created, field)
 
+    # Select the earliest answer and the answer identified as accepted.
     first_answer = answers[0] if answers else None
     first_answer_created = (
         parse_stack_datetime(
@@ -165,6 +167,7 @@ def build_characteristic_row(
         else None
     )
 
+    # Calculate response delays and scores across every available answer.
     answer_times = [
         non_negative_hours(
             parse_stack_datetime(
@@ -194,6 +197,7 @@ def build_characteristic_row(
         else None
     )
 
+    # Keep the answer posting time separate from the later acceptance day.
     acceptance_date = acceptance_dates.get(accepted_answer_id or "")
     days_to_acceptance = (
         (acceptance_date - question_created.date()).days
@@ -211,6 +215,7 @@ def build_characteristic_row(
             f"{context}: acceptance date precedes accepted-answer post date"
         )
 
+    # Count discussion attached directly to the question before the first answer.
     comment_times = [
         parse_stack_datetime(
             comment.get("CreationDate"),
@@ -227,6 +232,7 @@ def build_characteristic_row(
         else None
     )
 
+    # Assemble every field; the TSV writer later applies the documented schema order.
     tags = tag_names(question.get("Tags"))
     measurements = content_measurements(question.get("Body"))
     measurements["tag_count"] = len(tags)

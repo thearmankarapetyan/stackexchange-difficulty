@@ -6,7 +6,8 @@ that follow the expected XML structure.
 
 ## Before making a change
 
-1. Read `README.md` and `PROJECT_CHECKLIST.md`. Use the README contents and
+1. Read the README [quick orientation](README.md#quick-orientation) and
+   [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md). Use the README contents and
    reference index to open the section affected by the change.
 2. Create a short-lived branch from `main`, using a descriptive prefix such as
    `feature/`, `fix/`, or `docs/`.
@@ -34,7 +35,8 @@ that follow the expected XML structure.
 
 ## Validate the change
 
-Run the checks that cover the changed behavior. The minimum source checks are:
+Run commands from the project root. Select the checks that cover the changed
+behavior. The minimum source checks are:
 
 ```bash
 python -m compileall -q src
@@ -58,8 +60,9 @@ python -m nbconvert \
   --ExecutePreprocessor.timeout=600
 ```
 
-For extraction, schema, or calculation changes, also run the controlled pilot
-described in `README.md` and inspect its validation and metadata files.
+For extraction, schema, or calculation changes, also run the
+[controlled pilot](README.md#tutorial-run-the-bundled-analysis) and inspect its
+validation and metadata files.
 Record release-level evidence in `docs/reference/release-verification.tsv` and
 update `PROJECT_CHECKLIST.md` when a verified completion claim changes.
 

@@ -4,10 +4,13 @@ This project prepares reproducible Stack Exchange evidence for studying question
 
 **Documentation revision:** 11 July 2026
 
+**Project checks:** [Open the GitHub Actions verification history](https://github.com/thearmankarapetyan/stackexchange-difficulty/actions/workflows/ci.yml).
+
 This README is the canonical project documentation. Its linked contents and reference index lead directly to the relevant section of this page. Supporting source files, examples, spreadsheets, figures, and research material remain linked in their native formats.
 
 ## Contents
 
+- [Quick orientation](#quick-orientation)
 - [Find an answer](#find-an-answer)
 - [Project overview](#project-overview)
 - [Workflow overview](#workflow-overview)
@@ -37,6 +40,32 @@ This README is the canonical project documentation. Its linked contents and refe
 - [Glossary](#glossary)
 - [Canonical locations](#canonical-locations)
 
+## Quick orientation
+
+Routine use keeps the Python source unchanged. Choose the required result,
+provide the corresponding run values, and inspect its completion check.
+
+| Intended result | Start here | Values selected for the run | Result |
+|---|---|---|---|
+| See the complete analysis work once | [Bundled analysis tutorial](#tutorial-run-the-bundled-analysis) | Use the fixed pilot values | A validated 20-question table and executed notebook |
+| Preserve complete question threads | [Complete-thread procedure](#create-complete-thread-xml) | Source folder, output file, and one or more question IDs | One XML file containing the selected questions, their direct comments, and all available answers |
+| Produce a compact field report | [Selected-summary procedure](#create-selected-field-summary-xml) | Source folder, output file, question IDs, and optional copied field selection | One XML file containing the enabled fields in the selected order |
+| Build and explore a question table | [Characteristic procedure](#build-a-validated-characteristic-table) | Source folder, community host, dump date, question period, output folder, and optional limit | A 47-column TSV, validation report, run metadata, and notebook results |
+
+Run commands from the [project root](#project-root), the folder that contains
+this README. Uppercase words such as `DUMP_DIR` and `QUESTION_ID` are
+placeholders to replace with real values. Brackets and an ellipsis describe
+optional or repeated values. Enter the real values and omit this notation. The
+[command-line interface definition](#command-line-interface) gives a concrete
+example.
+
+For routine runs, change command arguments, a copied summary-field TSV, or the
+notebook's **Editable settings** cell. Keep the Python modules and
+`config/characteristics.tsv` unchanged unless the documented output contract
+itself is being revised.
+
+[Back to contents](#contents)
+
 ## Find an answer
 
 Use this index as the entry point for a task or unfamiliar term.
@@ -44,6 +73,7 @@ Use this index as the entry point for a task or unfamiliar term.
 | Need or term | Direct destination |
 |---|---|
 | Understand the project in a few minutes | [Project overview](#project-overview) |
+| Know what may be changed for a normal run | [Quick orientation](#quick-orientation) |
 | See the complete sequence from Stack Exchange access to results | [Workflow overview](#workflow-overview) |
 | Run a first working example | [Bundled analysis tutorial](#tutorial-run-the-bundled-analysis) |
 | Register, sign in, and access an official dump | [Access and prepare a data dump](#access-and-prepare-a-data-dump) |
@@ -53,6 +83,7 @@ Use this index as the entry point for a task or unfamiliar term.
 | Produce tables, figures, and interpretations | [Run the exploratory notebook](#run-the-exploratory-notebook) |
 | Understand a particular script, library, or notebook | [Component reference](#component-reference) |
 | Look up a command or parameter | [Command-line interfaces](#command-line-interfaces) |
+| Understand placeholders in a command example | [Command-line interface](#command-line-interface) |
 | Understand `Posts.xml`, `Comments.xml`, or `Votes.xml` | [Source XML contracts](#source-xml-contracts) |
 | Understand an output file | [Output contracts](#output-contracts) |
 | Understand a notebook setting or figure | [Notebook interface](#notebook-interface) |
@@ -62,8 +93,10 @@ Use this index as the entry point for a task or unfamiliar term.
 | Understand the 47-field schema | [Characteristic specification](#characteristic-specification) |
 | Understand configurable summary selection | [Summary field selection](#summary-field-selection) |
 | Understand run provenance | [Run metadata](#run-metadata) |
+| Understand reuse and attribution | [Reuse and attribution](#reuse-and-attribution) |
 | Understand source and result folders | [Source-data folder](#source-data-folder) · [Results folder](#results-folder) |
 | Look up another technical term | [Glossary](#glossary) |
+| Understand XML, TSV, JSON, or IPYNB files | [XML](#xml) · [TSV](#tsv) · [JSON](#json) · [Jupyter notebook](#jupyter-notebook) |
 | Understand the 47 characteristics in plain language | [Data dictionary](docs/reference/data-dictionary.xlsx) |
 | Check what has been verified | [Verified results](#verified-results) |
 | Find a source, result, or supporting artifact | [Canonical locations](#canonical-locations) |
@@ -213,15 +246,16 @@ These procedures start from a selected goal. Use the [command reference](#comman
 
 > **Goal:** Place the XML files required by a selected processing route in one readable local folder.
 
-**Before starting:** Select the Stack Exchange community, provide enough storage for its archive, and have an account on that community.
+**Before starting:** Select a community from the [Stack Exchange site directory](https://stackexchange.com/sites), provide enough storage for its archive, and have an account on that community.
 
 1. Open the selected Stack Exchange community and sign in or create an account.
 2. Open the profile page, select **Settings**, then select **Data dump access** under **Access**.
-3. Read and affirm the declaration presented by Stack Exchange.
-4. Select **Download data** and wait for the archive download to finish.
-5. Extract the archive into a selected local source-data folder.
-6. Confirm `Posts.xml` and `Comments.xml` for the complete-thread and selected-summary routes.
-7. Confirm `Posts.xml`, `Comments.xml`, and `Votes.xml` for the characteristic route.
+3. Read the current declaration and affirm it only when the intended use satisfies the displayed conditions.
+4. Note the latest dump date shown on the page. The characteristic builder uses this value for `--dump-date` and records it as the observation date.
+5. Select **Download data** and wait for the archive download to finish.
+6. Extract the archive into a selected local source-data folder. Any readable folder can be used; `data/raw/<descriptive-name>/` is the ignored project-local convention.
+7. Confirm `Posts.xml` and `Comments.xml` for the complete-thread and selected-summary routes.
+8. Confirm `Posts.xml`, `Comments.xml`, and `Votes.xml` for the characteristic route.
 
 Authoritative access instructions: [Stack Exchange Help Center — How do I access a data dump?](https://stackoverflow.com/help/data-dumps).
 
@@ -231,7 +265,7 @@ Authoritative access instructions: [Stack Exchange Help Center — How do I acce
 
 > **Goal:** Create one XML file containing one or more questions, each question's direct comments, and every available answer.
 
-**Before starting:** Prepare `Posts.xml` and `Comments.xml`, then collect one or more [question IDs](#question-id) from the same community.
+**Before starting:** Prepare `Posts.xml` and `Comments.xml`, then collect one or more [question IDs](#question-id) from the same community. On a question page, the ID is the positive number immediately after `/questions/` in the web address: `/questions/123456/example-title` has question ID `123456`.
 
 ```bash
 python src/extract_threads.py \
@@ -373,7 +407,7 @@ Shared source semantics—IDs, timestamps, ordering, question-comment selection,
 
 #### Characteristic builder
 
-[`src/build_characteristics.py`](src/build_characteristics.py) selects questions, reads related rows, calls the calculation library, validates every result, and publishes one run. It requires three source XML files plus community, snapshot, period, output, and optional schema or limit settings. Its `run` function and command create `thread_characteristics.tsv`, `validation.tsv`, and `run_metadata.json`. Missing inputs, invalid settings or schema, inconsistent source values, internal validation failures, and protected existing outputs stop the run before incomplete canonical files are published. See the [procedure](#build-a-validated-characteristic-table), [command](#characteristic-builder-command), and [output contracts](#characteristic-output-contracts).
+[`src/build_characteristics.py`](src/build_characteristics.py) selects questions, reads related rows, calls the calculation library, validates every result, and publishes one run. It requires three source XML files plus community, snapshot, period, output, and optional schema or limit settings. Its `run` function and command create `thread_characteristics.tsv`, `validation.tsv`, and `run_metadata.json`. Missing inputs, invalid settings or schema, inconsistent source values, internal validation failures, and protected existing outputs stop the run before writing begins. Each result file replaces its destination only after that file is complete. See the [procedure](#build-a-validated-characteristic-table), [command](#characteristic-builder-command), and [output contracts](#characteristic-output-contracts).
 
 #### EDA notebook
 
@@ -388,6 +422,7 @@ The project supports Python 3.10 or newer.
 | Git | Current supported release | Obtain the repository and record reviewed changes |
 | Archive extraction tool | Operating-system tool or 7-Zip equivalent | Extract the downloaded community archive |
 | Python | `>=3.10` | Source modules and notebook runtime |
+| Node.js and npm | Current long-term-support release; development only | Run the Markdown check through `npx` |
 | lxml | `>=5.2, <6` | XML processing |
 | beautifulsoup4 | `>=4.12, <5` | Rendered HTML text processing |
 | NumPy | `>=1.26, <3` | Numerical notebook operations |
@@ -415,17 +450,30 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-`requirements.txt` defines the source and notebook environment. `requirements-dev.txt` adds Ruff for repository checks. Official dump access uses a Stack Exchange account; the processing scripts require no Stack Exchange credential. The project needs enough storage for the selected archive, read access to source XML, and write access to selected output locations. It uses no project-specific environment variable.
+A virtual environment is an isolated folder containing the Python packages for
+this project. It prevents these packages from changing another Python project
+on the same computer. `requirements.txt` defines the source and notebook
+environment. `requirements-dev.txt` adds Ruff for repository checks. Official
+dump access uses a Stack Exchange account; the processing scripts require no
+Stack Exchange credential. The project needs enough storage for the selected
+archive, read access to source XML, and write access to selected output
+locations. It uses no project-specific environment variable.
 
 | Shell | Environment activation command |
 |---|---|
 | POSIX shell | `source .venv/bin/activate` |
 | Windows PowerShell | `.venv\Scripts\Activate.ps1` |
 
+Depending on the operating-system installation, the Python command may be
+named `python3`, `python`, or `py`. After activation, the command used in this
+README is `python`.
+
 ### Repository structure
 
 ```text
 stackexchange-difficulty/
+├── .github/                         GitHub checks, ownership, and review settings
+├── AGENTS.md                        Maintenance rules for coding assistants
 ├── README.md                         Canonical project documentation
 ├── PROJECT_CHECKLIST.md              Completion and evidence record
 ├── src/                              Five production Python modules
@@ -462,6 +510,18 @@ stackexchange-difficulty/
 Contribution rules are in [`CONTRIBUTING.md`](CONTRIBUTING.md). Security and data-handling rules are in [`SECURITY.md`](SECURITY.md). Pull-request, ownership, continuous-integration, and dependency settings are under [`.github/`](.github/).
 
 ### Command-line interfaces
+
+Run these commands from the project root. Replace each uppercase placeholder
+with one value from the intended run. For example, this notation:
+
+```text
+QUESTION_ID [QUESTION_ID ...]
+```
+
+means “supply one or more question numbers.” A real ending can therefore be
+`123456` or `123456 234567`; enter only the numbers and spaces.
+Paths may be relative to the project root or absolute. File and folder names
+containing spaces need the normal quoting required by the selected shell.
 
 #### Complete-thread extractor command
 
@@ -513,7 +573,7 @@ python src/build_characteristics.py \
 | Argument | Requirement | Meaning |
 |---|---|---|
 | `--dump-dir DUMP_DIR` | Required | Folder containing `Posts.xml`, `Comments.xml`, and `Votes.xml` |
-| `--site SITE` | Required | Community host used for URLs and provenance; supply the host name |
+| `--site SITE` | Required | Community host used for URLs and provenance; copy only the host from the community address, without `https://` or a following path |
 | `--dump-date DUMP_DATE` | Required | Snapshot date represented by the dump in `YYYY-MM-DD` form |
 | `--start-date START_DATE` | Required | First included question creation date, inclusive, in `YYYY-MM-DD` form |
 | `--end-date END_DATE` | Required | Last included question creation date, inclusive, in `YYYY-MM-DD` form |
@@ -628,6 +688,11 @@ The notebook has one visible **Editable settings** cell. Each setting is explain
 | `FDR_ALPHA` | Benjamini–Hochberg false-discovery-rate limit | `0.05` |
 | `MAX_CASES_TO_SHOW` | Maximum questions displayed in the final inspection table | `8` |
 
+Spearman `rho` describes whether two measurements tend to rise or fall together
+after ranking their values; it ranges from `-1` to `1`. False-discovery-rate
+control limits the expected share of chance findings among the displayed
+correlation pairs when many pairs are tested.
+
 The notebook validates file existence, nonempty input, required columns, dates, numeric values, `TRUE`/`FALSE` fields, one community, one snapshot, unique question IDs, and temporal consistency before plotting.
 
 | Output | Content |
@@ -653,7 +718,7 @@ Every plot is followed by an explanation of what it shows, how to read it, its m
 | Component | Filesystem behavior | Handled failure behavior |
 |---|---|---|
 | Thread and summary extractors | Create parent folders and atomically replace the selected destination XML | Print an English contextual error, return `1`, preserve source XML, and preserve a prior output until publication completes |
-| Characteristic builder | Create three canonical files in the selected output folder | Refuse existing outputs unless `--overwrite` is supplied, stop publication for internal `FAIL`, print a contextual error, and return `1` |
+| Characteristic builder | Create three canonical files in the selected output folder; publish each file after its content is complete | Refuse existing outputs unless `--overwrite` is supplied, stop before writing for internal `FAIL`, print a contextual error, and return `1`; after a filesystem interruption, review the folder and rerun the complete build |
 | EDA notebook | Update saved notebook outputs when executed in place | Raise a clear exception for missing or incompatible input, invalid values, mixed communities or snapshots, duplicate IDs, and inconsistent dates |
 
 | Message fragment | Meaning |
@@ -682,7 +747,7 @@ Every plot is followed by an explanation of what it shows, how to read it, its m
 | [`docs/project-workflow-overview.svg`](docs/project-workflow-overview.svg), [`PNG`](docs/project-workflow-overview.png) | SVG and PNG; editable workflow and publication image | Maintained with workflow changes | Open in a browser or SVG/image editor; tracked |
 | [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) | IPYNB; generic self-contained EDA | Maintained with the 47-field table and analysis requirements | Open in JupyterLab; tracked |
 | [`docs/reference/data-dictionary.xlsx`](docs/reference/data-dictionary.xlsx) | XLSX; plain-language definitions for 47 characteristics | Maintained with `config/characteristics.tsv` | Open in spreadsheet software; tracked |
-| [`docs/reference/stackexchange-published-statistics.xlsx`](docs/reference/stackexchange-published-statistics.xlsx) | XLSX; published network and tag statistics with sources | Maintained from cited published values | Open in spreadsheet software; tracked |
+| [`docs/reference/stackexchange-published-statistics.xlsx`](docs/reference/stackexchange-published-statistics.xlsx) | XLSX; dated snapshot of published network and tag statistics with sources | Maintained from cited published values; retrieval time is on the **Read me** sheet | Open in spreadsheet software; tracked |
 | [`docs/explanation/state-of-the-art-qpp-ppp-rag.pdf`](docs/explanation/state-of-the-art-qpp-ppp-rag.pdf) | PDF; scientific QPP, PPP, and RAG context | Maintained as the scientific review | Open in a PDF reader; tracked |
 | [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv) | TSV; recorded verification matrix | Updated after verified changes | Open as tab-separated text or a spreadsheet; tracked |
 
@@ -726,7 +791,8 @@ The examples contain public Stack Exchange content, source URLs, available autho
 
 ### Verified results
 
-The recorded release environment used Python 3.12.3 with Ruff 0.15.21, lxml 5.4.0, beautifulsoup4 4.15.0, NumPy 2.5.1, pandas 2.3.3, Matplotlib 3.11.0, SciPy 1.18.0, IPython 9.15.0, ipykernel 6.31.0, JupyterLab 4.6.1, and nbconvert 7.17.1.
+The recorded clean release environment used Python 3.12.3. Exact observed
+package versions are recorded in row `ENV-02` of the release evidence.
 
 - Complete-thread and default-summary outputs match retained real-data examples byte for byte.
 - The compact summary selection matches its six-field XML example byte for byte.
@@ -735,7 +801,7 @@ The recorded release environment used Python 3.12.3 with Ruff 0.15.21, lxml 5.4.
 - The verified annual Super User run contains 11,578 questions, no validation failure, and documented count-difference warnings for eight answer counts and two comment counts.
 - The generic notebook executes every code cell from a clean kernel.
 
-Detailed evidence is in [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv). The verified release tag is `verified-release-2026-07-11`.
+Detailed evidence is in [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv). Use rows marked `current release` for the present repository state. Rows marked `historical transition` preserve evidence from earlier consolidation and documentation stages. The verified release tag is `verified-release-2026-07-11`.
 
 [Back to contents](#contents)
 
@@ -793,7 +859,20 @@ A controlled small run exposes input, schema, and calculation problems quickly. 
 - Human-response traces support analysis and case selection. Difficulty categories require explicit assessment criteria.
 - Raw dumps and regenerated annual outputs remain external or ignored because of their size.
 
-The [scientific state-of-the-art report](docs/explanation/state-of-the-art-qpp-ppp-rag.pdf) provides the wider QPP, PPP, and RAG research context.
+The [scientific state-of-the-art report](docs/explanation/state-of-the-art-qpp-ppp-rag.pdf) provides the wider Query Performance Prediction (QPP), Prompt Performance Prediction (PPP), and retrieval-augmented generation (RAG) research context.
+
+### Reuse and attribution
+
+Complete-thread XML preserves the available source attributes, including
+author and `ContentLicense` values. The characteristic table records question
+and accepted-answer attribution fields. A selected summary can omit provenance
+fields through its field selection, so retain it with its source community and
+dump information. Preserve the available attribution and follow the recorded
+licence when sharing or reusing Stack Exchange content.
+
+The private repository currently has no software `LICENSE` file. External reuse
+or redistribution of the project code and authored documentation therefore
+requires explicit permission from the project owner or responsible institution.
 
 [Back to contents](#contents)
 
@@ -813,6 +892,23 @@ One documented value describing question content, provenance, human activity, or
 
 [`config/characteristics.tsv`](config/characteristics.tsv), which defines the 47 output names, order, types, roles, sources, calculations, and field contracts.
 
+### Command-line interface
+
+A text-based way to run a program by entering a command in a terminal. A command
+starts with the Python program and script, followed by named settings and their
+values. For example:
+
+```bash
+python src/extract_threads.py \
+  --dump-dir data/raw/example-dump \
+  --output data/processed/example-threads.xml \
+  123456
+```
+
+Here `--dump-dir` selects the source folder, `--output` selects the result file,
+and `123456` is the question ID. The full argument contracts are in
+[Command-line interfaces](#command-line-interfaces).
+
 ### Data dump
 
 A downloadable archive containing a snapshot of public data from one Stack Exchange community. The project reads extracted XML files from this archive.
@@ -828,6 +924,24 @@ The state and date represented by one downloaded data dump. Scores, views, edits
 ### EDA
 
 Exploratory data analysis using descriptive tables, figures, statistical associations, plain-language interpretations, and selected concrete cases. The project uses one generic Jupyter notebook for this work.
+
+### JSON
+
+JavaScript Object Notation, a structured text format made of named values,
+lists, numbers, and text. The project writes `run_metadata.json` so run settings
+and source-file details can be read by people and software.
+
+### Jupyter notebook
+
+An interactive document stored in an `.ipynb` file. It combines Markdown
+explanations, executable Python cells, tables, figures, and saved results. Open
+the project's notebook in JupyterLab and run its cells from top to bottom.
+
+### Project root
+
+The top folder of the cloned repository. It contains `README.md`, `src/`,
+`config/`, `data/`, and `notebooks/`. Commands in this README start from this
+folder unless a procedure states another location.
 
 ### Question ID
 
@@ -861,9 +975,22 @@ A TSV catalogue whose `TRUE` rows select summary XML elements and whose row orde
 
 One question, comments attached directly to that question, and all available answers. The implemented thread scope excludes comments attached to answers.
 
+### TSV
+
+Tab-separated values, a plain-text table in which tab characters separate
+columns. Spreadsheet software can open a TSV, and Python reads it with
+`sep="\t"`. Preserve the tab-separated format when editing a configuration TSV.
+
 ### Validation report
 
 `validation.tsv`, which contains `PASS`, `WARN`, and `FAIL` checks with their observed values for one characteristic build.
+
+### XML
+
+Extensible Markup Language, a structured text format that uses nested elements
+and attributes. Stack Exchange dump files store each record as a `<row ... />`
+element. The thread and summary routes also produce XML so the extracted values
+retain a clearly nested structure.
 
 [Back to contents](#contents)
 
