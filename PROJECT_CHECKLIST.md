@@ -11,13 +11,16 @@ material retain their original form.
 
 - Canonical private repository:
   `https://github.com/thearmankarapetyan/stackexchange-difficulty`.
-- Current reviewed `main` commit:
+- Reviewed base `main` commit:
   `491a1baba60489969b93d1bfe94d6a6399bee211`.
-- Current reviewed GitHub Actions run: `29160586054` (**2 jobs passed**).
+- Repository-comprehension implementation commit: `7c50682` in pull request
+  `#8`.
+- Repository-comprehension GitHub Actions run: `29164604048` (**2 jobs
+  passed**).
 - Verified release tag: `verified-release-2026-07-11`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Evidence matrix: **83 PASS, 0 FAIL** — **61 current-release** rows and
+- Evidence matrix: **90 PASS, 0 FAIL** — **68 current-release** rows and
   **22 historical-transition** rows.
 - Thirteen-task completion audit: **14 PASS, 0 FAIL**.
 
@@ -33,9 +36,11 @@ Status: **Complete**
   directly to the relevant same-page heading.
 - [x] Supporting figures, spreadsheets, TSV evidence, examples, and scientific
   material remain linked in their appropriate formats.
+- [x] The quick orientation identifies the normal run choices, explains command
+  notation, and links directly to plain-language file-format definitions.
 
 Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08`, `README-01`–`README-07`,
-and `T13-01` in the release evidence.
+`HANDOVER-01`–`HANDOVER-03`, and `T13-01` in the release evidence.
 
 ## Task 2 — Document the project structure and architecture
 
@@ -73,10 +78,13 @@ Status: **Complete**
   indicators.
 - [x] The tutorial starts with a small controlled run before any complete-period
   execution.
+- [x] The access procedure shows where to select a community, obtain the dump
+  date, place extracted XML, and find a question ID in its page address.
 
 Evidence: `README.md#environment-and-installation`,
 `README.md#access-and-prepare-a-data-dump`,
-`README.md#tutorial-run-the-bundled-analysis`, and `T13-03`.
+`README.md#tutorial-run-the-bundled-analysis`, `HANDOVER-03`, `HANDOVER-06`, and
+`T13-03`.
 
 ## Task 4 — Document every script and notebook
 
@@ -159,9 +167,11 @@ Status: **Complete**
   used only to explain the one notebook remains visible in that notebook.
 - [x] A clean-kernel execution verifies cell order and independence from hidden
   state.
+- [x] Saved tables and figures match a repeated clean execution of the current
+  notebook and bundled pilot.
 
 Evidence: `notebooks/stackexchange_eda.ipynb`, `src/`, checks `NB-01`,
-`SRC-06`, and `T13-08`.
+`SRC-06`, `HANDOVER-05`, and `T13-08`.
 
 ## Task 9 — Keep scripts generic and configurable
 
@@ -198,10 +208,12 @@ Status: **Complete**
   inspection, cleanup, and Git diff review.
 - [x] Git history, pull requests, CI, dependency automation, security guidance,
   and checksum archives preserve maintainable project evolution.
+- [x] Release evidence separates current-release checks from historical
+  transition records, and the documented path succeeds from a fresh clone.
 
 Evidence: `src/`, `config/`, `AGENTS.md`, `CONTRIBUTING.md`, `.github/`, the
 repeatable gate below, checks `SRC-01`–`SRC-06`, `AUDIT-01`, `GH-01`–`GH-07`,
-and `T13-10`.
+`HANDOVER-01`–`HANDOVER-07`, and `T13-10`.
 
 ## Task 11 — Provide a complete practical example
 
@@ -219,11 +231,14 @@ Status: **Complete**
 - [x] The tutorial identifies inputs, locations, commands, intermediate outputs,
   final results, success indicators, and the expected repeatability boundary for
   metadata timestamps and paths.
+- [x] The uninterrupted tutorial succeeds from a fresh remote clone and a newly
+  created Python environment.
 
 Evidence: `data/examples/pilot_dump/`,
 `data/examples/characteristics_pilot.tsv`,
 `data/examples/characteristics_pilot_validation.tsv`,
-`README.md#tutorial-run-the-bundled-analysis`, and `T13-11`.
+`README.md#tutorial-run-the-bundled-analysis`, `HANDOVER-04`, `HANDOVER-06`, and
+`T13-11`.
 
 ## Task 12 — Maintain a complete deliverables register
 
@@ -256,12 +271,14 @@ Status: **Complete**
   installation, shell activation, permissions, storage, and external tools.
 - [x] Installation and execution were verified in a clean Python 3.12.3
   environment, and the exact observed package versions remain recorded.
+- [x] Development-only Node.js and npm requirements for the Markdown check are
+  stated in the environment reference.
 - [x] GitHub CI repeats installation and source/interface checks on Python 3.10
   and 3.12 and executes the notebook on Python 3.12.
 
 Evidence: `requirements.txt`, `requirements-dev.txt`,
-`README.md#environment-and-installation`, checks `ENV-01`–`ENV-03`, `GH-06`,
-and `T13-13`.
+`README.md#environment-and-installation`, checks `ENV-01`–`ENV-02`, `GH-06`,
+`HANDOVER-06`, `HANDOVER-07`, and `T13-13`.
 
 ## Repeatable change verification gate
 
