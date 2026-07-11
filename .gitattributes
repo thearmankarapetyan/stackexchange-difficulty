@@ -8,5 +8,6 @@
 
 # Verified examples preserve source whitespace inside copied post bodies.
 data/examples/*.xml -diff
+data/examples/pilot_dump/*.xml -diff
 data/examples/characteristics_pilot.tsv -diff
 data/examples/characteristics_pilot_validation.tsv -diff

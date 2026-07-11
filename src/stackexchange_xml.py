@@ -4,6 +4,10 @@ The public dump stores records as ``<row ... />`` elements.  The files can be
 several gigabytes, so ``stream_rows`` reads one row at a time and clears it
 before continuing.  The two thread-extraction commands use the remaining
 helpers to apply the same validation and chronological ordering rules.
+
+The module requires ``lxml``.  It reads source XML without modifying it and
+publishes generated XML through a temporary file in the destination folder.
+It has no command-line interface.
 """
 
 from __future__ import annotations
@@ -28,7 +32,12 @@ STACK_DATETIME_PATTERN = re.compile(
 
 
 def normalize_question_ids(question_ids: Sequence[str]) -> list[str]:
-    """Validate question IDs and remove duplicates in the requested order."""
+    """Validate question IDs and remove duplicates in the requested order.
+
+    IDs must be positive decimal integers.  Leading zeroes are removed, and a
+    repeated ID keeps only its first requested position.  ``ValueError``
+    identifies an invalid value or an empty request.
+    """
     normalized: dict[str, None] = {}
     for question_id in question_ids:
         value = str(question_id)
@@ -43,7 +52,13 @@ def normalize_question_ids(question_ids: Sequence[str]) -> list[str]:
 
 
 def stream_rows(path: Path) -> Iterator[XmlRow]:
-    """Yield copied row attributes while keeping memory use bounded."""
+    """Yield copied ``<row>`` attributes while keeping memory use bounded.
+
+    The source file is parsed incrementally.  Each element is cleared after
+    its copied attributes have been yielded, so callers can process large dump
+    files without retaining the complete XML tree.  ``lxml`` reports malformed
+    or unreadable XML to the caller.
+    """
     context = etree.iterparse(str(path), events=("end",), tag="row", huge_tree=True)
     for _, element in context:
         try:
@@ -67,14 +82,23 @@ def describe_row(path: Path, row: XmlRow) -> str:
 
 
 def positive_id(value: str | None, context: str, field: str = "Id") -> str:
-    """Return a positive decimal identifier in its canonical form."""
+    """Return a positive decimal identifier in its canonical form.
+
+    ``ValueError`` includes the supplied row context and field name when the
+    value is missing, non-decimal, or zero or lower.
+    """
     if value is None or not value.isdecimal() or int(value) <= 0:
         raise ValueError(f"{context}: {field} must be a positive decimal integer")
     return str(int(value))
 
 
 def parse_stack_datetime(value: str | None, context: str, field: str) -> datetime:
-    """Parse the timestamp format used by Stack Exchange dump rows."""
+    """Parse a Stack Exchange timestamp and preserve its available precision.
+
+    Accepted values use ``YYYY-MM-DDTHH:MM:SS`` with an optional decimal
+    fraction.  ``ValueError`` includes the source-row context, field, and
+    rejected value.
+    """
     if not value:
         raise ValueError(f"{context}: missing {field}")
     try:
@@ -102,7 +126,13 @@ def chronological_key(path: Path, row: XmlRow) -> tuple[datetime, Decimal, int]:
 def read_posts(
     posts_path: Path, question_ids: Sequence[str]
 ) -> tuple[dict[str, XmlRow], dict[str, list[XmlRow]]]:
-    """Read requested questions and every answer belonging to them."""
+    """Read requested questions and every available answer belonging to them.
+
+    The complete ``Posts.xml`` file is streamed once.  Returned answers are
+    ordered by full creation time and numeric ID.  ``ValueError`` identifies a
+    missing ID, a selected post that is not a question, or invalid selected-row
+    identifiers and dates.
+    """
     requested = set(question_ids)
     questions: dict[str, XmlRow] = {}
     answers: dict[str, list[XmlRow]] = {}
@@ -137,7 +167,12 @@ def read_posts(
 def read_question_comments(
     comments_path: Path, question_ids: Collection[str]
 ) -> dict[str, list[XmlRow]]:
-    """Read comments attached directly to the requested questions."""
+    """Read and order comments attached directly to requested questions.
+
+    A comment is selected when its ``PostId`` equals a requested question ID.
+    Comments attached to answers are outside this function's scope.  Invalid
+    selected-row identifiers or creation dates raise ``ValueError``.
+    """
     requested = set(question_ids)
     comments: dict[str, list[XmlRow]] = {}
     for row in stream_rows(comments_path):
@@ -150,7 +185,11 @@ def read_question_comments(
 
 
 def source_paths(dump_dir: Path) -> tuple[Path, Path]:
-    """Return verified Posts.xml and Comments.xml paths."""
+    """Return verified ``Posts.xml`` and ``Comments.xml`` paths.
+
+    ``FileNotFoundError`` names each required file that is absent from the
+    selected dump folder.
+    """
     posts_path = Path(dump_dir) / "Posts.xml"
     comments_path = Path(dump_dir) / "Comments.xml"
     for path in (posts_path, comments_path):
@@ -160,13 +199,22 @@ def source_paths(dump_dir: Path) -> tuple[Path, Path]:
 
 
 def protect_source_files(output_path: Path, source_files: Sequence[Path]) -> None:
-    """Prevent an output path from replacing an input dump file."""
+    """Prevent an output path from replacing any input file.
+
+    Paths are resolved before comparison.  ``ValueError`` is raised before any
+    output is written when the destination identifies a protected source.
+    """
     if Path(output_path).resolve() in {path.resolve() for path in source_files}:
         raise ValueError("Output path must not overwrite a source XML file")
 
 
 def write_xml_safely(tree: etree._ElementTree, output_path: Path) -> None:
-    """Publish a complete XML file and remove a temporary file after failures."""
+    """Publish a complete XML tree through a temporary destination-side file.
+
+    Parent folders are created when needed.  The final replacement occurs only
+    after serialization succeeds; the temporary file is removed after success
+    or failure.  Filesystem and serialization errors propagate to the caller.
+    """
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temporary_path: Path | None = None

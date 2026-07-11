@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Real subset of the official April 2026 Software Engineering public dump. -->
+<votes>
+  <row Id="3219988" PostId="450377" VoteTypeId="1" CreationDate="2024-01-03T00:00:00.000"/>
+  <row Id="3220041" PostId="450383" VoteTypeId="1" CreationDate="2024-01-04T00:00:00.000"/>
+  <row Id="3220175" PostId="450388" VoteTypeId="1" CreationDate="2024-01-04T00:00:00.000"/>
+  <row Id="3220525" PostId="450392" VoteTypeId="1" CreationDate="2024-01-06T00:00:00.000"/>
+  <row Id="3220472" PostId="450396" VoteTypeId="1" CreationDate="2024-01-06T00:00:00.000"/>
+  <row Id="3220242" PostId="450412" VoteTypeId="1" CreationDate="2024-01-04T00:00:00.000"/>
+  <row Id="3221678" PostId="450415" VoteTypeId="1" CreationDate="2024-01-16T00:00:00.000"/>
+  <row Id="3220904" PostId="450417" VoteTypeId="1" CreationDate="2024-01-10T00:00:00.000"/>
+  <row Id="3220560" PostId="450420" VoteTypeId="1" CreationDate="2024-01-07T00:00:00.000"/>
+  <row Id="3220561" PostId="450430" VoteTypeId="1" CreationDate="2024-01-07T00:00:00.000"/>
+  <row Id="3220644" PostId="450437" VoteTypeId="1" CreationDate="2024-01-08T00:00:00.000"/>
+  <row Id="3221026" PostId="450446" VoteTypeId="1" CreationDate="2024-01-11T00:00:00.000"/>
+</votes>

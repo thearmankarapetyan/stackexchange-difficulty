@@ -5,6 +5,9 @@
 - Treat that checklist as the canonical roadmap. Check an item only after
   verifying its evidence, and update its **Last reviewed** date when status
   changes.
+- Preserve its thirteen independently numbered task sections. Record shared
+  evidence under every applicable task instead of merging or silently dropping
+  a requirement.
 - Write authored documentation, code comments, command messages, notebook
   prose, and workbook labels in English. Preserve source data, XML values,
   proper names, and quoted research material in their original form.

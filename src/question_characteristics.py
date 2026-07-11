@@ -4,6 +4,10 @@
 acceptance rows.  This module turns those rows into the 47 columns described in
 ``config/characteristics.tsv``.  Keeping the formulas together makes it easy to
 compare the implementation with the data dictionary.
+
+The module is used as a library by ``build_characteristics.py`` and has no
+command-line interface.  It requires Beautiful Soup for rendered-HTML parsing;
+all source row dictionaries remain unchanged.
 """
 
 from __future__ import annotations
@@ -61,7 +65,12 @@ def readable_text(html_value: str | None) -> str:
 
 
 def content_measurements(body_html: str | None) -> dict[str, int | str]:
-    """Calculate the transparent text and markup measurements."""
+    """Calculate visible text, prose words, code lines, links, and images.
+
+    Word counts exclude ``pre`` and ``code`` content.  Code lines count
+    nonempty lines inside ``pre`` blocks.  Missing HTML produces empty text and
+    zero counts; the input string is never modified.
+    """
     soup = BeautifulSoup(body_html or "", "html.parser")
     body_text = " ".join(soup.get_text(" ", strip=True).split())
     code_lines = sum(
@@ -109,7 +118,14 @@ def build_characteristic_row(
     posts_path: Path,
     comments_path: Path,
 ) -> dict[str, Any]:
-    """Create one documented 47-field row for one question."""
+    """Create one documented 47-field row for one question.
+
+    Related answers and direct question comments must already be ordered.  The
+    function validates source IDs, timestamps, counts, and event order, then
+    combines source-maintained values with transparent calculations.  Invalid
+    source values or events preceding the question raise contextual
+    ``ValueError``.  Input rows remain unchanged.
+    """
     context = describe_row(posts_path, question)
     question_id = positive_id(question.get("Id"), context)
     question_created = parse_stack_datetime(

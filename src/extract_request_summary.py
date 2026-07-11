@@ -7,6 +7,9 @@ source-code change.  Each output ``request`` represents one question.
 Example:
     python src/extract_request_summary.py --dump-dir /path/to/site-dump \
         --output data/examples/request-summary.xml 123 456
+
+Requires Python 3.10 or newer and ``lxml``.  Source dump and field-selection
+files remain unchanged, and the destination XML is published atomically.
 """
 
 from __future__ import annotations
@@ -71,7 +74,13 @@ def first_row(rows: Sequence[dict[str, str]]) -> dict[str, str]:
 
 
 def load_summary_fields(path: Path) -> list[str]:
-    """Load and validate the enabled fields in their requested output order."""
+    """Load enabled summary fields in their requested output order.
+
+    The TSV must preserve every supported field-to-source mapping and use
+    ``TRUE`` or ``FALSE`` in ``include``.  Unknown fields, duplicates, invalid
+    mappings, invalid flags, and an empty selection raise contextual
+    ``ValueError``; an absent file raises ``FileNotFoundError``.
+    """
     if not path.is_file():
         raise FileNotFoundError(f"Summary field file not found: {path}")
 
@@ -122,7 +131,12 @@ def summary_values(
     comments: Sequence[dict[str, str]],
     answers: Sequence[dict[str, str]],
 ) -> dict[str, str]:
-    """Map the question and its related rows to every supported field."""
+    """Map one question and its already ordered related rows to supported fields.
+
+    The first comment and answer come from position zero.  The accepted answer
+    is matched to the question's original ``AcceptedAnswerId``.  Unavailable
+    source values become empty strings.
+    """
     accepted_id = question.get("AcceptedAnswerId", "")
     records = {
         "question": question,
@@ -145,7 +159,12 @@ def build_summary_tree(
     answers: dict[str, list[dict[str, str]]],
     fields: Sequence[str],
 ) -> etree._ElementTree:
-    """Build one ordered, selected-field element per requested question."""
+    """Build one ordered, selected-field element per requested question.
+
+    The input dictionaries must contain every requested question.  Field order
+    is copied exactly from ``fields``; empty values remain present as empty XML
+    elements.
+    """
     root = etree.Element("requests")
     for question_id in question_ids:
         values = summary_values(
@@ -165,7 +184,13 @@ def extract_request_summaries(
     output_path: Path,
     fields_path: Path = DEFAULT_FIELDS_FILE,
 ) -> Path:
-    """Write selected summary fields for one or more question IDs."""
+    """Write selected summary fields for one or more question IDs.
+
+    The function validates and deduplicates IDs, loads the selected field TSV,
+    reads related dump rows, protects every source path, and atomically
+    publishes the XML.  Input, XML, validation, and filesystem errors propagate
+    to the caller; the returned path identifies the result.
+    """
     requested_ids = normalize_question_ids(question_ids)
     posts_path, comments_path = source_paths(Path(dump_dir))
     output_path = Path(output_path)
@@ -183,7 +208,12 @@ def extract_request_summaries(
 
 
 def main(arguments: Sequence[str] | None = None) -> int:
-    """Run the command-line interface and return its process exit code."""
+    """Run the command-line interface and return its process exit code.
+
+    Success prints the destination and returns ``0``.  Handled input,
+    validation, XML, and filesystem errors print one contextual message to
+    standard error and return ``1``.
+    """
     parser = argparse.ArgumentParser(
         description="Extract selected question-summary fields into one XML file."
     )

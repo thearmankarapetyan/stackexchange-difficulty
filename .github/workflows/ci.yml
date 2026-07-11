@@ -60,6 +60,24 @@ jobs:
           python src/extract_request_summary.py --help
           python src/build_characteristics.py --help
 
+      - name: Rebuild the bundled XML pilot
+        if: matrix.python-version == '3.12'
+        run: |
+          python src/build_characteristics.py \
+            --dump-dir data/examples/pilot_dump \
+            --site softwareengineering.stackexchange.com \
+            --dump-date 2026-04-20 \
+            --start-date 2024-01-01 \
+            --end-date 2024-12-31 \
+            --limit 20 \
+            --output-dir /tmp/stackexchange-pilot
+          cmp \
+            /tmp/stackexchange-pilot/thread_characteristics.tsv \
+            data/examples/characteristics_pilot.tsv
+          cmp \
+            /tmp/stackexchange-pilot/validation.tsv \
+            data/examples/characteristics_pilot_validation.tsv
+
       - name: Execute the bundled pilot notebook
         if: matrix.python-version == '3.12'
         run: |
