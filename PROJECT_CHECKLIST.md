@@ -14,8 +14,10 @@ material retain their original form.
 - Completed implementation commit:
   `53212ec15000635d17743a74a5c6adb3f7f9ac16`.
 - Verified release tag: `verified-release-2026-07-11`.
+- Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
 - Final committed-state audit: **25 PASS, 0 FAIL**.
+- Strict single-document guide audit: **25 PASS, 0 FAIL**.
 
 ## Task 1 — Finalize and integrate the canonical overview flowchart
 
@@ -60,13 +62,25 @@ Status: **Complete**
   version-control status.
 - [x] Useful verified information from the four former French documents was
   consolidated into clear English sections.
-- [x] The guide follows Diátaxis through distinct tutorial, how-to, reference,
-  and explanation parts.
-- [x] A LibreOffice PDF preview produced 17 pages; every page was visually
-  inspected and no blank, clipped, or overlapping page remains.
+- [x] A brief orientation directs each documentation need to one of four
+  deliberately separated Diátaxis parts in the same DOCX.
+- [x] The tutorial follows one fixed bundled pilot, produces visible results
+  early, gives an expected result after every stage, and contains no dump,
+  community, date, field, or plotting choice.
+- [x] Six how-to guides are named for practical goals and contain actions,
+  prerequisites, completion checks, and links to exact reference contracts.
+- [x] The reference follows the implemented system structure and states neutral
+  facts about components, dependencies, commands, XML, outputs,
+  configurations, notebook behavior, validation, errors, deliverables, and
+  terminology.
+- [x] The explanation part contains the research context, design reasoning,
+  interpretation boundaries, and scope without procedural commands.
+- [x] A LibreOffice PDF preview produced 19 pages, including the A3 workflow;
+  every page was visually inspected and no blank, clipped, overlapping, or
+  duplicated header/footer content remains.
 
 Evidence: `docs/stackexchange-project-guide.docx` and checks `GUIDE-01`–
-`GUIDE-03` in the release evidence.
+`GUIDE-08` in the release evidence.
 
 ## Task 3 — Add the glossary and one verified practical walkthrough
 
@@ -75,8 +89,9 @@ Status: **Complete**
 - [x] The guide defines community, dump, snapshot, question period, thread,
   question ID, direct question comment, accepted answer, characteristic,
   schemas, validation, metadata, EDA, source-data folder, and results folder.
-- [x] One uninterrupted tutorial covers environment creation, a 20-question
-  build, output checks, notebook execution, and interpretation.
+- [x] One uninterrupted tutorial covers the bundled 20-question input,
+  environment creation, notebook execution, expected evidence,
+  interpretation, and a repeatability check.
 - [x] Generic parameter placeholders explain what must be selected for each
   run; production behavior remains independent of a personal machine or site.
 - [x] `data/examples/characteristics_pilot.tsv` provides a real 20×47 notebook
@@ -86,11 +101,11 @@ Status: **Complete**
   characteristic, dictionary, notebook, and release examples.
 - [x] Success indicators cover generated files, row and column counts,
   validation, metadata, conditional figures, interpretations, and cell errors.
-- [x] The cold-read self-check in Section 16.4 locates direct answers for the
-  three routes, their inputs and outputs, question-ID meaning, configuration,
-  and acceptance checks.
+- [x] The opening route map and Parts II–III locate direct answers for the three
+  routes, their inputs and outputs, question-ID meaning, configuration, and
+  acceptance checks.
 
-Evidence: Sections 3, 11, and 16.4 of the guide; `data/examples/`; checks
+Evidence: Section 1 and Parts II–III of the guide; `data/examples/`; checks
 `BUILD-01`–`BUILD-04`, `NB-01`, and `PATH-01`.
 
 ## Task 4 — Make summary-field selection genuinely configurable

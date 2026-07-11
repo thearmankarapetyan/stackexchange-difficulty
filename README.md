@@ -21,9 +21,10 @@ Engineering data.
 3. Check current status and evidence in
    [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md).
 
-The guide follows Diátaxis: it contains an overview, one first-run tutorial,
-task-oriented how-to sections, exact reference material, and explanations of
-the scientific and technical choices.
+The guide applies Diátaxis inside one document. A short orientation points to
+four deliberately separated parts: one fixed first-run tutorial, goal-oriented
+how-to guides, system-shaped reference material, and explanations of the
+scientific and technical choices.
 
 ## Implemented routes
 
