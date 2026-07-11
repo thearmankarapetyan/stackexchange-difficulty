@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<requests>
+  <request>
+    <question_id>450355</question_id>
+    <question_body>&lt;p&gt;When Visual Basic came out, it was revolutionary for its drag-and-drop GUI designer, allowing users to quickly create GUI programs. &lt;a href="https://www.youtube.com/watch?v=Fh_UDQnboRw" rel="noreferrer"&gt;This video shows Bill Gates introducing it in 1991.&lt;/a&gt; Did drag-and-drop GUI designers exist before this? For example, did Apple have a similar tool to design GUIs for the Macintosh 128K, or did people have to type code to position controls on the screen when using the Macintosh?&lt;/p&gt;
+</question_body>
+    <question_date>2024-01-01T07:22:27.613</question_date>
+    <first_comment_id>991465</first_comment_id>
+    <first_comment_text>I bet it originated in the Xerox PARC/Smalltalk community because they pioneered both GUIs, IDEs, and WYSIWYG editing. They definitely used interactive development environments where the running program could be inspected and modified on the fly. But I don't have a good reference for that at hand. Many Xerox PARC ideas on GUIs were popularized by Apple with its Lisa and Macintosh products, and Objective-C merged high-level Smalltalk OOP features with the more efficient C language.</first_comment_text>
+    <first_comment_date>2024-01-01T08:31:01.620</first_comment_date>
+    <first_answer_id>450357</first_answer_id>
+    <first_answer_body>&lt;p&gt;I'm not aware of any direct predecessor to Visual Basic. It was regarded as a novel idea that later products emulated, and the commercial development took place entirely in-house at Microsoft.&lt;/p&gt;
+&lt;p&gt;I also don't think Visual Basic is as little as a drag-and-drop forms designer, but a complicated (and not necessarily obvious) integration of a number of elements including the forms designer, the language, the standard library built around Microsoft COM, and achieving all this with reasonable performance on a standard PC of the era.&lt;/p&gt;
+&lt;p&gt;The use of Basic itself as the language in Visual Basic is directly attributable to Bill Gates, as he had written Basic compilers personally earlier in his career, and was known to be enamoured with the language and a champion for it within Microsoft.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://en.m.wikipedia.org/wiki/Alan_Cooper" rel="noreferrer"&gt;Alan Cooper&lt;/a&gt; is credited with originating a prototype implementation of a drag-and-drop forms designer on Microsoft Windows, that later became part of Visual Basic, and for originating some of the skeuomorphic terms it uses.&lt;/p&gt;
+&lt;p&gt;I don't think it's necessarily reasonable to assume no person had ever had the same general idea about a drag-and-drop forms designer before Cooper.&lt;/p&gt;
+&lt;p&gt;Electronic hardware designers were long-accustomed to using standard components - buttons, indicator lights, segmented/dot-matrix displays, etc. - to design physical control panels.&lt;/p&gt;
+&lt;p&gt;And &amp;quot;desk top publishing&amp;quot; was a new thing in the print industry in the 80s, using GUIs to computerise design tasks that formerly were done by hand, including laying out newspaper pages or designing printed business forms.&lt;/p&gt;
+&lt;p&gt;Even the screens of character-based terminals were usually first designed visually on special graph paper, and then analysed by the programmer into a coded reproduction that would draw those layouts and implement the dynamics.&lt;/p&gt;
+&lt;p&gt;And Windows itself already incorporated the concept of standardised controls as an OS feature - it was just that, before VB, you had to directly code their layout.&lt;/p&gt;
+&lt;p&gt;But as I say, I don't think VB is just the forms designer, and I think Cooper's contribution was not conceiving the very idea of a forms designer, but making a plausible implementation work on the Windows platform (and having done so, happening to be in a position to demonstrate it personally to Gates and catch his attention with it).&lt;/p&gt;
+&lt;p&gt;There would bound to be many similar or embryonic examples of forms designers, arising independently at a similar time as Cooper was working, and which capture just the drag-and-drop aspect.&lt;/p&gt;
+&lt;p&gt;Many attempts would never have been commercialised and would have quickly foundered on poor performance or limited functionality, because they didn't ultimately integrate all the ingredients of Visual Basic. All failed attempts will also now be forgotten.&lt;/p&gt;
+</first_answer_body>
+    <first_answer_date>2024-01-01T15:03:53.970</first_answer_date>
+    <accepted_answer_id>450417</accepted_answer_id>
+    <accepted_answer_body>&lt;p&gt;&lt;a href="https://en.wikipedia.org/wiki/HyperCard" rel="noreferrer"&gt;HyperCard&lt;/a&gt; for the Macintosh, an application development tool with an integrated database, scripting, and drag-n-drop GUI builder was released in 1987 - several years before Visual Basic.&lt;/p&gt;
+</accepted_answer_body>
+    <accepted_answer_date>2024-01-05T07:17:27.397</accepted_answer_date>
+  </request>
+</requests>

@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<requests>
+  <request>
+    <question_id>1823849</question_id>
+    <question_body>&lt;p&gt;I have a samba share setup. I want to allow anyone to access the public share on /mypool/shared without any authentication. I also want to restrict access to /mypool/restricted. I've also created a /mypool/test share to see if this was a directory permissions issue.&lt;/p&gt;
+&lt;p&gt;Right now, I don't have any users added via smbpasswd. The user &amp;quot;max&amp;quot; is a valid user on the Linux server. When I add the user &amp;quot;max&amp;quot; via &amp;quot;smbpasswd -a max; smbpasswd -e max&amp;quot; and try to connect to \sambaserver in Windows explorer, I get a request for a password. If I enter Max's credentials, I get an error that \sambaserver is not accessible. This also happens if I enter no user name and password.&lt;/p&gt;
+&lt;p&gt;I would have at least expected to always be able to see the public share. How can I fix this so I can let anyone see the /mypool/shared directory, but only an authenticated user can see the /mypool/restricted directory?&lt;/p&gt;
+&lt;p&gt;As an aside, if I delete the user &amp;quot;max&amp;quot; from samba, I can access the /mypool/shared directory without any authentication, as expected.&lt;/p&gt;
+&lt;p&gt;This is using samba installed from apt install on Ubuntu 22.04 server. I am trying to connect to the share from a Windows 10 machine. If I hop onto the Ubuntu server and I have the max user added via smbpasswd, I am able to use smbclient to connect to the restricted share-- Windows isn't able to connect though.&lt;/p&gt;
+&lt;p&gt;I've been playing with this all night, and I get the feeling there's something weird going on with the authentication, but I can't pin down what it is. Any help in debugging would be greatly appreciated.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[global]
+   force user = nobody
+   min_protocol = SMB3
+   workgroup = WorkGroup
+   netbios name = sambaserver
+
+   server string = %h server (Samba, Ubuntu)
+   wins support = yes
+   log file = /var/log/samba/log.%m
+   max log size = 1000
+   logging = file
+   panic action = /usr/share/samba/panic-action %d
+   server role = standalone server
+   
+   obey pam restrictions = yes
+   unix password sync = yes
+
+   passwd program = /usr/bin/passwd %u
+   passwd chat = *Enter\snew\s*\spassword:* %n\n *Retype\snew\s*\spassword:* %n\n *password\supdated\ssuccessfully* .
+   pam password change = yes
+
+   map to guest = bad user
+
+   usershare allow guests = yes
+
+
+# My file shares!
+[public share]
+  comment = File Server Share
+  path = /mypool/shared
+  browseable = yes
+  guest ok = yes
+  read only = no
+  create mask = 0755
+
+[restricted share]
+  comment = Restricted Server Share
+  path = /mypool/restricted
+  browseable = yes
+  guest ok = no
+  read only = no
+  create mask = 0755
+  valid users = max
+
+[test share]
+  comment = Test Server Share
+  path = /mypool/test
+  browseable = yes
+  guest ok = no
+  read only = no
+  create mask = 0755
+  valid users = max
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Directory listing:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;max@sambaserver:/mypool$ ls -la
+drwxr-xr-x  5 root   root     5 Jan  1 01:52 ./
+drwxr-xr-x 20 root   root  4096 Dec 30 02:37 ../
+drwxr-sr-x  4 max    max      4 Dec 31 23:10 restricted/
+drwxr-sr-x 12 nobody users   12 Jan  1 01:14 shared/
+drwxrwsr-x  2 nobody users    3 Jan  1 01:52 test/
+&lt;/code&gt;&lt;/pre&gt;
+</question_body>
+    <question_date>2024-01-01T06:24:05.110</question_date>
+    <first_comment_id>2871710</first_comment_id>
+    <first_comment_text>`force user = nobody` is applied on all shares with your configuration. You should add `force user = max` in the `[restricted share]`. - Furthermore `browseable = yes` shares are accessible through `\\server_ip_or_fqdn`. - Last point, your current shares are called `XXXXX share`, there is a space inside the name. I think you can remove " share" from them to avoid any problem during access (for example : `\\server_ip_or_fqdn\restricted`).</first_comment_text>
+    <first_comment_date>2024-01-01T10:11:35.733</first_comment_date>
+    <first_answer_id>1823911</first_answer_id>
+    <first_answer_body>&lt;p&gt;I finally got it to work. Here's what I had to change:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Windows 10/11 have disabled the SMB1 protocol for security reasons. This is a good thing. While you can add SMB1 to Windows, as you'll see others suggests in posts, this is very insecure. Instead, we set the samba server to use at least SMB2 with &amp;quot;min protocol = SMB2&amp;quot;.&lt;/li&gt;
+&lt;li&gt;By upping the log level, I saw that even with SMB2 enabled, the connections were not using encryption, which causes a rejection. So we add &amp;quot;server smb encrypt = desired&amp;quot;.&lt;/li&gt;
+&lt;li&gt;Finally, Windows will send samba the currently logged in user name when it connects. So, for every user name you want to give access to the shares, make sure there is a corresponding user on the Linux system via &amp;quot;sudo useradd [user name]&amp;quot; and in samba &amp;quot;sudo smbpasswd -a [user]; sudo smbpasswd -e [user]&amp;quot;.&lt;/li&gt;
+&lt;li&gt;After that's done, the samba server can be restarted with &amp;quot;sudo systemctl restart smbd.service nmbd.service&amp;quot;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The smb.conf is below.&lt;/p&gt;
+&lt;p&gt;As an aside, if you're having trouble getting Windows to see your samba server, try installing avahi-daemon and wsdd. I needed both for the machine to advertise its name correctly. You can install them with &amp;quot;sudo apt install avahi-daemon wsdd&amp;quot;&lt;/p&gt;
+&lt;p&gt;FYI: you can have spaces in the names for the shares, but I removed them anyway.&lt;/p&gt;
+&lt;p&gt;smb.conf:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[global]
+   encrypt passwords = yes
+   server smb encrypt = desired
+   min_protocol = SMB2
+   
+   workgroup = WorkGroup
+   netbios name = sambaserver
+
+   # Uncomment the following line for detailed logs in /var/log/samba
+   # log level = 5
+
+   server string = %h server (Samba, Ubuntu)
+   wins support = yes
+   log file = /var/log/samba/log.%m
+   max log size = 1000
+   logging = file
+   panic action = /usr/share/samba/panic-action %d
+   server role = standalone server
+   
+   obey pam restrictions = yes
+   unix password sync = yes
+
+   passwd program = /usr/bin/passwd %u
+   passwd chat = *Enter\snew\s*\spassword:* %n\n *Retype\snew\s*\spassword:* %n\n *password\supdated\ssuccessfully* .
+   pam password change = yes
+
+   map to guest = bad user
+
+   usershare allow guests = yes
+
+
+# My file shares!
+[public]
+  comment = File Server Share
+  path = /mypool/shared
+  browseable = yes
+  guest ok = yes
+  read only = no
+  create mask = 0755
+  force user = nobody
+
+[restricted]
+  comment = Restricted Server Share
+  path = /mypool/restricted
+  browseable = yes
+  guest ok = no
+  read only = no
+  create mask = 0755
+  valid users = max
+&lt;/code&gt;&lt;/pre&gt;
+</first_answer_body>
+    <first_answer_date>2024-01-01T18:29:30.653</first_answer_date>
+    <accepted_answer_id>1823911</accepted_answer_id>
+    <accepted_answer_body>&lt;p&gt;I finally got it to work. Here's what I had to change:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Windows 10/11 have disabled the SMB1 protocol for security reasons. This is a good thing. While you can add SMB1 to Windows, as you'll see others suggests in posts, this is very insecure. Instead, we set the samba server to use at least SMB2 with &amp;quot;min protocol = SMB2&amp;quot;.&lt;/li&gt;
+&lt;li&gt;By upping the log level, I saw that even with SMB2 enabled, the connections were not using encryption, which causes a rejection. So we add &amp;quot;server smb encrypt = desired&amp;quot;.&lt;/li&gt;
+&lt;li&gt;Finally, Windows will send samba the currently logged in user name when it connects. So, for every user name you want to give access to the shares, make sure there is a corresponding user on the Linux system via &amp;quot;sudo useradd [user name]&amp;quot; and in samba &amp;quot;sudo smbpasswd -a [user]; sudo smbpasswd -e [user]&amp;quot;.&lt;/li&gt;
+&lt;li&gt;After that's done, the samba server can be restarted with &amp;quot;sudo systemctl restart smbd.service nmbd.service&amp;quot;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The smb.conf is below.&lt;/p&gt;
+&lt;p&gt;As an aside, if you're having trouble getting Windows to see your samba server, try installing avahi-daemon and wsdd. I needed both for the machine to advertise its name correctly. You can install them with &amp;quot;sudo apt install avahi-daemon wsdd&amp;quot;&lt;/p&gt;
+&lt;p&gt;FYI: you can have spaces in the names for the shares, but I removed them anyway.&lt;/p&gt;
+&lt;p&gt;smb.conf:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[global]
+   encrypt passwords = yes
+   server smb encrypt = desired
+   min_protocol = SMB2
+   
+   workgroup = WorkGroup
+   netbios name = sambaserver
+
+   # Uncomment the following line for detailed logs in /var/log/samba
+   # log level = 5
+
+   server string = %h server (Samba, Ubuntu)
+   wins support = yes
+   log file = /var/log/samba/log.%m
+   max log size = 1000
+   logging = file
+   panic action = /usr/share/samba/panic-action %d
+   server role = standalone server
+   
+   obey pam restrictions = yes
+   unix password sync = yes
+
+   passwd program = /usr/bin/passwd %u
+   passwd chat = *Enter\snew\s*\spassword:* %n\n *Retype\snew\s*\spassword:* %n\n *password\supdated\ssuccessfully* .
+   pam password change = yes
+
+   map to guest = bad user
+
+   usershare allow guests = yes
+
+
+# My file shares!
+[public]
+  comment = File Server Share
+  path = /mypool/shared
+  browseable = yes
+  guest ok = yes
+  read only = no
+  create mask = 0755
+  force user = nobody
+
+[restricted]
+  comment = Restricted Server Share
+  path = /mypool/restricted
+  browseable = yes
+  guest ok = no
+  read only = no
+  create mask = 0755
+  valid users = max
+&lt;/code&gt;&lt;/pre&gt;
+</accepted_answer_body>
+    <accepted_answer_date>2024-01-01T18:29:30.653</accepted_answer_date>
+  </request>
+</requests>

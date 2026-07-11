@@ -1,0 +1,2 @@
+# Verified XML examples preserve source whitespace inside copied post bodies.
+data/examples/*.xml -diff

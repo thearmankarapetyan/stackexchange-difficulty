@@ -1,0 +1,100 @@
+"""Reconstruct complete Stack Exchange question threads in one XML file.
+
+For every requested question ID, the result contains the original question
+attributes, comments attached directly to that question, and all its answers.
+Comments on answers are outside the agreed extraction scope.  One ID creates
+one thread; several IDs create several threads in the same output file.
+
+Example:
+    python src/extract_threads.py --dump-dir /path/to/site-dump \
+        --output data/examples/threads.xml 123 456
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+from typing import Sequence
+
+from lxml import etree
+
+from stackexchange_xml import (
+    normalize_question_ids,
+    protect_source_files,
+    read_posts,
+    read_question_comments,
+    source_paths,
+    write_xml_safely,
+)
+
+
+def build_thread_tree(
+    question_ids: Sequence[str],
+    questions: dict[str, dict[str, str]],
+    comments: dict[str, list[dict[str, str]]],
+    answers: dict[str, list[dict[str, str]]],
+) -> etree._ElementTree:
+    """Build ``threads/thread/question/comments+answers`` in request order."""
+    root = etree.Element("threads")
+    for question_id in question_ids:
+        thread = etree.SubElement(root, "thread")
+        question = etree.SubElement(thread, "question", questions[question_id])
+        comment_container = etree.SubElement(question, "comments")
+        for row in comments.get(question_id, []):
+            etree.SubElement(comment_container, "comment", row)
+        answer_container = etree.SubElement(question, "answers")
+        for row in answers.get(question_id, []):
+            etree.SubElement(answer_container, "answer", row)
+    return etree.ElementTree(root)
+
+
+def extract_threads(
+    dump_dir: Path, question_ids: Sequence[str], output_path: Path
+) -> Path:
+    """Extract one or more requested question threads into one XML file."""
+    requested_ids = normalize_question_ids(question_ids)
+    posts_path, comments_path = source_paths(Path(dump_dir))
+    output_path = Path(output_path)
+    protect_source_files(output_path, (posts_path, comments_path))
+
+    questions, answers = read_posts(posts_path, requested_ids)
+    comments = read_question_comments(comments_path, requested_ids)
+    write_xml_safely(
+        build_thread_tree(requested_ids, questions, comments, answers), output_path
+    )
+    return output_path
+
+
+def main(arguments: Sequence[str] | None = None) -> int:
+    """Run the command-line interface and return its process exit code."""
+    parser = argparse.ArgumentParser(
+        description="Reconstruct complete Stack Exchange question threads."
+    )
+    parser.add_argument(
+        "--dump-dir",
+        required=True,
+        type=Path,
+        help="Folder containing Posts.xml and Comments.xml.",
+    )
+    parser.add_argument(
+        "--output", required=True, type=Path, help="Destination XML file."
+    )
+    parser.add_argument(
+        "question_ids",
+        nargs="+",
+        metavar="QUESTION_ID",
+        help="One question ID or several question IDs.",
+    )
+    values = parser.parse_args(arguments)
+    try:
+        output = extract_threads(values.dump_dir, values.question_ids, values.output)
+    except (FileNotFoundError, OSError, ValueError, etree.XMLSyntaxError) as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 1
+    print(f"Wrote {output}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
