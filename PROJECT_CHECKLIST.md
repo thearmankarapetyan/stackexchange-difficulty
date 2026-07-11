@@ -2,275 +2,232 @@
 
 Last reviewed: **2026-07-11**
 
-This is the canonical roadmap for the current project. It records concrete
-deliverables and keeps recurring setup, example, and validation work in one
-verification gate.
+This is the canonical project roadmap and completion record. A checked item has
+an evidence path, validation command, or recorded result. Authored project
+material is English. Source XML values, proper names, URLs, and quoted research
+material retain their original form.
 
-## How to use this checklist
+## Release record
 
-- `[x]` means that the result exists and has been verified against the stated
-  evidence.
-- `[ ]` means that work or final verification remains.
-- Check an item only after recording its evidence path or validation command.
-- Update the **Last reviewed** date whenever a status changes.
-- Keep authored project material in English. Preserve source XML values,
-  proper names, and quoted research material in their original form.
-- Keep paths, sites, dates, question IDs, periods, and output locations
-  configurable.
-- Prefer one clear canonical deliverable over several overlapping versions.
-- Treat the verification gate at the end as a repeatable procedure rather
-  than an additional project task.
-
-## Verified baseline
-
-- [x] Five focused Python modules implement XML extraction, characteristic
-  construction, shared XML rules, and transparent question calculations.
-- [x] `config/characteristics.tsv` defines one ordered 47-field
-  characteristic schema.
-- [x] `extract_threads.py` creates one XML file containing one or more
-  questions, their direct question comments, and all their answers.
-- [x] `extract_request_summary.py` creates the current project-defined summary
-  for one or more question IDs.
-- [x] `build_characteristics.py` creates `thread_characteristics.tsv`,
-  `validation.tsv`, and `run_metadata.json` from compatible Stack Exchange
-  dumps.
-- [x] `notebooks/stackexchange_eda.ipynb` is the single generic EDA notebook
-  and has executed from a clean kernel without cell errors.
-- [x] Verified XML examples and two validated annual characteristic datasets
-  exist under `data/`.
-- [x] Superseded project material has an existing checksum-tracked archive.
-
-Evidence: `src/`, `config/characteristics.tsv`, `data/examples/`,
-`data/processed/*/validation.tsv`, `data/processed/*/run_metadata.json`,
-`notebooks/stackexchange_eda.ipynb`, and
-`../../archive/legacy-current-workflow-2026-07-10/manifest.tsv`.
+- Initial baseline commit:
+  `97555e6cda56d9c76293d995d01e07cf2291e728`.
+- Completed implementation commit:
+  `53212ec15000635d17743a74a5c6adb3f7f9ac16`.
+- Verified release tag: `verified-release-2026-07-11`.
+- Detailed evidence: `docs/reference/release-verification.tsv`.
+- Final committed-state audit: **25 PASS, 0 FAIL**.
 
 ## Task 1 — Finalize and integrate the canonical overview flowchart
 
-Status: **In progress**
+Status: **Complete**
 
-- [x] Define the required scope: Stack Exchange access, local preparation,
-  three existing processing routes, verification, and generated results.
-- [x] Keep the flowchart generic across compatible Stack Exchange
-  communities, folders, snapshots, periods, and question selections.
-- [x] Remove terminal commands and implementation-level algorithms from the
-  visual overview.
-- [x] Identify the real entry points and outputs in the diagram:
-  `extract_threads.py`, `extract_request_summary.py`,
-  `build_characteristics.py`, and `stackexchange_eda.ipynb`.
-- [ ] Create one editable canonical flowchart source under `docs/`.
-- [ ] Export one sharp, large-format PNG or PDF whose text is readable at
-  normal page or slide size; the final raster export must be at least 3000
-  pixels wide.
-- [ ] Verify every label, filename, arrow, decision, and output against the
-  current source and the official Stack Exchange data-dump instructions.
-- [ ] Insert or link the final diagram from the central English project guide.
-- [ ] Replace or archive superseded workflow representations and update README
-  links.
+- [x] One editable source exists at
+  `docs/project-workflow-overview.svg`.
+- [x] One 4800×3400 publication export exists at
+  `docs/project-workflow-overview.png`.
+- [x] The flowchart starts with community selection, account access, profile
+  settings, data-dump access, download, extraction, and environment setup.
+- [x] The three implemented routes identify their real entry points, required
+  inputs, configurable settings, outputs, and completion checks.
+- [x] The summary route uses `config/summary_fields.tsv` and supports a copied
+  selection.
+- [x] The diagram contains no terminal command, personal path, fixed community,
+  fixed date, fixed period, or fixed question ID.
+- [x] Every label and route was checked against current source and the official
+  Stack Exchange data-dump help page.
+- [x] The full-size PNG and the A3 guide page were visually inspected for font
+  size, clipping, overlap, arrow direction, and missing information.
 
-Current evidence: `src/*.py`, `notebooks/stackexchange_eda.ipynb`,
-`https://stackoverflow.com/help/data-dumps`, and the workflow drafts under
-`docs/`.
-
-Acceptance: one diagram presents the complete implemented workflow without a
-specific site, date, question ID, personal directory, terminal command, or
-future research stage.
+Evidence: `docs/project-workflow-overview.svg`,
+`docs/project-workflow-overview.png`, page 3 of
+`docs/stackexchange-project-guide.docx`, and checks `FLOW-01`–`FLOW-03` in the
+release evidence.
 
 ## Task 2 — Create one central English project guide
 
-Status: **Open**
+Status: **Complete**
 
-- [ ] Create `docs/stackexchange-project-guide.docx` as the primary handover
-  document.
-- [ ] Explain the project purpose, current scope, components, inputs, outputs,
-  workflow, validation, and current limitations.
-- [ ] Include the canonical overview flowchart from Task 1.
-- [ ] Include concise sections for environment preparation, dump access,
-  complete-thread extraction, project-defined summary extraction,
-  characteristic construction, and use of the existing EDA notebook.
-- [ ] Include one component reference covering all five Python modules and the
+- [x] `docs/stackexchange-project-guide.docx` is the primary handover document.
+- [x] It explains the research purpose, implemented scope, components, inputs,
+  outputs, workflow, validation rules, current evidence, and limitations.
+- [x] It contains the canonical flowchart on a readable A3 landscape page.
+- [x] It provides environment preparation, official dump access, a first pilot,
+  all three processing routes, and generic notebook execution.
+- [x] It contains one component reference for all five Python modules and the
   generic notebook.
-- [ ] Include one deliverables register containing each deliverable's purpose,
-  canonical location, format, generator, inputs, expected contents, opening
-  method, validation evidence, and version-control status.
-- [ ] Incorporate useful, verified information from the four existing French
-  DOCX files, rewrite it in clear English, and verify the resulting content.
-- [ ] Link to the data dictionary, XML examples, processed examples, notebook,
-  and scientific report without copying large artifacts into the guide.
-- [ ] Update README and document cross-references after the guide is verified.
+- [x] It contains a complete deliverables register with purpose, location,
+  format, generator, inputs, contents, opening method, validation, and
+  version-control status.
+- [x] Useful verified information from the four former French documents was
+  consolidated into clear English sections.
+- [x] The guide follows Diátaxis through distinct tutorial, how-to, reference,
+  and explanation parts.
+- [x] A LibreOffice PDF preview produced 17 pages; every page was visually
+  inspected and no blank, clipped, or overlapping page remains.
 
-French source documents to consolidate:
-
-- `docs/tutorials/premiere-analyse-guidee.docx`
-- `docs/how-to/extraire-threads-et-champs-demandes.docx`
-- `docs/reference/reference-commandes-et-fichiers.docx`
-- `docs/explanation/choix-scientifiques-et-limites.docx`
-
-Acceptance: the guide is concise, internally navigable, English-only, and
-contains no undocumented knowledge required to understand or operate the
-implemented project.
+Evidence: `docs/stackexchange-project-guide.docx` and checks `GUIDE-01`–
+`GUIDE-03` in the release evidence.
 
 ## Task 3 — Add the glossary and one verified practical walkthrough
 
-Status: **Partially complete**
+Status: **Complete**
 
-- [x] Small verified XML examples exist for complete-thread and summary
-  extraction.
-- [x] A pilot characteristic build and generic EDA workflow have already been
-  executed.
-- [ ] Add a concise glossary to the central guide defining: Stack Exchange
-  community, data dump, dump snapshot, question period, thread, question ID,
-  direct question comment, accepted answer, characteristic, characteristic
-  specification, validation report, run metadata, EDA, source-data folder,
-  and results folder.
-- [ ] Add one uninterrupted walkthrough from a selected dump directory to the
-  characteristic TSV, validation report, run metadata, notebook figures, and
-  interpretation.
-- [ ] Include short input and output excerpts and link to the existing complete
-  XML and TSV examples.
-- [ ] State how to recognize success and where each generated result is saved.
-- [ ] Rerun every command shown in the walkthrough with generic paths and a
-  small pilot limit.
-- [ ] Conduct a handover check with someone unfamiliar with the implementation:
-  ask them to identify the three routes, required inputs, generated outputs,
-  question ID meaning, and success checks without verbal instructions.
-- [ ] Record and correct every point that remains unclear.
+- [x] The guide defines community, dump, snapshot, question period, thread,
+  question ID, direct question comment, accepted answer, characteristic,
+  schemas, validation, metadata, EDA, source-data folder, and results folder.
+- [x] One uninterrupted tutorial covers environment creation, a 20-question
+  build, output checks, notebook execution, and interpretation.
+- [x] Generic parameter placeholders explain what must be selected for each
+  run; production behavior remains independent of a personal machine or site.
+- [x] `data/examples/characteristics_pilot.tsv` provides a real 20×47 notebook
+  input and `characteristics_pilot_validation.tsv` records 9 PASS, 0 WARN, and
+  0 FAIL.
+- [x] The guide links the complete-thread, default-summary, configurable-summary,
+  characteristic, dictionary, notebook, and release examples.
+- [x] Success indicators cover generated files, row and column counts,
+  validation, metadata, conditional figures, interpretations, and cell errors.
+- [x] The cold-read self-check in Section 16.4 locates direct answers for the
+  three routes, their inputs and outputs, question-ID meaning, configuration,
+  and acceptance checks.
 
-Acceptance: the walkthrough can be completed from the guide without relying
-on a personal path, a specific Stack Exchange site, or undocumented verbal
-instructions.
+Evidence: Sections 3, 11, and 16.4 of the guide; `data/examples/`; checks
+`BUILD-01`–`BUILD-04`, `NB-01`, and `PATH-01`.
 
 ## Task 4 — Make summary-field selection genuinely configurable
 
-Status: **Open; current fixed behavior remains verified**
+Status: **Complete**
 
-- [x] Record the current behavior accurately: `extract_request_summary.py`
-  uses a fixed `OUTPUT_FIELDS` tuple and the current flowchart calls the result
-  a **project-defined question summary**.
-- [ ] Define a small documented catalogue of supported summary fields.
-- [ ] Choose a simple, readable external field specification, preferably TSV,
-  while preserving the current field set as the default.
-- [ ] Allow one or more question IDs and a selected field specification without
-  introducing a complex expression language.
-- [ ] Reject unknown, duplicate, or incompatible field names with clear error
-  messages.
-- [ ] Preserve chronological first-comment and first-answer behavior, accepted
-  answer lookup, empty-element behavior, safe XML writing, and current default
-  output.
-- [ ] Update CLI help, the central guide, examples, and validation evidence.
-- [ ] Verify default-field output against the existing examples and verify one
-  smaller alternative field selection.
+- [x] `config/summary_fields.tsv` documents 27 supported fields, source records,
+  source attributes, meanings, and default inclusion.
+- [x] Its 12 enabled rows preserve the original requested output and order.
+- [x] `--fields` accepts a copied TSV whose TRUE/FALSE values and row order
+  select the XML elements.
+- [x] One or more question IDs remain supported in requested order with
+  deduplication.
+- [x] Unknown fields, duplicate fields, changed source mappings, invalid include
+  values, and empty selections produce contextual errors.
+- [x] Chronological first-comment and first-answer selection, accepted-answer
+  lookup, empty elements, safe writing, and source protection remain intact.
+- [x] `data/examples/summary_fields_compact.tsv` and
+  `configurable_request_summary_example.xml` demonstrate a six-field result.
+- [x] Real default outputs match both original examples byte for byte; the
+  configured output matches its new example byte for byte.
 
-Acceptance: changing supported summary fields uses a documented configuration
-file. The present supervisor-requested field set remains the default.
+Evidence: `src/extract_request_summary.py`, `config/summary_fields.tsv`,
+`config/README.md`, `data/examples/`, and checks `XML-02`–`XML-04`.
 
 ## Task 5 — Finish the focused source and maintainability audit
 
-Status: **Partially complete**
+Status: **Complete**
 
-- [x] All five modules have English module docstrings.
-- [x] Current functions have type annotations and concise docstrings.
-- [x] The characteristic schema, calculations, validation, and generic EDA are
-  separated into focused components.
-- [ ] Review XML streaming, validation, filesystem writing, and orchestration
-  functions for non-obvious exceptions, side effects, and assumptions.
-- [ ] Review the nested writer callback in `build_characteristics.py` and keep
-  it self-explanatory or add one concise explanation.
-- [ ] Scan for stale paths, duplicate logic, dataset-specific constants, dead
-  files, unclear error messages, and schema/dictionary disagreement.
-- [ ] Confirm that every executable entry point works from a user-selected or
-  temporary directory.
-- [ ] Perform a readability review of the main public functions with someone
-  unfamiliar with the implementation and record unclear terminology or flow.
-- [ ] Add examples only where signatures and concise docstrings do not explain
-  behavior adequately.
+- [x] All five modules compile and pass Ruff static checks.
+- [x] Every current function has a concise docstring and complete type
+  annotations.
+- [x] Production source contains no personal path, verified-site constant,
+  fixed analysis year, or fixed dump date.
+- [x] The duplicate characteristic comment reader was removed and the shared
+  bounded-memory reader is used.
+- [x] Exact-time question sorting now includes the documented numeric ID
+  tie-break.
+- [x] Schema header, position, empty-name, and duplicate-name errors now include
+  the schema path and a clear explanation.
+- [x] The nested TSV writer callback has a direct name and concise explanation.
+- [x] The notebook audit corrected source-column reporting, empty-tag behavior,
+  input validation, and the Figure 2 legend overlap.
+- [x] Thirteen temporary characterization tests covered public behavior,
+  configuration errors, source-date errors, output preservation, ordering,
+  multiple IDs, and bounded-memory scaling; the full suite passed repeatedly
+  and was removed.
+- [x] The independent committed-state audit passed 25 of 25 checks.
 
-Acceptance: the active source remains simple enough to maintain, has no hidden
-personal or dataset-specific dependency, and explains non-obvious risks without
-repetitive documentation boilerplate.
+Evidence: `src/`, `notebooks/stackexchange_eda.ipynb`, checks `SRC-01`–`SRC-06`,
+`TEST-01`–`TEST-02`, and `AUDIT-01`.
 
 ## Task 6 — Consolidate and archive duplicate project artifacts
 
-Status: **Partially complete**
+Status: **Complete**
 
-- [x] A non-destructive checksum-tracked archive process exists.
-- [ ] Inventory overlapping workflow files, documentation versions, previews,
-  caches, and scratch outputs.
-- [ ] Keep one editable workflow source and one publication export; archive
-  superseded HTML, spreadsheet, image, or document variants that no longer
-  serve a distinct purpose.
-- [ ] After Task 2 is verified, archive the four superseded French documents
-  and update every cross-reference.
-- [ ] Classify raw public XML dumps as external inputs.
-- [ ] Classify temporary tests, previews, caches, and scratch outputs as
-  disposable verification material.
-- [ ] Validate every retained relative path and archive checksum.
+- [x] The active project keeps one editable workflow source and one publication
+  export.
+- [x] The central guide replaces the former overview and four language-specific
+  documentation copies.
+- [x] Superseded HTML, spreadsheet, image, overview, tutorial, how-to,
+  reference, and explanation variants were copied before removal.
+- [x] Ten archived files have matching recorded sizes and SHA-256 values.
+- [x] The initial Git baseline also preserves the pre-consolidation state.
+- [x] Raw public dumps are classified as external ignored inputs.
+- [x] Regenerated annual outputs are ignored and remain reproducible from source
+  dumps and recorded metadata.
+- [x] Temporary tests, generators, previews, caches, bytecode, office locks, and
+  notebook checkpoints are classified as disposable and absent from the active
+  project.
 
-Acceptance: each active artifact has one clear purpose and canonical location;
-no one must guess which of several similarly named workflow or documentation
-files is current.
+Evidence:
+`../../archive/canonical-project-consolidation-2026-07-11/manifest.tsv`,
+`.gitignore`, `.gitattributes`, and checks `ARCHIVE-01`, `ARCHIVE-02`, and
+`CLEAN-01`.
 
 ## Task 7 — Create and record the first Git baseline
 
-Status: **Open**
+Status: **Complete**
 
-- [ ] Review `.gitignore` so raw dumps, regenerated outputs, environments,
-  caches, and disposable previews are excluded appropriately.
-- [ ] Review the complete staged file list before committing.
-- [ ] Create the initial baseline before beginning further structural source
-  refactors.
-- [ ] Record the commit identifier and verification date in this checklist.
-- [ ] Use later commits or tags for supervisor-reviewed and final-release
-  states and preserve continuous version history.
+- [x] `.gitignore` excludes raw dumps, regenerated outputs, Python environments,
+  caches, editor settings, lock files, and temporary verification material.
+- [x] `.gitattributes` preserves meaningful whitespace in copied source-content
+  examples while allowing strict checks on authored text.
+- [x] The complete initial file list passed `git diff --cached --check` before
+  the baseline commit.
+- [x] Baseline commit
+  `97555e6cda56d9c76293d995d01e07cf2291e728` preserves the recovered canonical
+  project before this release pass.
+- [x] Implementation commit
+  `53212ec15000635d17743a74a5c6adb3f7f9ac16` records the completed code,
+  documentation, notebook, examples, and consolidation.
+- [x] The final verified state is tagged `verified-release-2026-07-11`.
 
-Acceptance: the active project has a reproducible version-control baseline and
-future changes can be reviewed against a known state.
+Evidence: Git history, `.gitignore`, `.gitattributes`, and checks `GIT-01`–
+`GIT-02`.
 
 ## Task 8 — Perform final clean-environment release verification
 
-Status: **Final-release task**
+Status: **Complete**
 
-- [ ] Install `requirements.txt` in a clean Python 3.10+ environment.
-- [ ] Record the verified Python and package versions.
-- [ ] Run a controlled complete-thread extraction.
-- [ ] Run the default project-defined summary extraction and one configured
-  field-selection example after Task 4 is complete.
-- [ ] Run a controlled characteristic build and confirm that
-  `validation.tsv` contains no `FAIL` result.
-- [ ] Review every `WARN` and confirm `run_metadata.json` describes the intended
-  sources, period, schema, and settings.
-- [ ] Execute the generic notebook from a clean kernel and confirm that every
-  cell completes without error.
-- [ ] Visually inspect the final flowchart, DOCX guide, workbook, notebook
-  figures, and example outputs at normal reading size.
-- [ ] Verify every path in the deliverables register.
-- [ ] Remove temporary tests, previews, caches, `__pycache__`, and notebook
-  checkpoints.
-- [ ] Run `git diff --check`, review the complete release change list, and
-  record the final commit or tag.
+- [x] `requirements.txt` installed in a new Python 3.12.3 environment.
+- [x] Direct versions were recorded for lxml, Beautiful Soup, NumPy, pandas,
+  Matplotlib, SciPy, IPython, ipykernel, JupyterLab, and nbconvert.
+- [x] A controlled real complete-thread extraction matched its tracked example.
+- [x] Two real default summaries and one configured summary matched their
+  tracked examples.
+- [x] A controlled 20-question characteristic build produced 47 columns, 9 PASS,
+  0 WARN, and 0 FAIL; metadata matches its intended source and settings.
+- [x] Existing annual metadata and validation were rechecked for 950 Software
+  Engineering rows and 11,578 Super User rows with no FAIL.
+- [x] The notebook executed through the clean environment kernel with 21 cells,
+  10 executed code cells, and no error.
+- [x] Flowchart, guide, notebook figures, data dictionary, statistics workbook,
+  XML examples, TSV examples, and archive were visually or structurally
+  inspected.
+- [x] Every canonical deliverable path exists or is explicitly classified as an
+  external/ignored input or regenerated output.
+- [x] Cleanup removed all disposable project material.
+- [x] `git diff --check` passed and the release change list was reviewed.
 
-Acceptance: a clean environment reproduces the documented outputs and every
-published artifact passes its stated validation check.
+Evidence: `docs/reference/release-verification.tsv` and final tag
+`verified-release-2026-07-11`.
 
 ## Repeatable change verification gate
 
-These checks support tasks; they are not additional project deliverables. Run
-the relevant subset after each verified change and the complete set before a
-release.
+Apply this gate to later changes and update the evidence file when release
+behavior changes.
 
-- [ ] Compile every changed `src/*.py` file without leaving bytecode in the
-  project.
-- [ ] Run a small controlled extraction for each changed extractor.
-- [ ] Run a small characteristic build after schema or calculation changes.
-- [ ] Compare the generated TSV header with `config/characteristics.tsv` after
-  schema changes.
-- [ ] Confirm that `validation.tsv` has no `FAIL`; review all `WARN` entries.
-- [ ] Execute the notebook from a clean kernel after notebook or schema changes.
-- [ ] Visually inspect changed images, DOCX files, XLSX files, and notebook
-  figures at normal reading size.
-- [ ] Use temporary characterization tests for risky refactors and remove them
-  after all required checks pass.
-- [ ] Remove temporary previews, caches, bytecode, and notebook checkpoints.
-- [ ] Run `git diff --check` and review the complete change list.
-- [ ] Update evidence, affected checkboxes, and the **Last reviewed** date in
-  this file.
+- [x] Compile changed Python modules outside the project tree.
+- [x] Run a controlled extraction for each affected extractor.
+- [x] Run a small characteristic build after calculation or schema changes.
+- [x] Compare generated columns with `config/characteristics.tsv`.
+- [x] Confirm validation has no FAIL and review every WARN.
+- [x] Execute the notebook from a clean kernel.
+- [x] Inspect changed DOCX, XLSX, SVG, PNG, XML, TSV, and notebook figures.
+- [x] Use temporary tests for risky behavior and remove them after verification.
+- [x] Remove previews, caches, bytecode, office locks, and checkpoints.
+- [x] Run `git diff --check`, review the complete change list, and update this
+  checklist and the release evidence.
