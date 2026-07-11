@@ -21,8 +21,12 @@ material retain their original form.
 - GitHub Actions publication run: `29151176595` (**2 jobs passed**).
 - GitHub Markdown migration commit: `fac76b617be420824ff4cd4a0d5dbcf38e8a1b79`.
 - GitHub Markdown verification run: `29152702947` (**2 jobs passed**).
+- Single-page README implementation commit:
+  `f910e243e0eda5290a80664b8ca28874291623c1`.
+- Single-page README pull request: `#6`.
+- Single-page README verification run: `29156971069` (**2 jobs passed**).
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Current evidence matrix: **68 PASS, 0 FAIL**.
+- Current evidence matrix: **69 PASS, 0 FAIL**.
 - Final committed-state audit: **25 PASS, 0 FAIL**.
 - Previous DOCX guide audit: **25 PASS, 0 FAIL**.
 - GitHub Markdown documentation audit: **28 PASS, 0 FAIL**.
@@ -79,7 +83,7 @@ Status: **Complete**
   pass.
 
 Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08` and `README-01`–
-`README-06` in the release evidence.
+`README-07` in the release evidence.
 
 ## Task 3 — Add the glossary and one verified practical walkthrough
 
@@ -303,7 +307,7 @@ Status: **Complete**
 
 Evidence: `README.md`,
 `../../archive/single-page-readme-2026-07-11/manifest.tsv`, and checks
-`README-01`–`README-06` in the release evidence.
+`README-01`–`README-07` in the release evidence.
 
 ## Repeatable change verification gate
 
