@@ -22,10 +22,11 @@ material retain their original form.
 - GitHub Markdown migration commit: `fac76b617be420824ff4cd4a0d5dbcf38e8a1b79`.
 - GitHub Markdown verification run: `29152702947` (**2 jobs passed**).
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Current evidence matrix: **62 PASS, 0 FAIL**.
+- Current evidence matrix: **68 PASS, 0 FAIL**.
 - Final committed-state audit: **25 PASS, 0 FAIL**.
 - Previous DOCX guide audit: **25 PASS, 0 FAIL**.
 - GitHub Markdown documentation audit: **28 PASS, 0 FAIL**.
+- Single-page README audit: **18 PASS, 0 FAIL**.
 
 ## Task 1 — Finalize and integrate the canonical overview flowchart
 
@@ -45,76 +46,67 @@ Status: **Complete**
   fixed date, fixed period, or fixed question ID.
 - [x] Every label and route was checked against current source and the official
   Stack Exchange data-dump help page.
-- [x] The full-size PNG and its rendering on the Markdown documentation home
-  were inspected for readability, clipping, arrow direction, and missing
-  information.
+- [x] The full-size PNG and its rendering in `README.md` were inspected for
+  readability, clipping, arrow direction, and missing information.
 
 Evidence: `docs/project-workflow-overview.svg`,
-`docs/project-workflow-overview.png`, `docs/README.md`, and checks `FLOW-01`–
+`docs/project-workflow-overview.png`, `README.md`, and checks `FLOW-01`–
 `FLOW-03` in the release evidence.
 
-## Task 2 — Create the English GitHub documentation
+## Task 2 — Create the single-page English GitHub documentation
 
 Status: **Complete**
 
-- [x] `docs/README.md` is the primary documentation and handover entry point.
-- [x] Ten linked Markdown pages explain the research purpose, implemented scope,
-  components, inputs, outputs, workflow, validation, current evidence, and
-  limitations.
-- [x] The documentation home displays the canonical workflow and links its
-  editable SVG source.
-- [x] The pages cover environment preparation, official dump access, a first
-  pilot, all three processing routes, and generic notebook execution.
-- [x] `docs/reference/system-reference.md` documents all five Python modules,
-  the generic notebook, exact interfaces, contracts, errors, deliverables, and
-  canonical locations.
-- [x] Verified information from the former central guide is preserved in native
-  GitHub Markdown with working relative links and fenced command examples.
-- [x] The documentation home directs each need to a separate Diátaxis page:
-  tutorial, how-to, reference, or explanation.
-- [x] The tutorial follows one fixed bundled pilot, produces visible results
-  early, gives an expected result after every stage, and contains no dump,
-  community, date, field, or plotting choice.
-- [x] Six how-to guides are named for practical goals and contain actions,
-  prerequisites, completion checks, and links to exact reference contracts.
-- [x] The reference follows the implemented system structure and states neutral
-  facts about components, dependencies, commands, XML, outputs,
-  configurations, notebook behavior, validation, errors, deliverables, and
-  terminology.
-- [x] The explanation page contains the research context, design reasoning,
-  interpretation boundaries, and scope without procedural commands.
-- [x] Markdown linting, local-link validation, heading and fence checks, Pandoc
-  rendering, command checks, and GitHub rendering checks pass.
+- [x] `README.md` is the single project-documentation and handover page.
+- [x] Its contents, task index, inline cross-references, and glossary links lead
+  directly to the relevant heading on the same page.
+- [x] The README explains the research purpose, implemented scope, components,
+  inputs, outputs, workflow, validation, current evidence, and limitations.
+- [x] The canonical workflow image and editable SVG are available from the page.
+- [x] Diátaxis is preserved as one fixed tutorial, six goal-oriented how-to
+  sections, one system-shaped reference section, and one scientific and design
+  explanation section.
+- [x] The fixed tutorial produces visible results early, gives expected evidence,
+  and includes a repeatability check.
+- [x] The how-to sections cover official dump access, complete-thread XML,
+  configurable summary XML, characteristic construction, generic notebook
+  execution, and change verification.
+- [x] The reference documents all five Python modules, the notebook, exact
+  interfaces, XML and output contracts, configuration, errors, deliverables,
+  verified results, and canonical locations.
+- [x] Markdown linting, same-page anchor validation, local-link checks, heading
+  and fence checks, rendering, command checks, and English/genericity checks
+  pass.
 
-Evidence: `docs/README.md` and its linked pages; checks `GUIDE-01`–`GUIDE-08`
-in the release evidence.
+Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08` and `README-01`–
+`README-06` in the release evidence.
 
 ## Task 3 — Add the glossary and one verified practical walkthrough
 
 Status: **Complete**
 
-- [x] The system reference defines community, dump, snapshot, question period, thread,
-  question ID, direct question comment, accepted answer, characteristic,
-  schemas, validation, metadata, EDA, source-data folder, and results folder.
+- [x] The README glossary defines community, dump, snapshot, question period,
+  thread, question ID, direct question comment, accepted answer,
+  characteristic, schemas, validation, metadata, EDA, source-data folder, and
+  results folder.
+- [x] Important terms in the overview and procedures link directly to their
+  same-page definitions.
 - [x] One uninterrupted tutorial covers the bundled 20-question input,
   environment creation, notebook execution, expected evidence,
   interpretation, and a repeatability check.
-- [x] Generic parameter placeholders explain what must be selected for each
+- [x] Generic placeholders explain what must be selected for each production
   run; production behavior remains independent of a personal machine or site.
 - [x] `data/examples/characteristics_pilot.tsv` provides a real 20×47 notebook
   input and `characteristics_pilot_validation.tsv` records 9 PASS, 0 WARN, and
   0 FAIL.
-- [x] The documentation links the complete-thread, default-summary, configurable-summary,
-  characteristic, dictionary, notebook, and release examples.
+- [x] The README links the complete-thread, default-summary,
+  configurable-summary, characteristic, dictionary, notebook, and release
+  examples.
 - [x] Success indicators cover generated files, row and column counts,
   validation, metadata, conditional figures, interpretations, and cell errors.
-- [x] The documentation home and linked how-to and reference pages locate direct
-  answers for the three routes, their inputs and outputs, question-ID meaning,
-  configuration, and acceptance checks.
 
-Evidence: `docs/tutorials/first-analysis.md`, `docs/how-to/`,
-`docs/reference/system-reference.md`, `data/examples/`, and checks `BUILD-01`–
-`BUILD-04`, `NB-01`, and `PATH-01`.
+Evidence: `README.md`, `data/examples/`, and checks `BUILD-01`–`BUILD-04`,
+`NB-01`, `PATH-01`, `README-02`, and `README-03`.
 
 ## Task 4 — Make summary-field selection genuinely configurable
 
@@ -172,13 +164,13 @@ Status: **Complete**
 
 - [x] The active project keeps one editable workflow source and one publication
   export.
-- [x] The GitHub Markdown documentation replaces the former central DOCX and
-  language-specific documentation copies.
+- [x] One canonical README replaces the former central DOCX, language-specific
+  copies, and split Markdown documentation pages.
 - [x] Superseded HTML, spreadsheet, image, overview, tutorial, how-to,
   reference, and explanation variants were copied before removal.
 - [x] Ten archived files have matching recorded sizes and SHA-256 values.
-- [x] The two superseded DOCX files have matching recorded sizes and SHA-256
-  values in the Markdown-migration archive.
+- [x] The two superseded DOCX files and eleven superseded Markdown pages have
+  matching recorded sizes and SHA-256 values in their migration archives.
 - [x] The initial Git baseline also preserves the pre-consolidation state.
 - [x] Raw public dumps are classified as external ignored inputs.
 - [x] Regenerated annual outputs are ignored and remain reproducible from source
@@ -190,7 +182,8 @@ Status: **Complete**
 Evidence:
 `../../archive/canonical-project-consolidation-2026-07-11/manifest.tsv`,
 `../../archive/github-markdown-documentation-2026-07-11/manifest.tsv`,
-`.gitignore`, `.gitattributes`, and checks `ARCHIVE-01`–`ARCHIVE-04` and
+`../../archive/single-page-readme-2026-07-11/manifest.tsv`, `.gitignore`,
+`.gitattributes`, and checks `ARCHIVE-01`–`ARCHIVE-04`, `README-04`, and
 `CLEAN-01`.
 
 ## Task 7 — Create and record the first Git baseline
@@ -284,34 +277,33 @@ Evidence: publication commit `2e934430`, GitHub Actions run `29151176595`,
 `.github/`, `CONTRIBUTING.md`, `SECURITY.md`, repository settings, and checks
 `GH-01`–`GH-07` in the release evidence.
 
-## Task 10 — Migrate the project documentation to GitHub Markdown
+## Task 10 — Consolidate the project documentation into one linked README
 
 Status: **Complete**
 
-- [x] `docs/README.md` provides one concise documentation home and route map.
-- [x] The verified central-guide content is distributed across one tutorial, six
-  how-to guides, one system reference, and one explanation page.
-- [x] Commands use fenced Bash blocks, the XML hierarchy uses a text block, and
-  Word section references were replaced by working relative links.
-- [x] The workflow uses the tracked PNG and SVG, with no extracted duplicate or
-  temporary absolute media path.
-- [x] The superseded central DOCX and historical recovery-audit DOCX were copied
-  to a checksum-verified archive before removal from the active project.
-- [x] No DOCX remains in the active repository; PDFs and XLSX files retain their
-  appropriate publication and tabular formats.
+- [x] `README.md` contains the project overview, workflow, tutorial, six
+  procedures, system reference, scientific and design explanation, glossary,
+  deliverables, evidence, and canonical locations.
+- [x] A linked contents list and a task-and-term index provide direct same-page
+  navigation.
+- [x] Important terms link to exact glossary definitions, and procedural text
+  links to exact interface and contract sections.
+- [x] Diátaxis roles remain visibly separated within the single page.
+- [x] Commands use fenced Bash blocks and the XML hierarchy uses a text block.
+- [x] The workflow uses the tracked PNG and SVG, with no duplicate extracted
+  image or temporary absolute media path.
+- [x] The eleven superseded Markdown pages were copied to a checksum-verified
+  archive before removal from the active repository.
+- [x] The active `docs/` tree retains supporting SVG, PNG, XLSX, TSV, and PDF
+  artifacts and contains no competing Markdown documentation page.
+- [x] Project instructions, contributor guidance, checklist evidence, and
+  canonical locations identify the root README as the documentation source.
 - [x] Markdownlint, heading hierarchy, fence balance, local links and anchors,
-  Pandoc HTML rendering, English and genericity scans, and documented commands
-  pass.
-- [x] Root navigation, contributor guidance, project instructions, canonical
-  locations, deliverables, checklist, and release evidence point to the Markdown
-  documentation.
-- [x] The GitHub `main` rendering exposes the documentation home and all linked
-  pages without a broken local target.
+  rendering, English and genericity scans, and documented command checks pass.
 
-Evidence: `docs/README.md`, `docs/tutorials/`, `docs/how-to/`,
-`docs/reference/system-reference.md`, `docs/explanation/design-and-scope.md`,
-`../../archive/github-markdown-documentation-2026-07-11/manifest.tsv`, and
-checks `MD-01`–`MD-07` in the release evidence.
+Evidence: `README.md`,
+`../../archive/single-page-readme-2026-07-11/manifest.tsv`, and checks
+`README-01`–`README-06` in the release evidence.
 
 ## Repeatable change verification gate
 

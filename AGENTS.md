@@ -13,13 +13,15 @@
   behavior free of site-specific constants.
 - Prefer simple code and concise documentation that can be understood by
   someone unfamiliar with the implementation.
-- Maintain one English documentation home at `docs/README.md`. Add information
-  to the existing linked page whose purpose matches it, and avoid duplicate
-  documentation pages.
-- Apply Diátaxis across the Markdown documentation: keep tutorials concrete and
-  choice-free, keep how-to guides focused on goals and actions, keep reference
+- Maintain `README.md` as the single English project-documentation page. Add
+  stable contents links, same-page cross-references, and glossary links so a
+  reader can reach an exact answer directly. Treat linked headings as stable
+  navigation targets and update every incoming link when a heading changes.
+  Avoid duplicate documentation pages.
+- Apply Diátaxis within the README: keep the tutorial concrete and choice-free,
+  keep how-to sections focused on goals and actions, keep reference sections
   neutral and system-shaped, and reserve reasons, context, alternatives, and
-  interpretation for explanation.
+  interpretation for the explanation section.
 - Maintain one canonical editable overview flowchart and one publication
   export. Archive superseded workflow variants after verification.
 - Keep the default summary behavior in `config/summary_fields.tsv`; use a
@@ -33,5 +35,4 @@
   kernel, inspect changed visual artifacts, remove temporary material, and run
   `git diff --check` before recording completion.
 - Record release evidence in `docs/reference/release-verification.tsv` and keep
-  the Markdown documentation, examples, root README, and checklist synchronized
-  with production behavior.
+  the README, examples, and checklist synchronized with production behavior.
