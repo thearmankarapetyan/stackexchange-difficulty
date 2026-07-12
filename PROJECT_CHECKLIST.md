@@ -1,6 +1,6 @@
 # Stack Exchange Difficulty Project Checklist
 
-Last reviewed: **2026-07-11**
+Last reviewed: **2026-07-12**
 
 This is the canonical project roadmap and completion record. A checked item has
 an evidence path, validation command, or recorded result. Authored project
@@ -17,7 +17,7 @@ material retain their original form.
 - Verified release tag: `verified-release-2026-07-11`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Evidence matrix: **90 PASS, 0 FAIL** — **68 current-release** rows and
+- Evidence matrix: **91 PASS, 0 FAIL** — **69 current-release** rows and
   **22 historical-transition** rows.
 - Thirteen-task completion audit: **14 PASS, 0 FAIL**.
 
@@ -35,8 +35,11 @@ Status: **Complete**
   material remain linked in their appropriate formats.
 - [x] The quick orientation identifies the normal run choices, explains command
   notation, and links directly to plain-language file-format definitions.
+- [x] The first screen presents the project purpose, direct action links, current
+  outputs, clickable result routes, and the workflow before the detailed
+  reference index. The index is grouped by task, interface, and evidence.
 
-Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08`, `README-01`–`README-07`,
+Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08`, `README-01`–`README-08`,
 `HANDOVER-01`–`HANDOVER-03`, and `T13-01` in the release evidence.
 
 ## Task 2 — Document the project structure and architecture
