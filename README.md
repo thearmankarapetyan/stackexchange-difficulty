@@ -1,76 +1,109 @@
 # Stack Exchange human–model difficulty
 
-This project prepares reproducible Stack Exchange evidence for studying question difficulty. It reconstructs complete [question threads](#thread), extracts configurable XML summaries, builds one documented 47-field [characteristic](#characteristic) table, publishes a [validation report](#validation-report) for each analytical run, and provides one generic [exploratory data analysis](#eda) notebook.
+> **From official Stack Exchange XML dumps to reconstructed question
+> threads, configurable summaries, and validated evidence for studying
+> question difficulty.**
 
-**Documentation revision:** 11 July 2026
+[**Run the bundled analysis**](#tutorial-run-the-bundled-analysis) ·
+[**Choose a result**](#quick-orientation) ·
+[**See the workflow**](#workflow-overview) ·
+[**Find an exact answer**](#find-an-answer) ·
+[**Review verified results**](#verified-results)
 
-**Project checks:** [Open the GitHub Actions verification history](https://github.com/thearmankarapetyan/stackexchange-difficulty/actions/workflows/ci.yml).
+| Research focus | Source evidence | Maintained results |
+|---|---|---|
+| Observable signals associated with question difficulty and later human–model comparison | Official public questions, answers, direct question comments, accepted-answer information, votes, dates, scores, views, tags, and whether questions were closed | [Complete-thread XML](#complete-thread-xml-contract), [configurable summary XML](#selected-summary-xml-contract), a [validated 47-field TSV](#characteristic-output-contracts), and one [generic EDA notebook](#notebook-interface) |
 
-This README is the canonical project documentation. Its linked contents and reference index lead directly to the relevant section of this page. Supporting source files, examples, spreadsheets, figures, and research material remain linked in their native formats.
+**Documentation revision:** 12 July 2026 ·
+**Project checks:** [GitHub Actions](https://github.com/thearmankarapetyan/stackexchange-difficulty/actions/workflows/ci.yml) ·
+**Completion record:** [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md)
+
+This README is the canonical project documentation. Its contents and reference
+index lead directly to the relevant section of this page. Supporting source
+files, examples, spreadsheets, figures, and research material remain linked in
+their appropriate formats.
 
 ## Contents
 
-- [Quick orientation](#quick-orientation)
-- [Find an answer](#find-an-answer)
-- [Project overview](#project-overview)
-- [Workflow overview](#workflow-overview)
-- [Tutorial: run the bundled analysis](#tutorial-run-the-bundled-analysis)
-- [How-to guides](#how-to-guides)
-  - [Access and prepare a data dump](#access-and-prepare-a-data-dump)
-  - [Create complete-thread XML](#create-complete-thread-xml)
-  - [Create selected-field summary XML](#create-selected-field-summary-xml)
-  - [Build a validated characteristic table](#build-a-validated-characteristic-table)
-  - [Run the exploratory notebook](#run-the-exploratory-notebook)
-  - [Verify and record a change](#verify-and-record-a-change)
-- [System reference](#system-reference)
-  - [Architecture and components](#architecture-and-components)
-  - [Component reference](#component-reference)
-  - [Environment and installation](#environment-and-installation)
-  - [Repository structure](#repository-structure)
-  - [Command-line interfaces](#command-line-interfaces)
-  - [Source XML contracts](#source-xml-contracts)
-  - [Output contracts](#output-contracts)
-  - [Configuration contracts](#configuration-contracts)
-  - [Notebook interface](#notebook-interface)
-  - [Validation and errors](#validation-and-errors)
-  - [Deliverables register](#deliverables-register)
-  - [Verified examples](#verified-examples)
-  - [Verified results](#verified-results)
-- [Scientific and design explanation](#scientific-and-design-explanation)
-- [Glossary](#glossary)
-- [Canonical locations](#canonical-locations)
+| Read first | Learn by doing | Complete a task | Look up or understand |
+|---|---|---|---|
+| [Quick orientation](#quick-orientation) · [Workflow](#workflow-overview) · [Project overview](#project-overview) | [Bundled analysis tutorial](#tutorial-run-the-bundled-analysis) | [How-to guides](#how-to-guides) · [Verify a change](#verify-and-record-a-change) | [Find an answer](#find-an-answer) · [System reference](#system-reference) · [Scientific explanation](#scientific-and-design-explanation) · [Glossary](#glossary) · [Canonical locations](#canonical-locations) |
 
 ## Quick orientation
 
-Routine use keeps the Python source unchanged. Choose the required result,
+### Choose what to produce
+
+Routine use keeps the Python source unchanged. Select the required result,
 provide the corresponding run values, and inspect its completion check.
 
-| Intended result | Start here | Values selected for the run | Result |
+| Path | Choose it when | Values selected for the run | Result to inspect |
 |---|---|---|---|
-| See the complete analysis work once | [Bundled analysis tutorial](#tutorial-run-the-bundled-analysis) | Use the fixed pilot values | A validated 20-question table and executed notebook |
-| Preserve complete question threads | [Complete-thread procedure](#create-complete-thread-xml) | Source folder, output file, and one or more question IDs | One XML file containing the selected questions, their direct comments, and all available answers |
-| Produce a compact field report | [Selected-summary procedure](#create-selected-field-summary-xml) | Source folder, output file, question IDs, and optional copied field selection | One XML file containing the enabled fields in the selected order |
-| Build and explore a question table | [Characteristic procedure](#build-a-validated-characteristic-table) | Source folder, community host, dump date, question period, output folder, and optional limit | A 47-column TSV, validation report, run metadata, and notebook results |
+| [**First complete run**](#tutorial-run-the-bundled-analysis) | You want to see the implemented analysis sequence once | Use the fixed bundled pilot values | A validated 20-question table and an executed notebook |
+| [**Complete threads**](#create-complete-thread-xml) | You need the complete available discussion for selected questions | Source folder, output file, and one or more question IDs | One XML file containing each question, its direct comments, and all available answers |
+| [**Selected summary**](#create-selected-field-summary-xml) | You need a compact XML report with chosen fields | Source folder, output file, question IDs, and an optional copied field selection | One XML file containing the enabled fields in the selected order |
+| [**Characteristics and EDA**](#build-a-validated-characteristic-table) | You need question-level measurements, checks, figures, and interpretations | Source folder, community host, dump date, question period, output folder, and optional limit | A 47-column TSV, validation report, run metadata, and notebook results |
 
-Run commands from the [project root](#project-root), the folder that contains
-this README. Uppercase words such as `DUMP_DIR` and `QUESTION_ID` are
-placeholders to replace with real values. Brackets and an ellipsis describe
-optional or repeated values. Enter the real values and omit this notation. The
-[command-line interface definition](#command-line-interface) gives a concrete
-example.
+> [!TIP]
+> **Recommended starting point:** Run the
+> [bundled analysis tutorial](#tutorial-run-the-bundled-analysis). Its small,
+> tracked input verifies the environment, characteristic build, validation,
+> and notebook before a larger dump is processed.
 
-For routine runs, change command arguments, a copied summary-field TSV, or the
-notebook's **Editable settings** cell. Keep the Python modules and
-`config/characteristics.tsv` unchanged unless the documented output contract
-itself is being revised.
+### Change only the run values
+
+- Run commands from the [project root](#project-root), which contains this
+  README.
+- Replace uppercase placeholders such as `DUMP_DIR` and `QUESTION_ID` with
+  values from the intended run. Omit the brackets and ellipsis that describe
+  optional or repeated values. See the
+  [command-line interface example](#command-line-interface).
+- For a routine run, change command arguments, a copied summary-field TSV, or
+  the notebook's **Editable settings** cell. Keep the Python modules and
+  `config/characteristics.tsv` unchanged unless the documented output contract
+  itself is being revised.
+
+[Back to contents](#contents)
+
+## Workflow overview
+
+**Purpose:** Follow the complete implemented sequence from Stack Exchange
+access to inspected and retained results.
+
+![Stack Exchange project workflow](docs/project-workflow-overview.png)
+
+[Open the full-size PNG](docs/project-workflow-overview.png) ·
+[Open the editable SVG](docs/project-workflow-overview.svg) ·
+[Go to the how-to guides](#how-to-guides)
+
+The implemented sequence is:
+
+1. Select a compatible [Stack Exchange community](#stack-exchange-community).
+2. Create an account or sign in on that community.
+3. Open profile settings, open data-dump access, and affirm the displayed
+   declaration.
+4. Download and extract the official [data dump](#data-dump).
+5. Create a Python environment and install the declared dependencies.
+6. Choose one of the three implemented result routes.
+7. Supply run-specific paths, identifiers, dates, or field selections through
+   the documented interfaces.
+8. Inspect the generated XML or the TSV, validation, and metadata files.
+9. Run the generic notebook when exploratory results are required.
+10. Retain the source provenance, run settings, validation evidence, and
+    generated result together.
+
+Each route has a completion check in the [how-to guides](#how-to-guides). Exact
+arguments and file contracts are in the [system reference](#system-reference).
 
 [Back to contents](#contents)
 
 ## Find an answer
 
-Use this index as the entry point for a task or unfamiliar term.
+Select the description that matches the current question. Every destination is
+on this page unless its file format requires a separate artifact.
 
-| Need or term | Direct destination |
+### Start, run, or inspect a result
+
+| Need | Direct destination |
 |---|---|
 | Understand the project in a few minutes | [Project overview](#project-overview) |
 | Know what may be changed for a normal run | [Quick orientation](#quick-orientation) |
@@ -81,37 +114,64 @@ Use this index as the entry point for a task or unfamiliar term.
 | Select and order summary fields | [Create selected-field summary XML](#create-selected-field-summary-xml) |
 | Produce the 47-column analytical table | [Build a validated characteristic table](#build-a-validated-characteristic-table) |
 | Produce tables, figures, and interpretations | [Run the exploratory notebook](#run-the-exploratory-notebook) |
-| Understand a particular script, library, or notebook | [Component reference](#component-reference) |
-| Look up a command or parameter | [Command-line interfaces](#command-line-interfaces) |
-| Understand placeholders in a command example | [Command-line interface](#command-line-interface) |
-| Understand `Posts.xml`, `Comments.xml`, or `Votes.xml` | [Source XML contracts](#source-xml-contracts) |
-| Understand an output file | [Output contracts](#output-contracts) |
-| Understand a notebook setting or figure | [Notebook interface](#notebook-interface) |
-| Understand a PASS, WARN, FAIL, or error message | [Validation and errors](#validation-and-errors) |
-| Understand an accepted answer | [Accepted answer](#accepted-answer) |
-| Understand which comments form a thread | [Direct question comment](#direct-question-comment) |
-| Understand the 47-field schema | [Characteristic specification](#characteristic-specification) |
-| Understand configurable summary selection | [Summary field selection](#summary-field-selection) |
-| Understand run provenance | [Run metadata](#run-metadata) |
-| Understand reuse and attribution | [Reuse and attribution](#reuse-and-attribution) |
-| Understand source and result folders | [Source-data folder](#source-data-folder) · [Results folder](#results-folder) |
-| Look up another technical term | [Glossary](#glossary) |
-| Understand XML, TSV, JSON, or IPYNB files | [XML](#xml) · [TSV](#tsv) · [JSON](#json) · [Jupyter notebook](#jupyter-notebook) |
-| Understand the 47 characteristics in plain language | [Data dictionary](docs/reference/data-dictionary.xlsx) |
 | Check what has been verified | [Verified results](#verified-results) |
-| Find a source, result, or supporting artifact | [Canonical locations](#canonical-locations) |
+
+### Understand an interface or term
+
+| Need or term | Direct destination |
+|---|---|
+| A particular script, library, or notebook | [Component reference](#component-reference) |
+| A command or parameter | [Command-line interfaces](#command-line-interfaces) |
+| Placeholders in a command example | [Command-line interface](#command-line-interface) |
+| `Posts.xml`, `Comments.xml`, or `Votes.xml` | [Source XML contracts](#source-xml-contracts) |
+| An output file | [Output contracts](#output-contracts) |
+| A notebook setting or figure | [Notebook interface](#notebook-interface) |
+| A PASS, WARN, FAIL, or error message | [Validation and errors](#validation-and-errors) |
+| An accepted answer | [Accepted answer](#accepted-answer) |
+| Which comments form a thread | [Direct question comment](#direct-question-comment) |
+| The 47-field schema | [Characteristic specification](#characteristic-specification) |
+| Configurable summary selection | [Summary field selection](#summary-field-selection) |
+| Run provenance | [Run metadata](#run-metadata) |
+| Source and result folders | [Source-data folder](#source-data-folder) · [Results folder](#results-folder) |
+| XML, TSV, JSON, or IPYNB files | [XML](#xml) · [TSV](#tsv) · [JSON](#json) · [Jupyter notebook](#jupyter-notebook) |
+| Another technical term | [Glossary](#glossary) |
+
+### Find supporting evidence
+
+| Need | Direct destination |
+|---|---|
+| Plain-language definitions of all 47 characteristics | [Data dictionary](docs/reference/data-dictionary.xlsx) |
+| A source, result, or supporting artifact | [Canonical locations](#canonical-locations) |
+| Reuse and attribution requirements | [Reuse and attribution](#reuse-and-attribution) |
+| Recorded release checks | [Release verification](docs/reference/release-verification.tsv) |
 
 [Back to contents](#contents)
 
 ## Project overview
 
+**Purpose:** Understand the research question, the evidence prepared by the
+software, and the three currently implemented result routes.
+
 ### Research purpose
 
-The project studies observable signals associated with question difficulty in a setting where humans and generative models may experience difficulty differently. Stack Exchange supplies real questions together with traces of human response: answers, direct clarification comments, [accepted answers](#accepted-answer), closure, votes, views, tags, and elapsed times.
+The project studies observable signals associated with question difficulty in
+a setting where humans and generative models may experience difficulty
+differently. Stack Exchange supplies real questions together with traces of
+human response: answers, direct clarification comments,
+[accepted answers](#accepted-answer), closure, votes, views, tags, and elapsed
+times.
 
-These traces describe community activity. Delayed answers, repeated clarification comments, closure, and the absence of an accepted answer can identify questions that deserve closer examination. Their meaning depends on the selected [dump snapshot](#dump-snapshot) and [question period](#question-period).
+These traces describe community activity. Delayed answers, repeated
+clarification comments, closure, and the absence of an accepted answer can
+identify questions that deserve closer examination. Their meaning depends on
+the selected [dump snapshot](#dump-snapshot) and
+[question period](#question-period).
 
-The implemented software prepares this evidence. It reconstructs threads, produces selected summaries, builds a documented question-level table, validates every analytical run, and presents exploratory results. Difficulty judgements and generative-model performance values require their own documented assessment protocols.
+The implemented software prepares this evidence. It reconstructs threads,
+produces selected summaries, builds a documented question-level table,
+validates every analytical run, and presents exploratory results. Difficulty
+judgements and generative-model performance values require their own documented
+assessment protocols.
 
 ### Implemented result routes
 
@@ -121,30 +181,10 @@ The implemented software prepares this evidence. It reconstructs threads, produc
 | [Selected summary](#create-selected-field-summary-xml) | Create a compact report with selected and ordered fields | `Posts.xml`, `Comments.xml`, question IDs, optional field-selection TSV | [`src/extract_request_summary.py`](src/extract_request_summary.py) | One configurable summary XML file |
 | [Characteristics and EDA](#build-a-validated-characteristic-table) | Build validated question-level evidence and explore it | `Posts.xml`, `Comments.xml`, `Votes.xml`, run settings, schema | [`src/build_characteristics.py`](src/build_characteristics.py), then [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) | TSV, validation, metadata, tables, figures, and interpretations |
 
-The workflow accepts compatible Stack Exchange community dumps. Paths, communities, dates, question IDs, summary fields, schemas, and output locations are selected for each run. Super User and Software Engineering provide cross-site verification evidence.
-
-[Back to contents](#contents)
-
-## Workflow overview
-
-![Stack Exchange project workflow](docs/project-workflow-overview.png)
-
-Open the [full-size PNG](docs/project-workflow-overview.png) for reading or the [editable SVG](docs/project-workflow-overview.svg) for a reviewed diagram change.
-
-The implemented sequence is:
-
-1. Select a compatible [Stack Exchange community](#stack-exchange-community).
-2. Create an account or sign in on that community.
-3. Open profile settings, open data-dump access, and affirm the displayed declaration.
-4. Download and extract the official [data dump](#data-dump).
-5. Create a Python environment and install the declared dependencies.
-6. Choose one implemented result route.
-7. Supply run-specific paths, identifiers, dates, or field selections through the documented interfaces.
-8. Inspect the generated XML or the TSV, validation, and metadata files.
-9. Run the generic notebook when exploratory results are required.
-10. Retain the source provenance, run settings, validation evidence, and generated result together.
-
-Each route has a completion check in the [how-to guides](#how-to-guides). Exact arguments and file contracts are in the [system reference](#system-reference).
+The workflow accepts compatible Stack Exchange community dumps. Paths,
+communities, dates, question IDs, summary fields, schemas, and output locations
+are selected for each run. Super User and Software Engineering provide
+cross-site verification evidence.
 
 [Back to contents](#contents)
 
