@@ -30,8 +30,8 @@ that follow the expected XML structure.
   second-person project voice, conversational prompts, and direct imperatives
   remain absent.
 - One generic, self-contained EDA notebook remains canonical.
-- A field-contract change includes corresponding schema, data-dictionary,
-  example, and documentation updates.
+- A field-contract change includes corresponding catalogue, schema,
+  data-dictionary, example, notebook, and documentation updates.
 - Raw dumps, credentials, local environments, caches, and regenerated annual
   outputs remain outside Git.
 - Secrets remain outside Git. Any exposed secret is revoked at its source and
@@ -43,11 +43,13 @@ Validation commands run from the project root. The selected checks cover the
 changed behavior. The minimum source checks are:
 
 ```bash
-python -m compileall -q src
+PYTHONPYCACHEPREFIX=/tmp/stackexchange-pycache python -m compileall -q src
 python -m ruff check src
 python src/extract_threads.py --help
 python src/extract_request_summary.py --help
 python src/build_characteristics.py --help
+python src/build_data_dictionary.py --help
+python src/build_data_dictionary.py --check
 npx --yes markdownlint-cli2@0.23.0 \
   '**/*.md' '.github/**/*.md'
 git diff --check

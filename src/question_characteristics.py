@@ -1,7 +1,7 @@
 """This module calculates the documented fields for one Stack Exchange question.
 
 ``build_characteristics.py`` finds the related question, answer, comment, and
-acceptance rows.  This module turns those rows into the 47 columns described in
+acceptance rows.  This module turns those rows into the 49 columns described in
 ``config/characteristics.tsv``.  Keeping the formulas together supports direct
 comparison between the implementation and the data dictionary.
 
@@ -65,11 +65,12 @@ def readable_text(html_value: str | None) -> str:
 
 
 def content_measurements(body_html: str | None) -> dict[str, int | str]:
-    """Calculates visible text, prose words, code lines, links, and images.
+    """Calculates visible text, prose words, code size, links, and images.
 
-    Word counts exclude ``pre`` and ``code`` content.  Code lines count
-    nonempty lines inside ``pre`` blocks.  Missing HTML produces empty text and
-    zero counts; the input string is never modified.
+    Word counts exclude ``pre`` and ``code`` content.  Code characters include
+    the text inside every ``code`` element, including whitespace.  Code lines
+    count nonempty lines inside ``pre`` blocks.  Missing HTML produces empty
+    text and zero counts; the input string is never modified.
     """
     soup = BeautifulSoup(body_html or "", "html.parser")
     body_text = " ".join(soup.get_text(" ", strip=True).split())
@@ -87,6 +88,9 @@ def content_measurements(body_html: str | None) -> dict[str, int | str]:
     return {
         "question_body_text": body_text,
         "question_word_count": len(WORD_PATTERN.findall(prose_text)),
+        "code_character_count": sum(
+            len(element.get_text()) for element in soup.find_all("code")
+        ),
         "code_line_count": code_lines,
         "link_count": len(soup.find_all("a", href=True)),
         "image_count": len(soup.find_all("img")),
@@ -118,7 +122,7 @@ def build_characteristic_row(
     posts_path: Path,
     comments_path: Path,
 ) -> dict[str, Any]:
-    """Creates one documented 47-field row for one question.
+    """Creates one documented 49-field row for one question.
 
     Related answers and direct question comments must already be ordered.  The
     function validates source IDs, timestamps, counts, and event order, then
@@ -236,6 +240,9 @@ def build_characteristic_row(
     tags = tag_names(question.get("Tags"))
     measurements = content_measurements(question.get("Body"))
     measurements["tag_count"] = len(tags)
+    stackexchange_answer_count = optional_count(
+        question.get("AnswerCount"), context, "AnswerCount"
+    )
     row: dict[str, Any] = {
         "site": site,
         "dump_snapshot_date": dump_date.isoformat(),
@@ -254,8 +261,11 @@ def build_characteristic_row(
         "question_view_count": optional_count(
             question.get("ViewCount"), context, "ViewCount"
         ),
-        "stackexchange_answer_count": optional_count(
-            question.get("AnswerCount"), context, "AnswerCount"
+        "stackexchange_answer_count": stackexchange_answer_count,
+        "has_stackexchange_answer": (
+            stackexchange_answer_count > 0
+            if stackexchange_answer_count is not None
+            else None
         ),
         "stackexchange_comment_count": optional_count(
             question.get("CommentCount"), context, "CommentCount"

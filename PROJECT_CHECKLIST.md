@@ -17,8 +17,8 @@ material retain their original form.
 - Verified release tag: `verified-release-2026-07-11`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Evidence matrix: **93 PASS, 0 FAIL** — **71 current-release** rows and
-  **22 historical-transition** rows.
+- Evidence matrix: **100 PASS, 0 FAIL** — **69 current-release** rows and
+  **31 historical-transition** rows.
 - Thirteen-task completion audit: **14 PASS, 0 FAIL**.
 
 ## Task 1 — Main project documentation
@@ -38,12 +38,15 @@ Status: **Complete**
 - [x] The opening presents a concise data-workflow statement and direct action
   links before the result routes, workflow, and detailed reference index. The
   index is grouped by task, interface, and evidence.
+- [x] The README and generated workbook distinguish the complete
+  138-characteristic catalogue from the 49 implemented question-level fields.
 - [x] Maintained authored surfaces use an impersonal, descriptive tone.
   First- and second-person project voice, conversational prompts, and direct
   instructions are absent; source data and quoted material remain unchanged.
 
 Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08`, `README-01`–`README-09`,
-`HANDOVER-01`–`HANDOVER-03`, `T13-01`, and `TONE-01` in the release evidence.
+`HANDOVER-01`–`HANDOVER-03`, `CAT-01`–`CAT-02`, `DOC-01`, `T13-01`, and
+`TONE-01` in the release evidence.
 
 ## Task 2 — Project structure and architecture
 
@@ -51,7 +54,7 @@ Status: **Complete**
 
 - [x] The README tree identifies every important source, configuration, data,
   notebook, documentation, dependency, contribution, and security location.
-- [x] The architecture and component tables explain all five Python modules and
+- [x] The architecture and component tables explain all six Python modules and
   the generic notebook, including their relationships.
 - [x] One editable SVG and one 4800×3400 PNG show the sequence from Stack
   Exchange access through environment preparation, the three implemented
@@ -94,7 +97,7 @@ Evidence: `README.md#environment-and-installation`,
 Status: **Complete**
 
 - [x] The component reference gives a dedicated, directly linkable section to
-  each of the five Python modules and the generic notebook.
+  each of the six Python modules and the generic notebook.
 - [x] Each executable component documents its purpose, required source files,
   accepted settings, validation, outputs, side effects, handled failures,
   command, process status, and expected result.
@@ -102,16 +105,18 @@ Status: **Complete**
   assumptions, side effects, and error propagation.
 - [x] Source XML, output XML, TSV, JSON, configuration, and notebook contracts
   state exact formats, fields, defaults, and ordering behavior.
+- [x] The data-dictionary builder reference documents its three TSV inputs,
+  configurable output, validation rules, workbook sheets, and command.
 
 Evidence: `README.md#component-reference` through
-`README.md#validation-and-errors`, the three current `--help` outputs, and
-`T13-04`.
+`README.md#validation-and-errors`, the four current `--help` outputs, and
+`DICT-03`, `DOC-01`, and `T13-04`.
 
 ## Task 5 — Python module introductions
 
 Status: **Complete**
 
-- [x] All five modules begin with English module docstrings.
+- [x] All six modules begin with English module docstrings.
 - [x] Executable-module introductions state purpose, workflow role, required
   inputs, generated outputs, dependency source, a basic command, source-file
   safety, and important scope limitations.
@@ -125,7 +130,7 @@ Evidence: `src/*.py`, the module-docstring audit, and `T13-05`.
 
 Status: **Complete**
 
-- [x] All 43 current functions have complete parameter and return type
+- [x] All 53 current functions have complete parameter and return type
   annotations and a concise English docstring; the project defines no classes.
 - [x] Non-obvious streaming, row selection, schema loading, summary mapping,
   characteristic calculation, validation, orchestration, and atomic-writing
@@ -198,12 +203,15 @@ checks `BUILD-02`–`BUILD-04`, `SRC-03`, and `T13-09`.
 
 Status: **Complete**
 
-- [x] Five modules have focused responsibilities, common XML rules are shared,
-  characteristic calculations follow one 47-field specification, and summary
+- [x] Six modules have focused responsibilities, common XML rules are shared,
+  characteristic calculations follow one 49-field specification, the complete
+  research catalogue contains 138 distinct characteristics, and summary
   mappings follow one 27-field catalogue.
 - [x] Names and errors are descriptive, inputs are validated, configuration is
   separated from processing, source XML is protected, and canonical files are
   written atomically.
+- [x] The workbook builder verifies catalogue identifiers and uniqueness, the
+  implemented subset, schema order, and pilot columns before publication.
 - [x] Duplicate logic, stale helpers, notebook generators, previews, caches,
   bytecode, and obsolete active documentation paths are absent.
 - [x] The repeatable change gate covers compilation, Ruff, controlled behavior,
@@ -216,7 +224,8 @@ Status: **Complete**
 
 Evidence: `src/`, `config/`, `AGENTS.md`, `CONTRIBUTING.md`, `.github/`, the
 repeatable gate below, checks `SRC-01`–`SRC-06`, `AUDIT-01`, `GH-01`–`GH-07`,
-`HANDOVER-01`–`HANDOVER-07`, and `T13-10`.
+`HANDOVER-01`–`HANDOVER-07`, `CAT-01`–`CAT-02`, `FIELD-01`, `DICT-03`, and
+`T13-10`.
 
 ## Task 11 — Practical example
 
@@ -230,7 +239,7 @@ Status: **Complete**
   validation, metadata inspection, notebook execution, figures, and
   interpretation.
 - [x] Generated pilot characteristics and validation match their tracked targets
-  byte for byte: 20 rows, 47 columns, 9 PASS, 0 WARN, and 0 FAIL.
+  byte for byte: 20 rows, 49 columns, 10 PASS, 0 WARN, and 0 FAIL.
 - [x] The tutorial identifies inputs, locations, commands, intermediate outputs,
   final results, success indicators, and the expected repeatability boundary for
   metadata timestamps and paths.
@@ -240,8 +249,8 @@ Status: **Complete**
 Evidence: `data/examples/pilot_dump/`,
 `data/examples/characteristics_pilot.tsv`,
 `data/examples/characteristics_pilot_validation.tsv`,
-`README.md#bundled-analysis-tutorial`, `HANDOVER-04`, `HANDOVER-06`, and
-`T13-11`.
+`README.md#bundled-analysis-tutorial`, `HANDOVER-04`, `HANDOVER-06`,
+`TEST-03`, and `T13-11`.
 
 ## Task 12 — Deliverables register
 
@@ -253,14 +262,14 @@ Status: **Complete**
   purpose, maintainer or generator, required input, opening or use method, and
   version-control status where applicable.
 - [x] Source, configuration, documentation, workflow, XML examples, pilot XML,
-  characteristic tables, validation, metadata, notebook, dictionary,
-  statistics, scientific review, dependencies, and release evidence are
-  covered.
+  complete characteristic catalogue, current characteristic tables,
+  validation, metadata, notebook, generated dictionary workbook, statistics,
+  scientific review, dependencies, and release evidence are covered.
 - [x] Raw dumps are identified as external inputs, regenerated analytical runs
   as ignored outputs, and temporary verification material as disposable.
 
 Evidence: `README.md#deliverables-register`, `.gitignore`, canonical-location
-checks `PATH-01`, and `T13-12`.
+checks `PATH-01`, `CAT-01`–`CAT-02`, `DICT-03`, `DOC-01`, and `T13-12`.
 
 ## Task 13 — Installation and dependency files
 
@@ -268,8 +277,8 @@ Status: **Complete**
 
 - [x] `requirements.txt` declares compatible ranges for every runtime, XML,
   notebook, numerical, plotting, and statistical dependency.
-- [x] `requirements-dev.txt` includes the runtime set and declares Ruff for
-  repository checks.
+- [x] `requirements-dev.txt` includes the runtime set and declares openpyxl for
+  dictionary generation plus Ruff for repository checks.
 - [x] The README documents Python 3.10 or newer, environment creation,
   installation, shell activation, permissions, storage, and external tools.
 - [x] Installation and execution were verified in a clean Python 3.12.3
