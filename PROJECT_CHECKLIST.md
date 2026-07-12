@@ -14,10 +14,13 @@ material retain their original form.
 - Repository-comprehension pull request: `#8`, merged as
   `c8577ce7a436be2ffa96e89f81fd3be1fcc4b2ce`.
 - Post-merge GitHub Actions run: `29164761612` (**2 jobs passed**).
+- Dictionary v5 synthesis: draft pull request `#13`, implementation commit
+  `3f754ece4e49efbb48c8605587abd02bc13446d8`, and GitHub Actions run
+  `29204483469` (**2 jobs passed**).
 - Verified release tag: `verified-release-2026-07-11`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Evidence matrix: **100 PASS, 0 FAIL** — **69 current-release** rows and
+- Evidence matrix: **101 PASS, 0 FAIL** — **70 current-release** rows and
   **31 historical-transition** rows.
 - Thirteen-task completion audit: **14 PASS, 0 FAIL**.
 
@@ -223,7 +226,7 @@ Status: **Complete**
   transition records, and the documented path succeeds from a fresh clone.
 
 Evidence: `src/`, `config/`, `AGENTS.md`, `CONTRIBUTING.md`, `.github/`, the
-repeatable gate below, checks `SRC-01`–`SRC-06`, `AUDIT-01`, `GH-01`–`GH-07`,
+repeatable gate below, checks `SRC-01`–`SRC-06`, `AUDIT-01`, `GH-01`–`GH-08`,
 `HANDOVER-01`–`HANDOVER-07`, `CAT-01`–`CAT-02`, `FIELD-01`, `DICT-03`, and
 `T13-10`.
 
@@ -289,7 +292,7 @@ Status: **Complete**
   and 3.12 and executes the notebook on Python 3.12.
 
 Evidence: `requirements.txt`, `requirements-dev.txt`,
-`README.md#environment-and-installation`, checks `ENV-01`–`ENV-02`, `GH-06`,
+`README.md#environment-and-installation`, checks `ENV-01`–`ENV-02`, `GH-06`, `GH-08`,
 `HANDOVER-06`, `HANDOVER-07`, and `T13-13`.
 
 ## Repeatable change verification gate
