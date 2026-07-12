@@ -1,27 +1,13 @@
-# Stack Exchange human–model difficulty
+<!-- markdownlint-disable-file MD041 -->
 
 > **From official Stack Exchange XML dumps to reconstructed question
-> threads, configurable summaries, and validated evidence for studying
-> question difficulty.**
+> threads, configurable summaries, and validated evidence.**
 
 [**Bundled analysis tutorial**](#bundled-analysis-tutorial) ·
 [**Result routes**](#quick-orientation) ·
 [**Workflow**](#workflow-overview) ·
 [**Reference index**](#reference-index) ·
 [**Verified results**](#verified-results)
-
-| Research focus | Source evidence | Maintained results |
-|---|---|---|
-| Observable signals associated with question difficulty and later human–model comparison | Official public questions, answers, direct question comments, accepted-answer information, votes, dates, scores, views, tags, and whether questions were closed | [Complete-thread XML](#complete-thread-xml-contract), [configurable summary XML](#selected-summary-xml-contract), a [validated 47-field TSV](#characteristic-output-contracts), and one [generic EDA notebook](#notebook-interface) |
-
-**Documentation revision:** 12 July 2026 ·
-**Project checks:** [GitHub Actions](https://github.com/thearmankarapetyan/stackexchange-difficulty/actions/workflows/ci.yml) ·
-**Completion record:** [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md)
-
-This README is the canonical project documentation. Its contents and reference
-index lead directly to the relevant section of this page. Supporting source
-files, examples, spreadsheets, figures, and research material remain linked in
-their appropriate formats.
 
 ## Contents
 
@@ -32,9 +18,6 @@ their appropriate formats.
 ## Quick orientation
 
 ### Available result routes
-
-Routine use leaves the Python source unchanged. Each route identifies its
-required run values and completion evidence.
 
 | Path | Use case | Values selected for the run | Result to inspect |
 |---|---|---|---|
@@ -51,8 +34,7 @@ required run values and completion evidence.
 
 ### Routine run values
 
-- Commands run from the [project root](#project-root), which contains this
-  README.
+- Commands run from the project root.
 - Uppercase placeholders such as `DUMP_DIR` and `QUESTION_ID` receive values
   from the intended run. Brackets and an ellipsis denote optional or repeated
   values and are omitted from literal commands. The
@@ -67,7 +49,7 @@ required run values and completion evidence.
 
 ## Workflow overview
 
-**Purpose:** The diagram presents the complete implemented sequence from Stack
+The diagram presents the complete implemented sequence from Stack
 Exchange access to inspected and retained results.
 
 ![Stack Exchange project workflow](docs/project-workflow-overview.png)
@@ -102,8 +84,6 @@ arguments and file contracts are in the [system reference](#system-reference).
 ## Reference index
 
 The index maps common project needs to their exact documentation destination.
-Every destination is on this page unless its format requires a separate
-artifact.
 
 ### Result procedures and inspection
 
@@ -153,30 +133,6 @@ artifact.
 
 ## Project overview
 
-**Purpose:** This section summarizes the research question, the evidence
-prepared by the software, and the three currently implemented result routes.
-
-### Research purpose
-
-The project studies observable signals associated with question difficulty in
-a setting where humans and generative models may experience difficulty
-differently. Stack Exchange supplies real questions together with traces of
-human response: answers, direct clarification comments,
-[accepted answers](#accepted-answer), closure, votes, views, tags, and elapsed
-times.
-
-These traces describe community activity. Delayed answers, repeated
-clarification comments, closure, and the absence of an accepted answer can
-identify questions that deserve closer examination. Their meaning depends on
-the selected [dump snapshot](#dump-snapshot) and
-[question period](#question-period).
-
-The implemented software prepares this evidence. It reconstructs threads,
-produces selected summaries, builds a documented question-level table,
-validates every analytical run, and presents exploratory results. Difficulty
-judgements and generative-model performance values require their own documented
-assessment protocols.
-
 ### Implemented result routes
 
 | Route | Purpose | Required input | Entry point | Primary result |
@@ -187,8 +143,7 @@ assessment protocols.
 
 The workflow accepts compatible Stack Exchange community dumps. Paths,
 communities, dates, question IDs, summary fields, schemas, and output locations
-are selected for each run. Super User and Software Engineering provide
-cross-site verification evidence.
+are selected for each run.
 
 [Back to contents](#contents)
 
