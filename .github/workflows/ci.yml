@@ -59,6 +59,7 @@ jobs:
           python src/extract_threads.py --help
           python src/extract_request_summary.py --help
           python src/build_characteristics.py --help
+          python src/build_data_dictionary.py --help
 
       - name: Bundled XML pilot reconstruction
         if: matrix.python-version == '3.12'
@@ -77,6 +78,7 @@ jobs:
           cmp \
             /tmp/stackexchange-pilot/validation.tsv \
             data/examples/characteristics_pilot_validation.tsv
+          python src/build_data_dictionary.py --check
 
       - name: Bundled pilot notebook execution
         if: matrix.python-version == '3.12'

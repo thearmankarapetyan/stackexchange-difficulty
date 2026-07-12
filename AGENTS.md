@@ -37,6 +37,10 @@
   maintained. Superseded workflow variants are archived after verification.
 - Default summary behavior remains in `config/summary_fields.tsv`. Run-specific
   summary outputs use a copied field-selection TSV.
+- `config/characteristic_catalogue.tsv` remains the complete research
+  catalogue. `config/characteristics.tsv` remains its implemented
+  question-level output subset. Field changes keep both TSV files, the pilot,
+  the generated data-dictionary workbook, the notebook, and README synchronized.
 - One generic, self-contained EDA notebook remains canonical. Site-specific
   notebook copies, notebook generators, and large plotting-helper modules
   remain excluded.

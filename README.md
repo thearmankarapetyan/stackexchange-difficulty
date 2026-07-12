@@ -24,7 +24,7 @@
 | [**First complete run**](#bundled-analysis-tutorial) | Demonstration of the complete implemented analysis sequence | Fixed bundled pilot values | A validated 20-question table and an executed notebook |
 | [**Complete threads**](#complete-thread-xml-creation) | Preservation of the complete available discussion for selected questions | Source folder, output file, and one or more question IDs | One XML file containing each question, its direct comments, and all available answers |
 | [**Selected summary**](#selected-field-summary-xml-creation) | Compact XML reporting with selected fields | Source folder, output file, question IDs, and an optional copied field selection | One XML file containing the enabled fields in the selected order |
-| [**Characteristics and EDA**](#validated-characteristic-table-construction) | Question-level measurements, checks, figures, and interpretations | Source folder, community host, dump date, question period, output folder, and optional limit | A 47-column TSV, validation report, run metadata, and notebook results |
+| [**Characteristics and EDA**](#validated-characteristic-table-construction) | Question-level measurements, checks, figures, and interpretations | Source folder, community host, dump date, question period, output folder, and optional limit | A 49-column TSV, validation report, run metadata, and notebook results |
 
 > [!TIP]
 > **Recommended starting point:** The
@@ -42,8 +42,8 @@
   notation.
 - Routine runs change command arguments, a copied summary-field TSV, or the
   notebook's **Editable settings** cell. Python modules and
-  `config/characteristics.tsv` remain unchanged unless the documented output
-  contract itself changes.
+  `config/characteristic_catalogue.tsv` and `config/characteristics.tsv`
+  remain unchanged unless the documented catalogue or output contract changes.
 
 [Back to contents](#contents)
 
@@ -96,7 +96,7 @@ The index maps common project needs to their exact documentation destination.
 | Official dump registration, sign-in, and access | [Data-dump access and preparation](#data-dump-access-and-preparation) |
 | Question, comment, and answer reconstruction | [Complete-thread XML creation](#complete-thread-xml-creation) |
 | Summary-field selection and ordering | [Selected-field summary XML creation](#selected-field-summary-xml-creation) |
-| 47-column analytical table | [Validated characteristic-table construction](#validated-characteristic-table-construction) |
+| 49-column analytical table | [Validated characteristic-table construction](#validated-characteristic-table-construction) |
 | Tables, figures, and interpretations | [Exploratory notebook execution](#exploratory-notebook-execution) |
 | Verified project state | [Verified results](#verified-results) |
 
@@ -113,7 +113,8 @@ The index maps common project needs to their exact documentation destination.
 | A PASS, WARN, FAIL, or error message | [Validation and errors](#validation-and-errors) |
 | An accepted answer | [Accepted answer](#accepted-answer) |
 | Comments included in a thread | [Direct question comment](#direct-question-comment) |
-| The 47-field schema | [Characteristic specification](#characteristic-specification) |
+| The 49-field current schema | [Characteristic specification](#characteristic-specification) |
+| The 138-characteristic research catalogue | [Characteristic catalogue](#characteristic-catalogue) |
 | Configurable summary selection | [Summary field selection](#summary-field-selection) |
 | Run provenance | [Run metadata](#run-metadata) |
 | Source and result folders | [Source-data folder](#source-data-folder) · [Results folder](#results-folder) |
@@ -124,7 +125,7 @@ The index maps common project needs to their exact documentation destination.
 
 | Need | Direct destination |
 |---|---|
-| Plain-language definitions of all 47 characteristics | [Data dictionary](docs/reference/data-dictionary.xlsx) |
+| Definitions and implementation status for all 138 catalogue characteristics | [Data dictionary](docs/reference/data-dictionary.xlsx) |
 | A source, result, or supporting artifact | [Canonical locations](#canonical-locations) |
 | Reuse and attribution requirements | [Reuse and attribution](#reuse-and-attribution) |
 | Recorded release checks | [Release verification](docs/reference/release-verification.tsv) |
@@ -206,7 +207,7 @@ python src/build_characteristics.py \
 ```
 
 The expected report contains 20 selected questions and
-`9 PASS, 0 WARN, 0 FAIL`. The command creates:
+`10 PASS, 0 WARN, 0 FAIL`. The command creates:
 
 ```text
 data/processed/tutorial-run/thread_characteristics.tsv
@@ -217,7 +218,7 @@ data/processed/tutorial-run/run_metadata.json
 Every `validation.tsv` status is `PASS`. The `run_metadata.json` values
 identify the community, 20 April 2026 snapshot, 2024 question period, 20-row
 limit, three source files, and 20-row result. The generated characteristic TSV
-contains 20 rows and 47 columns and matches
+contains 20 rows and 49 columns and matches
 [`data/examples/characteristics_pilot.tsv`](data/examples/characteristics_pilot.tsv)
 byte for byte.
 
@@ -235,7 +236,7 @@ python -m jupyter lab
 4. Tables, figures, interpretations, and availability messages are examined in
    notebook order.
 
-The first summary reports one community, 20 questions, 47 source columns, a
+The first summary reports one community, 20 questions, 49 source columns, a
 question period from 1–8 January 2024, and the 20 April 2026 dump snapshot.
 Every code cell completes without a Python exception.
 
@@ -264,7 +265,7 @@ paths in `run_metadata.json` describe each individual execution and can
 therefore change.
 
 > **Tutorial complete:** Real source XML has been transformed into a validated
-> 47-field table, interpreted through the generic notebook, and reproduced.
+> 49-field table, interpreted through the generic notebook, and reproduced.
 
 [Back to contents](#contents)
 
@@ -398,7 +399,7 @@ python src/build_characteristics.py \
 2. `run_metadata.json` identifies the community, snapshot, question period,
    source files, row limit, and row count.
 3. The `thread_characteristics.tsv` header follows
-   [`config/characteristics.tsv`](config/characteristics.tsv) and contains 47
+   [`config/characteristics.tsv`](config/characteristics.tsv) and contains 49
    columns.
 4. Complete-period processing follows a successful pilot, uses a new output
    folder, and omits `--limit`.
@@ -469,8 +470,9 @@ This section states the current interfaces and contracts. The [how-to guides](#h
 | [`src/stackexchange_xml.py`](src/stackexchange_xml.py) | Shared streaming XML, row validation, ordering, question-comment reading, and atomic XML writing | XML paths and selected question IDs | Copied row dictionaries and library helpers |
 | [`src/extract_threads.py`](src/extract_threads.py) | Complete-thread reconstruction | `Posts.xml`, `Comments.xml`, question IDs | One XML file; command and `extract_threads` function |
 | [`src/extract_request_summary.py`](src/extract_request_summary.py) | Configurable summary extraction | `Posts.xml`, `Comments.xml`, question IDs, summary TSV | One XML file; command and `extract_request_summaries` function |
-| [`src/question_characteristics.py`](src/question_characteristics.py) | Transparent 47-field calculations | Selected question, answer, comment, acceptance, and provenance values | One characteristic dictionary per question |
+| [`src/question_characteristics.py`](src/question_characteristics.py) | Transparent 49-field calculations | Selected question, answer, comment, acceptance, and provenance values | One characteristic dictionary per question |
 | [`src/build_characteristics.py`](src/build_characteristics.py) | Question selection, orchestration, validation, and publication | Three XML files, run settings, schema | TSV, validation, metadata; command and `run` function |
+| [`src/build_data_dictionary.py`](src/build_data_dictionary.py) | Data-dictionary workbook construction and synchronization checks | Complete catalogue, current schema, tracked pilot TSV | Canonical XLSX workbook |
 | [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) | Generic exploratory analysis | Compatible `thread_characteristics.tsv` | Tables, figures, interpretations, and inspection cases |
 
 Shared source semantics—IDs, timestamps, ordering, question-comment selection, and safe output writing—live in the shared XML module. The characteristic calculations remain in a focused module. The notebook keeps its parameters, direct pandas, Matplotlib, and SciPy analysis code, results, and explanations together.
@@ -491,15 +493,25 @@ Shared source semantics—IDs, timestamps, ordering, question-comment selection,
 
 #### Characteristic calculations
 
-[`src/question_characteristics.py`](src/question_characteristics.py) is a library used by the builder. It receives one selected question with its ordered answers, direct question comments, acceptance dates, and run provenance. `build_characteristic_row` returns the 47-field dictionary specified by `config/characteristics.tsv`. The module parses rendered HTML and validates counts, timestamps, and event order. It modifies no source row and has no command-line interface.
+[`src/question_characteristics.py`](src/question_characteristics.py) is a library used by the builder. It receives one selected question with its ordered answers, direct question comments, acceptance dates, and run provenance. `build_characteristic_row` returns the 49-field dictionary specified by `config/characteristics.tsv`. The module parses rendered HTML and validates counts, timestamps, and event order. It modifies no source row and has no command-line interface.
 
 #### Characteristic builder
 
 [`src/build_characteristics.py`](src/build_characteristics.py) selects questions, reads related rows, calls the calculation library, validates every result, and publishes one run. It requires three source XML files plus community, snapshot, period, output, and optional schema or limit settings. Its `run` function and command create `thread_characteristics.tsv`, `validation.tsv`, and `run_metadata.json`. Missing inputs, invalid settings or schema, inconsistent source values, internal validation failures, and protected existing outputs stop the run before writing begins. Each result file replaces its destination only after that file is complete. Related documentation: [procedure](#validated-characteristic-table-construction), [command](#characteristic-builder-command), and [output contracts](#characteristic-output-contracts).
 
+#### Data-dictionary builder
+
+[`src/build_data_dictionary.py`](src/build_data_dictionary.py) builds the
+canonical workbook from the complete catalogue, current output schema, and
+tracked pilot table. It verifies the 138-row catalogue, the 49 implemented
+fields, schema order, catalogue mappings, and pilot columns before atomically
+publishing `docs/reference/data-dictionary.xlsx`. Its four sheets are
+**Overview**, **Characteristic catalogue**, **Current output**, and
+**Current sample**. The script changes no production dataset.
+
 #### EDA notebook
 
-[`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) performs the generic exploratory analysis. It accepts one compatible 47-column characteristic TSV through the visible `DATA_FILE` setting. Direct pandas, Matplotlib, and SciPy cells validate the table and produce summaries, figures, interpretations, and selected cases. Missing or incompatible data raises a clear exception; insufficient evidence for an optional analysis produces an availability message. Related documentation: [tutorial](#bundled-analysis-tutorial), [procedure](#exploratory-notebook-execution), and [notebook interface](#notebook-interface).
+[`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) performs the generic exploratory analysis. It accepts one compatible 49-column characteristic TSV through the visible `DATA_FILE` setting. Direct pandas, Matplotlib, and SciPy cells validate the table and produce summaries, figures, interpretations, and selected cases. Missing or incompatible data raises a clear exception; insufficient evidence for an optional analysis produces an availability message. Related documentation: [tutorial](#bundled-analysis-tutorial), [procedure](#exploratory-notebook-execution), and [notebook interface](#notebook-interface).
 
 ### Environment and installation
 
@@ -521,6 +533,7 @@ The project supports Python 3.10 or newer.
 | ipykernel | `>=6.29, <7` | Jupyter kernel |
 | JupyterLab | `>=4.2, <5` | Interactive notebook interface |
 | nbconvert | `>=6.5, <8` | Automated notebook execution and conversion |
+| openpyxl | `>=3.1, <4`; development only | Data-dictionary workbook generation |
 | Ruff | `>=0.15, <1` | Repository source checks |
 
 Repository acquisition after access approval:
@@ -564,8 +577,8 @@ stackexchange-difficulty/
 ├── AGENTS.md                        Maintenance rules for coding assistants
 ├── README.md                         Canonical project documentation
 ├── PROJECT_CHECKLIST.md              Completion and evidence record
-├── src/                              Five production Python modules
-├── config/                           Characteristic and summary contracts
+├── src/                              Five processing modules and one dictionary builder
+├── config/                           Complete catalogue, current schema, and summary contract
 ├── data/
 │   ├── examples/                     Small verified inputs and outputs
 │   │   └── pilot_dump/                 Real XML input for the full tutorial
@@ -578,7 +591,7 @@ stackexchange-difficulty/
 │   ├── reference/                    Dictionary, statistics, release evidence
 │   └── explanation/                  Scientific state-of-the-art report
 ├── requirements.txt                  Runtime and notebook dependencies
-├── requirements-dev.txt              Development checks
+├── requirements-dev.txt              Dictionary-build and development dependencies
 ├── CONTRIBUTING.md                   Change procedure
 └── SECURITY.md                       Data and credential policy
 ```
@@ -591,7 +604,7 @@ stackexchange-difficulty/
 | Visibility | Private during active project work |
 | Default branch | `main` |
 | Change route | Short-lived branch, pull request, successful checks, squash merge |
-| Continuous integration | Python 3.10 and 3.12 source and CLI checks; Markdown checks, XML-pilot reconstruction, target comparison, and pilot notebook execution on Python 3.12 |
+| Continuous integration | Python 3.10 and 3.12 source and CLI checks; Markdown checks, XML-pilot reconstruction, target comparison, dictionary synchronization, and pilot notebook execution on Python 3.12 |
 | Dependency automation | Weekly GitHub Actions updates; Python vulnerability alerts and automated security fixes |
 | Historical branch | `archive/legacy-corpus-scaffold` preserves the superseded remote scaffold |
 
@@ -671,7 +684,29 @@ python src/build_characteristics.py \
 | `--overwrite` | Optional | Permission to replace existing canonical outputs in `OUTPUT_DIR` |
 | `-h`, `--help` | Optional | Command-help display and exit |
 
-All three entry points return `0` after successful completion and `1` for handled file, value, validation, or XML errors. Argument-parsing errors follow `argparse` behavior and return a nonzero status.
+#### Data-dictionary builder command
+
+The default command rebuilds the tracked workbook from the canonical project
+TSV files. Workbook maintenance uses the dependencies in
+`requirements-dev.txt`.
+
+```bash
+python src/build_data_dictionary.py
+```
+
+| Argument | Requirement | Meaning |
+|---|---|---|
+| `--catalogue CATALOGUE` | Optional | Complete catalogue TSV; default: `config/characteristic_catalogue.tsv` |
+| `--schema SCHEMA` | Optional | Current output schema TSV; default: `config/characteristics.tsv` |
+| `--sample SAMPLE` | Optional | Current pilot TSV; default: `data/examples/characteristics_pilot.tsv` |
+| `--output OUTPUT` | Optional | Destination workbook; default: `docs/reference/data-dictionary.xlsx` |
+| `--check` | Optional | Verification that the destination workbook matches the current TSV inputs |
+| `-h`, `--help` | Optional | Command-help display and exit |
+
+The three processing entry points and the data-dictionary builder return `0`
+after successful completion and `1` for handled file, value, validation, or XML
+errors. Argument-parsing errors follow `argparse` behavior and return a nonzero
+status.
 
 ### Source XML contracts
 
@@ -710,7 +745,7 @@ Each distinct requested ID produces one `thread` in request order. Comments atta
 
 The root element is `requests`. Each distinct requested question produces one `request` child in request order. Every request contains enabled fields in summary TSV row order. An unavailable selected value produces an empty XML element.
 
-The default catalogue enables these twelve fields:
+The default summary selection enables these twelve fields:
 
 | Default element | Meaning |
 |---|---|
@@ -731,13 +766,74 @@ The default catalogue enables these twelve fields:
 
 | File | Contract |
 |---|---|
-| `thread_characteristics.tsv` | One selected question per row and 47 tab-separated columns in `config/characteristics.tsv` order |
+| `thread_characteristics.tsv` | One selected question per row and 49 tab-separated columns in `config/characteristics.tsv` order |
 | `validation.tsv` | One structural or source-comparison check per row with status `PASS`, `WARN`, or `FAIL` and an observed value |
 | `run_metadata.json` | Schema version and path, community, snapshot, period, limit, row count, generation time, elapsed time, Python version, absolute source-file details, and validation totals |
 
-The [plain-language data dictionary](docs/reference/data-dictionary.xlsx) records every characteristic's definition, operation, interpretation, and empty-value meaning. Its 47 rows follow the names and order in [`config/characteristics.tsv`](config/characteristics.tsv).
+The [plain-language data dictionary](docs/reference/data-dictionary.xlsx) records every characteristic's definition, operation, interpretation, and empty-value meaning. Its **Characteristic catalogue** sheet contains 138 distinct concepts, while its **Current output** sheet follows the 49 names and positions in [`config/characteristics.tsv`](config/characteristics.tsv).
 
 ### Configuration contracts
+
+#### Complete characteristic catalogue contract
+
+[`config/characteristic_catalogue.tsv`](config/characteristic_catalogue.tsv)
+is the canonical synthesis of Dictionary v5 and the verified production
+schema. The source spreadsheet was retrieved on 12 July 2026. The catalogue
+contains 138 distinct characteristics and consolidates
+semantic aliases, including the two Dictionary v5 names for the earliest-answer
+delay, and retains every source name in `source_name_v5`.
+
+Dictionary v5 contains 119 named rows. `fastest_response_time_hours` and
+`time_to_first_answer_hours` describe the same earliest-answer delay, so those
+rows map to one catalogue concept. This produces 118 distinct Dictionary v5
+concepts. The 20 verified production concepts that were absent from Dictionary
+v5 remain in the catalogue, giving 138 concepts in total. Of those concepts, 49
+currently satisfy the question-level production requirements below.
+
+Each row records a stable catalogue ID, canonical name, logical entity,
+implementation status, current output mapping, calculation group, availability
+stage, role, source, type, unit, definition, calculation, interpretation,
+empty-value meaning, scientific evidence, and synthesis note.
+New concepts receive the next catalogue ID, which preserves existing IDs and
+cross-references.
+
+Production inclusion requires one unambiguous value per selected question, an
+available source, and a complete calculation contract. Answer-, comment-,
+user-, benchmark-, manual-, and model-level entries retain their catalogue
+status until the corresponding aggregation or evaluation contract is defined.
+
+The synthesis adds `code_character_count` and
+`has_stackexchange_answer` to the production table. The 19 other concepts
+available from the current XML inputs describe individual answer, comment,
+vote, post-tag, or post records. Several records can belong to one question,
+and `post_type_id` is always `1` in a question-only table. These concepts remain
+catalogue entries until a separate table or an explicit question-level
+aggregation is defined.
+
+The implementation statuses are:
+
+- **Implemented** — produced by the current 49-field builder;
+- **Available in current source** — supported by `Posts.xml`, `Comments.xml`,
+  or `Votes.xml` and currently outside the question-level output;
+- **Requires additional dump file** — dependent on another official public-dump
+  XML file;
+- **Requires Data Explorer source** — dependent on a
+  [Stack Exchange Data Explorer](#stack-exchange-data-explorer) table that is
+  absent from the official public XML dump;
+- **Requires manual assessment** — dependent on a documented human-review
+  protocol;
+- **Requires model evaluation** — dependent on stored model outputs and a
+  documented evaluation protocol;
+- **Literature-derived candidate** — dependent on scientific selection and a
+  complete calculation specification;
+- **Needs source review** — dependent on source-field availability and meaning
+  verification.
+
+The catalogue currently contains 49 implemented characteristics, 19 available
+in current sources, 28 requiring additional dump files, 3 requiring a Stack
+Exchange Data Explorer source, 21 literature-derived candidates, 12
+model-evaluation characteristics, 5 manual-assessment characteristics, and 1
+source-review characteristic.
 
 #### Characteristic specification contract
 
@@ -785,7 +881,7 @@ The notebook validates file existence, nonempty input, required columns, dates, 
 
 | Output | Content |
 |---|---|
-| Dataset summary | Community, question count, 47 source columns, question period, and dump snapshot |
+| Dataset summary | Community, question count, 49 source columns, question period, and dump snapshot |
 | Figure 1 | Question outcome totals for answered, accepted, and closed questions |
 | Figure 2 | Cumulative question, answer, acceptance, and closure event evolution |
 | Figure 3 | Numeric distributions in complete labelled ranges, including open-ended extreme categories |
@@ -828,13 +924,14 @@ Every plot is followed by its displayed content, interpretation, main observatio
 | Deliverable and location | Format and purpose | Maintained or produced by | Access method and version-control status |
 |---|---|---|---|
 | [`README.md`](README.md) | Markdown; complete project documentation | Maintained with every affected interface | GitHub rendering; tracked |
-| [`src/`](src/) | Python; five production modules | Maintained source code | Text editor or IDE; tracked |
+| [`src/`](src/) | Python; five processing modules and one data-dictionary builder | Maintained source code | Text editor or IDE; tracked |
 | [`requirements.txt`](requirements.txt), [`requirements-dev.txt`](requirements-dev.txt) | Text; runtime and development dependency contracts | Maintained with environment changes | `python -m pip install -r ...`; tracked |
-| [`config/characteristics.tsv`](config/characteristics.tsv) | TSV; 47 characteristic names, order, and contracts | Maintained with calculations and dictionary | Tab-separated text or spreadsheet; tracked |
+| [`config/characteristic_catalogue.tsv`](config/characteristic_catalogue.tsv) | TSV; 138 distinct characteristics with source, status, definition, calculation, interpretation, and traceability | Synthesized from Dictionary v5 and the verified project schema | Tab-separated text or spreadsheet; tracked |
+| [`config/characteristics.tsv`](config/characteristics.tsv) | TSV; 49 implemented characteristic names, order, and contracts | Maintained with calculations and dictionary | Tab-separated text or spreadsheet; tracked |
 | [`config/summary_fields.tsv`](config/summary_fields.tsv) | TSV; 27 supported summary fields and default selection | Maintained with the summary extractor | Run-specific copy in a text editor or spreadsheet; tracked |
 | [`docs/project-workflow-overview.svg`](docs/project-workflow-overview.svg), [`PNG`](docs/project-workflow-overview.png) | SVG and PNG; editable workflow and publication image | Maintained with workflow changes | Browser or SVG/image editor; tracked |
-| [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) | IPYNB; generic self-contained EDA | Maintained with the 47-field table and analysis requirements | JupyterLab; tracked |
-| [`docs/reference/data-dictionary.xlsx`](docs/reference/data-dictionary.xlsx) | XLSX; plain-language definitions for 47 characteristics | Maintained with `config/characteristics.tsv` | Spreadsheet software; tracked |
+| [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) | IPYNB; generic self-contained EDA | Maintained with the 49-field table and analysis requirements | JupyterLab; tracked |
+| [`docs/reference/data-dictionary.xlsx`](docs/reference/data-dictionary.xlsx) | XLSX; 138-characteristic catalogue, 49-field current contract, and 20-question sample | Generated from the canonical TSV files by `src/build_data_dictionary.py` | Spreadsheet software; tracked |
 | [`docs/reference/stackexchange-published-statistics.xlsx`](docs/reference/stackexchange-published-statistics.xlsx) | XLSX; dated snapshot of published network and tag statistics with sources | Maintained from cited published values; retrieval time is on the **Overview** sheet | Spreadsheet software; tracked |
 | [`docs/explanation/state-of-the-art-qpp-ppp-rag.pdf`](docs/explanation/state-of-the-art-qpp-ppp-rag.pdf) | PDF; scientific QPP, PPP, and RAG context | Maintained as the scientific review | PDF reader; tracked |
 | [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv) | TSV; recorded verification matrix | Updated after verified changes | Tab-separated text or spreadsheet; tracked |
@@ -872,8 +969,8 @@ The tracked examples make every implemented route inspectable while the large so
 - [`summary_fields_compact.tsv`](data/examples/summary_fields_compact.tsv) selects six supported fields, and [`configurable_request_summary_example.xml`](data/examples/configurable_request_summary_example.xml) contains its output for question 450355.
 - The three default XML files were regenerated from the April 2026 public dumps with the canonical extractors.
 - [`pilot_dump/`](data/examples/pilot_dump/) contains the real `Posts.xml`, `Comments.xml`, and `Votes.xml` subset used to reproduce the complete tutorial chain.
-- [`characteristics_pilot.tsv`](data/examples/characteristics_pilot.tsv) contains the first 20 Software Engineering questions selected chronologically from 1–8 January 2024 by the current 47-field builder.
-- [`characteristics_pilot_validation.tsv`](data/examples/characteristics_pilot_validation.tsv) records nine `PASS`, zero `WARN`, and zero `FAIL` checks for that pilot.
+- [`characteristics_pilot.tsv`](data/examples/characteristics_pilot.tsv) contains the first 20 Software Engineering questions selected chronologically from 1–8 January 2024 by the current 49-field builder.
+- [`characteristics_pilot_validation.tsv`](data/examples/characteristics_pilot_validation.tsv) records ten `PASS`, zero `WARN`, and zero `FAIL` checks for that pilot.
 
 The examples contain public Stack Exchange content, source URLs, available author identifiers, and content-licence fields. This provenance remains attached during sharing or reuse.
 
@@ -884,9 +981,13 @@ package versions are recorded in row `ENV-02` of the release evidence.
 
 - Complete-thread and default-summary outputs match retained real-data examples byte for byte.
 - The compact summary selection matches its six-field XML example byte for byte.
-- The bundled pilot contains 20 questions, 47 columns, nine `PASS` checks, zero `WARN`, and zero `FAIL`.
-- The verified annual Software Engineering run contains 950 questions and no validation warning or failure.
-- The verified annual Super User run contains 11,578 questions, no validation failure, and documented count-difference warnings for eight answer counts and two comment counts.
+- The bundled pilot contains 20 questions, 49 columns, ten `PASS` checks, zero `WARN`, and zero `FAIL`.
+- The verified annual Software Engineering run contains 950 questions and 49
+  columns, with no validation warning or failure.
+- The verified annual Super User run contains 16,795 questions and 49 columns,
+  with no validation failure and documented warnings for 11 answer-count
+  differences, 7
+  question-comment-count differences, and 1 unavailable acceptance date.
 - The generic notebook executes every code cell from a clean kernel.
 
 Detailed evidence is in [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv). Rows marked `current release` describe the present repository state. Rows marked `historical transition` preserve evidence from earlier consolidation and documentation stages. The verified release tag is `verified-release-2026-07-11`.
@@ -930,7 +1031,11 @@ The accepted answer's `CreationDate` records when the answer was posted. A `Vote
 
 Run-specific choices belong in command arguments, configuration TSV files, or the notebook settings cell. The same production logic therefore works with compatible communities, source folders, snapshots, date periods, question IDs, summary selections, schemas, and output locations.
 
-The summary catalogue offers reviewed source mappings and allows each run to select and order required fields. The notebook applies one visible analysis sequence to every compatible characteristic TSV. Its explanations, settings, direct analysis code, figures, and interpretations remain together for inspection.
+The summary-field catalogue offers reviewed source mappings and allows each run
+to select and order required fields. The notebook applies one visible analysis
+sequence to every compatible characteristic TSV. Its explanations, settings,
+direct analysis code, figures, and interpretations remain together for
+inspection.
 
 ### Validation and reproducibility
 
@@ -941,7 +1046,7 @@ A controlled small run exposes input, schema, and calculation problems quickly. 
 ### Scope boundaries
 
 - Complete-thread extraction contains comments attached directly to the question and all available answers. Answer comments are outside the agreed extraction scope.
-- The characteristic table represents the current 47-field specification and selected dump snapshot.
+- The characteristic table represents the current 49-field specification and selected dump snapshot.
 - Acceptance events have calendar-day precision in public `Votes.xml` data.
 - Deleted or unavailable source rows can create documented differences between platform counters and reconstructed row counts.
 - Human-response traces support analysis and case selection. Difficulty categories require explicit assessment criteria.
@@ -974,11 +1079,20 @@ The answer whose ID is stored in the question's `AcceptedAnswerId` attribute. It
 
 ### Characteristic
 
-One documented value describing question content, provenance, human activity, or snapshot context. The project publishes 47 characteristics per selected question.
+One documented value describing question content, provenance, human activity, or snapshot context. The current builder publishes 49 implemented characteristics per selected question. The complete catalogue records 138 distinct characteristics and their implementation status.
+
+### Characteristic catalogue
+
+[`config/characteristic_catalogue.tsv`](config/characteristic_catalogue.tsv),
+which records every retained characteristic concept, its source or evidence,
+implementation status, calculation responsibility, definition, method,
+interpretation, empty-value meaning, and mapping to the current output. The
+catalogue includes source-level, manual-assessment, model-evaluation, and
+literature-derived concepts alongside the implemented fields.
 
 ### Characteristic specification
 
-[`config/characteristics.tsv`](config/characteristics.tsv), which defines the 47 output names, order, types, roles, sources, calculations, and field contracts.
+[`config/characteristics.tsv`](config/characteristics.tsv), which defines the 49 implemented output names, order, types, roles, sources, calculations, and field contracts.
 
 ### Command-line interface
 
@@ -1051,6 +1165,15 @@ A selected location that receives generated XML, TSV, JSON, notebook, or validat
 
 A selected local folder containing the extracted official Stack Exchange XML files required by a route.
 
+### Stack Exchange Data Explorer
+
+The [Stack Exchange Data Explorer](https://data.stackexchange.com/) is a web
+query service for public Stack Exchange data. Its relational schema contains
+some tables that are absent from the downloadable public XML archive. A
+catalogue entry with the **Requires Data Explorer source** status therefore
+needs a separately documented query and cannot be reconstructed solely from the
+downloaded XML files.
+
 ### Stack Exchange community
 
 One specialised question-and-answer site in the Stack Exchange network, with its own topic, host name, and public data dump.
@@ -1090,7 +1213,7 @@ retain a clearly nested structure.
 | GitHub repository | [thearmankarapetyan/stackexchange-difficulty](https://github.com/thearmankarapetyan/stackexchange-difficulty) |
 | Current completion record | [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md) |
 | Workflow diagram | [`docs/project-workflow-overview.svg`](docs/project-workflow-overview.svg) and [PNG](docs/project-workflow-overview.png) |
-| Characteristic meanings | [`docs/reference/data-dictionary.xlsx`](docs/reference/data-dictionary.xlsx) |
+| Complete characteristic catalogue and current meanings | [`config/characteristic_catalogue.tsv`](config/characteristic_catalogue.tsv) and [`docs/reference/data-dictionary.xlsx`](docs/reference/data-dictionary.xlsx) |
 | Summary field selection | [`config/summary_fields.tsv`](config/summary_fields.tsv) |
 | Characteristic order and contracts | [`config/characteristics.tsv`](config/characteristics.tsv) |
 | Verified examples and tutorial XML | [`data/examples/`](data/examples/) and [`pilot_dump/`](data/examples/pilot_dump/) |

@@ -55,7 +55,7 @@ from stackexchange_xml import (
 )
 
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_SCHEMA = PROJECT_DIR / "config" / "characteristics.tsv"
 SOURCE_FILENAMES = ("Posts.xml", "Comments.xml", "Votes.xml")
@@ -293,6 +293,18 @@ def validation_rows(
         bool(row.get("accepted_answer_id")) and not row.get("acceptance_date")
         for row in rows
     )
+    stackexchange_answer_flag_mismatches = sum(
+        (
+            row.get("stackexchange_answer_count") is None
+            and row.get("has_stackexchange_answer") is not None
+        )
+        or (
+            row.get("stackexchange_answer_count") is not None
+            and row.get("has_stackexchange_answer")
+            != (row["stackexchange_answer_count"] > 0)
+        )
+        for row in rows
+    )
 
     checks: list[tuple[str, str, str, str]] = [
         ("rows produced", "PASS" if rows else "FAIL", str(len(rows)), "more than zero"),
@@ -325,6 +337,12 @@ def validation_rows(
                     for row in rows
                 )
             ),
+            "zero mismatches",
+        ),
+        (
+            "Stack Exchange answer flag matches Stack Exchange count",
+            "PASS" if stackexchange_answer_flag_mismatches == 0 else "FAIL",
+            str(stackexchange_answer_flag_mismatches),
             "zero mismatches",
         ),
         (
@@ -463,7 +481,8 @@ def ensure_paths(args: argparse.Namespace) -> tuple[dict[str, Path], dict[str, P
     existing = [str(path) for path in paths.values() if path.exists()]
     if existing and not args.overwrite:
         raise FileExistsError(
-            "Output already exists; use --overwrite to replace it: " + ", ".join(existing)
+            "Output already exists; --overwrite permits replacement: "
+            + ", ".join(existing)
         )
     return sources, paths
 
