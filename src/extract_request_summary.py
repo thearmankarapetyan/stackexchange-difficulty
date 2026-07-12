@@ -1,4 +1,4 @@
-"""Extract a configurable question summary from Stack Exchange dump files.
+"""This module extracts a configurable question summary from Stack Exchange dump files.
 
 The default field selection reproduces the twelve-field XML requested for the
 project.  A TSV field file can select or reorder supported fields without a
@@ -69,12 +69,12 @@ FIELD_SOURCES = {
 
 
 def first_row(rows: Sequence[dict[str, str]]) -> dict[str, str]:
-    """Return the earliest row from an already sorted collection."""
+    """Returns the earliest row from an already sorted collection."""
     return rows[0] if rows else {}
 
 
 def load_summary_fields(path: Path) -> list[str]:
-    """Load enabled summary fields in their requested output order.
+    """Loads enabled summary fields in their requested output order.
 
     The TSV must preserve every supported field-to-source mapping and use
     ``TRUE`` or ``FALSE`` in ``include``.  Unknown fields, duplicates, invalid
@@ -122,7 +122,7 @@ def load_summary_fields(path: Path) -> list[str]:
             selected.append(field)
 
     if not selected:
-        raise ValueError(f"{path}: select at least one summary field")
+        raise ValueError(f"{path}: at least one summary field must be selected")
     return selected
 
 
@@ -131,7 +131,7 @@ def summary_values(
     comments: Sequence[dict[str, str]],
     answers: Sequence[dict[str, str]],
 ) -> dict[str, str]:
-    """Map one question and its already ordered related rows to supported fields.
+    """Maps one question and its already ordered related rows to supported fields.
 
     The first comment and answer come from position zero.  The accepted answer
     is matched to the question's original ``AcceptedAnswerId``.  Unavailable
@@ -159,7 +159,7 @@ def build_summary_tree(
     answers: dict[str, list[dict[str, str]]],
     fields: Sequence[str],
 ) -> etree._ElementTree:
-    """Build one ordered, selected-field element per requested question.
+    """Builds one ordered, selected-field element per requested question.
 
     The input dictionaries must contain every requested question.  Field order
     is copied exactly from ``fields``; empty values remain present as empty XML
@@ -184,7 +184,7 @@ def extract_request_summaries(
     output_path: Path,
     fields_path: Path = DEFAULT_FIELDS_FILE,
 ) -> Path:
-    """Write selected summary fields for one or more question IDs.
+    """Writes selected summary fields for one or more question IDs.
 
     The function validates and deduplicates IDs, loads the selected field TSV,
     reads related dump rows, protects every source path, and atomically
@@ -208,14 +208,14 @@ def extract_request_summaries(
 
 
 def main(arguments: Sequence[str] | None = None) -> int:
-    """Run the command-line interface and return its process exit code.
+    """Runs the command-line interface and returns its process exit code.
 
     Success prints the destination and returns ``0``.  Handled input,
     validation, XML, and filesystem errors print one contextual message to
     standard error and return ``1``.
     """
     parser = argparse.ArgumentParser(
-        description="Extract selected question-summary fields into one XML file."
+        description="Selected question-summary field extraction into one XML file."
     )
     parser.add_argument(
         "--dump-dir",
@@ -231,8 +231,8 @@ def main(arguments: Sequence[str] | None = None) -> int:
         type=Path,
         default=DEFAULT_FIELDS_FILE,
         help=(
-            "TSV field selection. Copy config/summary_fields.tsv and change "
-            "TRUE/FALSE values to customize the output."
+            "TSV field selection. A run-specific config/summary_fields.tsv copy "
+            "supports TRUE/FALSE customization."
         ),
     )
     parser.add_argument(

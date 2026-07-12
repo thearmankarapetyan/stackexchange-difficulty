@@ -1,4 +1,4 @@
-"""Build one clear question-level table from a Stack Exchange data dump.
+"""This module builds one clear question-level table from a Stack Exchange data dump.
 
 The script reads only the source files needed by the current analysis:
 Posts.xml, Comments.xml, and Votes.xml. It creates:
@@ -62,16 +62,16 @@ SOURCE_FILENAMES = ("Posts.xml", "Comments.xml", "Votes.xml")
 SITE_PATTERN = re.compile(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?")
 
 
-# 1. Read the user-supplied run settings.
+# 1. Run-setting normalization and validation.
 def parse_args(arguments: Sequence[str] | None = None) -> argparse.Namespace:
-    """Read, normalize, and validate the command-line parameters.
+    """Reads, normalizes, and validates the command-line parameters.
 
     The returned namespace includes parsed date values used by ``run``.
     ``argparse`` reports an invalid host, limit, date, or date order and exits
     with its standard nonzero status.
     """
     parser = argparse.ArgumentParser(
-        description="Build a verified question-level TSV from a Stack Exchange XML dump."
+        description="Verified question-level TSV construction from a Stack Exchange XML dump."
     )
     parser.add_argument(
         "--dump-dir",
@@ -119,7 +119,7 @@ def parse_args(arguments: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--overwrite",
         action="store_true",
-        help="Replace an existing output from an earlier run.",
+        help="Permission to replace an existing output from an earlier run.",
     )
     values = parser.parse_args(arguments)
 
@@ -145,14 +145,14 @@ def parse_args(arguments: Sequence[str] | None = None) -> argparse.Namespace:
     return values
 
 
-# 2. Read the selected questions and their related source rows.
+# 2. Selected questions and related source rows.
 def select_questions(
     posts_path: Path,
     start: datetime,
     end: datetime,
     limit: int | None,
 ) -> list[dict[str, str]]:
-    """Select question rows in chronological order for an inclusive period.
+    """Selects question rows in chronological order for an inclusive period.
 
     The complete ``Posts.xml`` file is streamed.  The optional limit is applied
     after sorting by full creation time and numeric ID.  Invalid selected-row
@@ -181,7 +181,7 @@ def select_questions(
 def read_answers(
     posts_path: Path, question_ids: set[str]
 ) -> dict[str, list[dict[str, str]]]:
-    """Read and order every answer whose parent is a selected question.
+    """Reads and orders every answer whose parent is a selected question.
 
     The complete ``Posts.xml`` file is streamed.  Invalid selected-answer IDs,
     dates, or scores raise contextual ``ValueError``.
@@ -205,7 +205,7 @@ def read_answers(
 def read_acceptance_dates(
     votes_path: Path, accepted_answer_ids: set[str]
 ) -> dict[str, date]:
-    """Read the earliest acceptance day for each currently accepted answer.
+    """Reads the earliest acceptance day for each currently accepted answer.
 
     Only ``VoteTypeId=1`` rows associated with supplied accepted-answer IDs are
     selected.  Public vote timestamps provide calendar-day precision.  Invalid
@@ -225,9 +225,9 @@ def read_acceptance_dates(
     return dates
 
 
-# 3. Check and write the three canonical output files.
+# 3. Canonical-output validation and publication.
 def load_schema(path: Path) -> list[str]:
-    """Load and validate the ordered characteristic names from a schema TSV.
+    """Loads and validates the ordered characteristic names from a schema TSV.
 
     Positions must be consecutive from one, and names must be present and
     unique.  An absent schema raises ``FileNotFoundError``; malformed content
@@ -264,7 +264,7 @@ def load_schema(path: Path) -> list[str]:
 def validation_rows(
     rows: list[dict[str, Any]], columns: list[str]
 ) -> list[dict[str, str]]:
-    """Return structural checks and explicit source-difference warnings.
+    """Returns structural checks and explicit source-difference warnings.
 
     Each returned row has a check name, ``PASS``/``WARN``/``FAIL`` status,
     observed value, and interpretation.  Platform counters can differ from
@@ -372,7 +372,7 @@ def validation_rows(
 
 
 def tsv_value(value: Any) -> Any:
-    """Serialize booleans and missing values consistently for TSV output."""
+    """Serializes booleans and missing values consistently for TSV output."""
     if value is None:
         return ""
     if isinstance(value, bool):
@@ -381,7 +381,7 @@ def tsv_value(value: Any) -> Any:
 
 
 def atomic_write(path: Path, write: Callable[[Any], None], newline: str | None = None) -> None:
-    """Publish output through a complete temporary destination-side file.
+    """Publishes output through a complete temporary destination-side file.
 
     Parent folders are created when needed.  ``write`` receives an open UTF-8
     text stream.  ``os.replace`` publishes the result only after writing
@@ -408,9 +408,9 @@ def atomic_write(path: Path, write: Callable[[Any], None], newline: str | None =
 
 
 def write_tsv(path: Path, rows: Iterable[dict[str, Any]], columns: list[str]) -> None:
-    """Write dictionaries to a UTF-8 tab-separated file."""
+    """Writes dictionaries to a UTF-8 tab-separated file."""
     def write_rows(file: Any) -> None:
-        """Write the header and serialized rows to an open temporary file."""
+        """Writes the header and serialized rows to an open temporary file."""
         writer = csv.DictWriter(file, fieldnames=columns, delimiter="\t")
         writer.writeheader()
         for row in rows:
@@ -420,7 +420,7 @@ def write_tsv(path: Path, rows: Iterable[dict[str, Any]], columns: list[str]) ->
 
 
 def write_json(path: Path, value: Any) -> None:
-    """Write readable UTF-8 JSON atomically."""
+    """Writes readable UTF-8 JSON atomically."""
     atomic_write(
         path,
         lambda file: json.dump(value, file, ensure_ascii=False, indent=2),
@@ -428,7 +428,7 @@ def write_json(path: Path, value: Any) -> None:
 
 
 def source_metadata(path: Path) -> dict[str, Any]:
-    """Describe a local source file without rereading it for a full hash."""
+    """Describes a local source file without rereading it for a full hash."""
     stat = path.stat()
     return {
         "path": str(path.resolve()),
@@ -440,7 +440,7 @@ def source_metadata(path: Path) -> dict[str, Any]:
 
 
 def output_paths(output_dir: Path) -> dict[str, Path]:
-    """Return the three canonical output paths."""
+    """Returns the three canonical output paths."""
     return {
         "characteristics": output_dir / "thread_characteristics.tsv",
         "metadata": output_dir / "run_metadata.json",
@@ -449,7 +449,7 @@ def output_paths(output_dir: Path) -> dict[str, Path]:
 
 
 def ensure_paths(args: argparse.Namespace) -> tuple[dict[str, Path], dict[str, Path]]:
-    """Verify required source files and determine canonical output paths.
+    """Verifies required source files and determines canonical output paths.
 
     Missing XML raises ``FileNotFoundError``.  Existing canonical output raises
     ``FileExistsError`` unless ``args.overwrite`` is true.  This function checks
@@ -468,9 +468,9 @@ def ensure_paths(args: argparse.Namespace) -> tuple[dict[str, Path], dict[str, P
     return sources, paths
 
 
-# 4. Run the complete workflow in a visible, predictable order.
+# 4. Visible and predictable workflow orchestration.
 def run(args: argparse.Namespace) -> int:
-    """Build, validate, and publish one complete characteristic run.
+    """Builds, validates, and publishes one complete characteristic run.
 
     ``args`` must come from ``parse_args`` because it contains normalized date
     values.  The function streams the three source XML files, builds one row per
@@ -558,7 +558,7 @@ def run(args: argparse.Namespace) -> int:
 
 
 def main(arguments: Sequence[str] | None = None) -> int:
-    """Run the command-line program and return a process exit code.
+    """Runs the command-line program and returns a process exit code.
 
     Successful execution returns ``0``.  Handled input, validation, XML, and
     filesystem errors print one contextual message to standard error and return

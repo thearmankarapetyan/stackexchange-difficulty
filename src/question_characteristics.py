@@ -1,9 +1,9 @@
-"""Calculate the documented fields for one Stack Exchange question.
+"""This module calculates the documented fields for one Stack Exchange question.
 
 ``build_characteristics.py`` finds the related question, answer, comment, and
 acceptance rows.  This module turns those rows into the 47 columns described in
-``config/characteristics.tsv``.  Keeping the formulas together makes it easy to
-compare the implementation with the data dictionary.
+``config/characteristics.tsv``.  Keeping the formulas together supports direct
+comparison between the implementation and the data dictionary.
 
 The module is used as a library by ``build_characteristics.py`` and has no
 command-line interface.  It requires Beautiful Soup for rendered-HTML parsing;
@@ -34,12 +34,12 @@ WORD_PATTERN = re.compile(r"\b[^\W_]+(?:[-'][^\W_]+)*\b", re.UNICODE)
 def optional_stack_datetime(
     value: str | None, context: str, field: str
 ) -> datetime | None:
-    """Parse an optional Stack Exchange timestamp when it is present."""
+    """Parses an optional Stack Exchange timestamp when it is present."""
     return parse_stack_datetime(value, context, field) if value else None
 
 
 def optional_integer(value: str | None, context: str, field: str) -> int | None:
-    """Parse an optional integer source field."""
+    """Parses an optional integer source field."""
     if value in (None, ""):
         return None
     try:
@@ -49,7 +49,7 @@ def optional_integer(value: str | None, context: str, field: str) -> int | None:
 
 
 def optional_count(value: str | None, context: str, field: str) -> int | None:
-    """Parse an optional source count and require a value of zero or greater."""
+    """Parses an optional source count and requires a value of zero or greater."""
     parsed = optional_integer(value, context, field)
     if parsed is not None and parsed < 0:
         raise ValueError(f"{context}: {field} must be zero or greater")
@@ -57,7 +57,7 @@ def optional_count(value: str | None, context: str, field: str) -> int | None:
 
 
 def readable_text(html_value: str | None) -> str:
-    """Convert rendered HTML into normalized visible text."""
+    """Converts rendered HTML into normalized visible text."""
     if not html_value:
         return ""
     soup = BeautifulSoup(html_value, "html.parser")
@@ -65,7 +65,7 @@ def readable_text(html_value: str | None) -> str:
 
 
 def content_measurements(body_html: str | None) -> dict[str, int | str]:
-    """Calculate visible text, prose words, code lines, links, and images.
+    """Calculates visible text, prose words, code lines, links, and images.
 
     Word counts exclude ``pre`` and ``code`` content.  Code lines count
     nonempty lines inside ``pre`` blocks.  Missing HTML produces empty text and
@@ -94,12 +94,12 @@ def content_measurements(body_html: str | None) -> dict[str, int | str]:
 
 
 def tag_names(raw_tags: str | None) -> list[str]:
-    """Extract names from Stack Exchange's ``<tag><tag>`` notation."""
+    """Extracts names from Stack Exchange's ``<tag><tag>`` notation."""
     return TAG_PATTERN.findall(raw_tags or "")
 
 
 def non_negative_hours(later: datetime, earlier: datetime, label: str) -> float:
-    """Return elapsed hours and reject an event that precedes its source."""
+    """Returns elapsed hours and rejects an event that precedes its source."""
     hours = (later - earlier).total_seconds() / 3600
     if hours < 0:
         raise ValueError(
@@ -118,7 +118,7 @@ def build_characteristic_row(
     posts_path: Path,
     comments_path: Path,
 ) -> dict[str, Any]:
-    """Create one documented 47-field row for one question.
+    """Creates one documented 47-field row for one question.
 
     Related answers and direct question comments must already be ordered.  The
     function validates source IDs, timestamps, counts, and event order, then
@@ -126,7 +126,7 @@ def build_characteristic_row(
     source values or events preceding the question raise contextual
     ``ValueError``.  Input rows remain unchanged.
     """
-    # Validate the question and any edit or closure time recorded on it.
+    # Question and recorded edit-or-closure timestamp validation.
     context = describe_row(posts_path, question)
     question_id = positive_id(question.get("Id"), context)
     question_created = parse_stack_datetime(
@@ -137,7 +137,7 @@ def build_characteristic_row(
         if event_time is not None:
             non_negative_hours(event_time, question_created, field)
 
-    # Select the earliest answer and the answer identified as accepted.
+    # Earliest-answer and accepted-answer selection.
     first_answer = answers[0] if answers else None
     first_answer_created = (
         parse_stack_datetime(
@@ -167,7 +167,7 @@ def build_characteristic_row(
         else None
     )
 
-    # Calculate response delays and scores across every available answer.
+    # Response-delay and score calculation across every available answer.
     answer_times = [
         non_negative_hours(
             parse_stack_datetime(
@@ -197,7 +197,7 @@ def build_characteristic_row(
         else None
     )
 
-    # Keep the answer posting time separate from the later acceptance day.
+    # Separation of answer-posting and acceptance-event times.
     acceptance_date = acceptance_dates.get(accepted_answer_id or "")
     days_to_acceptance = (
         (acceptance_date - question_created.date()).days
@@ -215,7 +215,7 @@ def build_characteristic_row(
             f"{context}: acceptance date precedes accepted-answer post date"
         )
 
-    # Count discussion attached directly to the question before the first answer.
+    # Direct question-discussion count before the first answer.
     comment_times = [
         parse_stack_datetime(
             comment.get("CreationDate"),
@@ -232,7 +232,7 @@ def build_characteristic_row(
         else None
     )
 
-    # Assemble every field; the TSV writer later applies the documented schema order.
+    # Field assembly; the TSV writer later applies the documented schema order.
     tags = tag_names(question.get("Tags"))
     measurements = content_measurements(question.get("Body"))
     measurements["tag_count"] = len(tags)
