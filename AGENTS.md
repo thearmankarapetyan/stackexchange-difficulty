@@ -1,46 +1,51 @@
-# Project instructions
+# Project requirements
 
-- Read [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md) before planning or
-  modifying this project.
-- Treat that checklist as the canonical roadmap. Check an item only after
-  verifying its evidence, and update its **Last reviewed** date when status
-  changes.
-- Preserve its thirteen independently numbered task sections. Record shared
-  evidence under every applicable task instead of merging or silently dropping
+- [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md) is consulted before project
+  planning or modification.
+- The checklist is the canonical roadmap. Completion status changes only after
+  evidence verification, and each status change updates the **Last reviewed**
+  date.
+- Its thirteen independently numbered task sections remain present. Shared
+  evidence is recorded under every applicable task without merging or omitting
   a requirement.
-- Write authored documentation, code comments, command messages, notebook
-  prose, and workbook labels in English. Preserve source data, XML values,
-  proper names, and quoted research material in their original form.
-- Keep production inputs configurable across compatible Stack Exchange sites;
-  use the current verified sites as cross-site evidence and keep production
-  behavior free of site-specific constants.
-- Prefer simple code and concise documentation that can be understood by
-  someone unfamiliar with the implementation.
-- Treat unfamiliar-reader comprehension as an acceptance condition: define a
-  term before relying on it, explain which values may change in a routine run,
-  use concrete examples, and link to the exact heading that answers a question.
-- Maintain `README.md` as the single English project-documentation page. Add
-  stable contents links, same-page cross-references, and glossary links so a
-  reader can reach an exact answer directly. Treat linked headings as stable
-  navigation targets and update every incoming link when a heading changes.
-  Avoid duplicate documentation pages.
-- Keep any folder-level README as a short orientation and set of direct links to
-  the canonical root README instead of recreating project documentation.
-- Apply Diátaxis within the README: keep the tutorial concrete and choice-free,
-  keep how-to sections focused on goals and actions, keep reference sections
-  neutral and system-shaped, and reserve reasons, context, alternatives, and
-  interpretation for the explanation section.
-- Maintain one canonical editable overview flowchart and one publication
-  export. Archive superseded workflow variants after verification.
-- Keep the default summary behavior in `config/summary_fields.tsv`; use a
-  copied field-selection TSV for run-specific summary outputs.
-- Preserve one generic, self-contained EDA notebook. Do not add site-specific
-  notebook copies, a notebook generator, or a large plotting-helper module.
-- Do not modify raw dumps. Archive superseded project material
-  non-destructively and record its checksum before removing the canonical copy.
-- Verify a small controlled run before a full-period run. Compile changed
-  modules, inspect validation and metadata, execute the notebook from a clean
-  kernel, inspect changed visual artifacts, remove temporary material, and run
-  `git diff --check` before recording completion.
-- Record release evidence in `docs/reference/release-verification.tsv` and keep
-  the README, examples, and checklist synchronized with production behavior.
+- Authored documentation, code comments, command messages, notebook prose, and
+  workbook labels remain in English. Source data, XML values, proper names, and
+  quoted research material retain their original form.
+- Production inputs remain configurable across compatible Stack Exchange
+  sites. Current verified sites provide cross-site evidence, while production
+  behavior remains free of site-specific constants.
+- Code and documentation remain simple, concise, and comprehensible without
+  implementation familiarity.
+- Independent comprehension is an acceptance condition. Terms are defined
+  before use, routine run values are identified, concrete examples are
+  included, and links target the exact relevant heading.
+- Authored project prose uses an impersonal, descriptive tone. Second-person
+  address, first-person project references, conversational prompts, and
+  direct imperatives are excluded. Procedures retain exact actions
+  through declarative or passive constructions.
+- `README.md` remains the single English project-documentation page. Stable
+  contents links, same-page cross-references, and glossary links provide direct
+  navigation. Linked headings are stable targets, and heading changes include
+  updates to every incoming link. Duplicate documentation pages remain absent.
+- Folder-level README files remain short orientations with direct links to the
+  canonical root README.
+- Diátaxis remains visible within the README: the tutorial is concrete and
+  choice-free, how-to sections focus on goals and actions, reference sections
+  remain neutral and system-shaped, and the explanation section contains
+  reasons, context, alternatives, and interpretation.
+- One canonical editable overview flowchart and one publication export remain
+  maintained. Superseded workflow variants are archived after verification.
+- Default summary behavior remains in `config/summary_fields.tsv`. Run-specific
+  summary outputs use a copied field-selection TSV.
+- One generic, self-contained EDA notebook remains canonical. Site-specific
+  notebook copies, notebook generators, and large plotting-helper modules
+  remain excluded.
+- Raw dumps remain unmodified. Superseded project material is archived
+  non-destructively, with its checksum recorded before canonical-copy removal.
+- A small controlled run precedes a full-period run. Completion evidence
+  includes compilation, validation and metadata inspection, clean-kernel
+  notebook execution, visual-artifact inspection, temporary-material removal,
+  and `git diff --check`.
+- Release evidence remains in `docs/reference/release-verification.tsv`.
+  README, example, and checklist content remains synchronized with production
+  behavior.

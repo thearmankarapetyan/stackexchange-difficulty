@@ -2,7 +2,7 @@
 
 ## Summary
 
-Describe the purpose and the user-visible result.
+Purpose and externally visible result:
 
 ## Scope
 
@@ -12,7 +12,7 @@ Describe the purpose and the user-visible result.
 
 ## Validation
 
-List the commands run and their results.
+Validation commands and results:
 
 - [ ] Changed Python modules compile.
 - [ ] Ruff passes for changed source.

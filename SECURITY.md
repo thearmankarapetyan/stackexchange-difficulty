@@ -6,13 +6,13 @@ Security fixes are applied to the current `main` branch.
 
 ## Reporting a concern
 
-For this private repository, open a repository issue and mark the title with
-`[security]`. Describe the affected file or behavior and provide safe steps to
-reproduce the concern. Keep credentials, tokens, private keys, personal data,
-and raw dump content out of the report.
+The reporting route for this private repository is a repository issue with
+`[security]` in its title. The report identifies the affected file or behavior
+and includes safe reproduction steps. Credentials, tokens, private keys,
+personal data, and raw dump content remain excluded.
 
-Before any public release, enable GitHub private vulnerability reporting and
-replace this reporting route with the repository's private security form.
+GitHub private vulnerability reporting and the repository's private security
+form become prerequisites before any public release.
 
 ## Data and credential handling
 

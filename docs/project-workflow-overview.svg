@@ -28,39 +28,39 @@
 <tspan x="130" dy="0">1</tspan>
 </text>
 <text x="285" y="111" text-anchor="start" class="phase">
-<tspan x="285" dy="0">Access the selected Stack Exchange community data</tspan>
+<tspan x="285" dy="0">Stack Exchange community-data access</tspan>
 </text>
 <rect x="110" y="180" width="1070" height="250" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="645" y="236" text-anchor="middle" class="box-title">
-<tspan x="645" dy="0">Choose a community</tspan>
+<tspan x="645" dy="0">Community selection</tspan>
 </text>
 <text x="645" y="285" text-anchor="middle" class="box-body">
-<tspan x="645" dy="0">Select the compatible Stack Exchange</tspan>
-<tspan x="645" dy="46">community whose data will be analysed.</tspan>
+<tspan x="645" dy="0">A compatible Stack Exchange community</tspan>
+<tspan x="645" dy="46">is selected for analysis.</tspan>
 </text>
 <rect x="1280" y="180" width="1070" height="250" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="1815" y="236" text-anchor="middle" class="box-title">
-<tspan x="1815" dy="0">Sign in</tspan>
+<tspan x="1815" dy="0">Account access</tspan>
 </text>
 <text x="1815" y="285" text-anchor="middle" class="box-body">
-<tspan x="1815" dy="0">Create an account on that community</tspan>
-<tspan x="1815" dy="46">or sign in with an existing account.</tspan>
+<tspan x="1815" dy="0">A new or existing account provides</tspan>
+<tspan x="1815" dy="46">access to the selected community.</tspan>
 </text>
 <rect x="2450" y="180" width="1070" height="250" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="2985" y="236" text-anchor="middle" class="box-title">
-<tspan x="2985" dy="0">Open dump access</tspan>
+<tspan x="2985" dy="0">Data-dump access</tspan>
 </text>
 <text x="2985" y="285" text-anchor="middle" class="box-body">
-<tspan x="2985" dy="0">Open the profile, then Settings, then Access,</tspan>
-<tspan x="2985" dy="46">and select Data dump access.</tspan>
+<tspan x="2985" dy="0">The access path is Profile, Settings, Access,</tspan>
+<tspan x="2985" dy="46">then Data dump access.</tspan>
 </text>
 <rect x="3620" y="180" width="1070" height="250" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="4155" y="236" text-anchor="middle" class="box-title">
-<tspan x="4155" dy="0">Download the dump</tspan>
+<tspan x="4155" dy="0">Data-dump download</tspan>
 </text>
 <text x="4155" y="285" text-anchor="middle" class="box-body">
-<tspan x="4155" dy="0">Review the permitted-use declaration</tspan>
-<tspan x="4155" dy="46">and start the current dump download.</tspan>
+<tspan x="4155" dy="0">The permitted-use declaration precedes</tspan>
+<tspan x="4155" dy="46">the current dump download.</tspan>
 </text>
 <path class="arrow" d="M1180,305 L1265,305"/>
 <polygon points="1241,287 1241,323 1271,305" fill="#35506b"/>
@@ -73,19 +73,19 @@
 <tspan x="130" dy="0">2</tspan>
 </text>
 <text x="285" y="556" text-anchor="start" class="phase">
-<tspan x="285" dy="0">Prepare the local inputs and project environment</tspan>
+<tspan x="285" dy="0">Local-input and project-environment preparation</tspan>
 </text>
 <rect x="170" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="850" y="681" text-anchor="middle" class="box-title">
-<tspan x="850" dy="0">Extract the downloaded archive</tspan>
+<tspan x="850" dy="0">Archive extraction</tspan>
 </text>
 <text x="850" y="730" text-anchor="middle" class="box-body">
-<tspan x="850" dy="0">Use a source-data folder selected</tspan>
-<tspan x="850" dy="46">for the current run.</tspan>
+<tspan x="850" dy="0">The downloaded archive is extracted into</tspan>
+<tspan x="850" dy="46">the source-data folder selected for the run.</tspan>
 </text>
 <rect x="1720" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="2400" y="681" text-anchor="middle" class="box-title">
-<tspan x="2400" dy="0">Confirm the required XML files</tspan>
+<tspan x="2400" dy="0">Required XML files</tspan>
 </text>
 <text x="2400" y="730" text-anchor="middle" class="box-body">
 <tspan x="2400" dy="0">Posts.xml and Comments.xml support</tspan>
@@ -93,11 +93,12 @@
 </text>
 <rect x="3270" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="3950" y="681" text-anchor="middle" class="box-title">
-<tspan x="3950" dy="0">Prepare the project</tspan>
+<tspan x="3950" dy="0">Project environment</tspan>
 </text>
 <text x="3950" y="730" text-anchor="middle" class="box-body">
-<tspan x="3950" dy="0">Use Python 3.10 or newer, install</tspan>
-<tspan x="3950" dy="46">requirements.txt, and open the project root.</tspan>
+<tspan x="3950" dy="0">Python 3.10 or newer provides the runtime.</tspan>
+<tspan x="3950" dy="46">Dependencies are installed from requirements.txt</tspan>
+<tspan x="3950" dy="46">at the project root.</tspan>
 </text>
 <path class="arrow" d="M1530,768 L1705,768"/>
 <polygon points="1681,750 1681,786 1711,768" fill="#35506b"/>
@@ -108,12 +109,12 @@
 <tspan x="130" dy="0">3</tspan>
 </text>
 <text x="285" y="1036" text-anchor="start" class="phase">
-<tspan x="285" dy="0">Choose and run one or more implemented result routes</tspan>
+<tspan x="285" dy="0">Implemented result routes</tspan>
 </text>
 <path d="M2400,1110 L2820,1285 L2400,1460 L1980,1285 Z" fill="#fff4cc" stroke="#b88900" stroke-width="7" filter="url(#shadow)"/>
 <text x="2400" y="1269" text-anchor="middle" class="box-title">
-<tspan x="2400" dy="0">Which result</tspan>
-<tspan x="2400" dy="43">is needed?</tspan>
+<tspan x="2400" dy="0">Selected result</tspan>
+<tspan x="2400" dy="43">route</tspan>
 </text>
 <path class="arrow" d="M2400,910 L2400,1095"/>
 <polygon points="2382,1071 2418,1071 2400,1101" fill="#35506b"/>
@@ -131,19 +132,19 @@
 </text>
 <rect x="125" y="1725" width="1350" height="205" rx="28" fill="#eef5fb" stroke="#6e9bc5" stroke-width="6" filter="url(#shadow)"/>
 <text x="800" y="1781" text-anchor="middle" class="box-title">
-<tspan x="800" dy="0">Select the question posts</tspan>
+<tspan x="800" dy="0">Question selection</tspan>
 </text>
 <text x="800" y="1830" text-anchor="middle" class="box-body">
-<tspan x="800" dy="0">Choose one or more question post IDs</tspan>
+<tspan x="800" dy="0">Input: one or more question post IDs</tspan>
 <tspan x="800" dy="46">from the selected community.</tspan>
 </text>
 <rect x="125" y="1965" width="1350" height="235" rx="28" fill="#ffffff" stroke="#6e9bc5" stroke-width="6" filter="url(#shadow)"/>
 <text x="800" y="2021" text-anchor="middle" class="box-title">
-<tspan x="800" dy="0">Run the complete-thread extractor</tspan>
+<tspan x="800" dy="0">Complete-thread extraction</tspan>
 </text>
 <text x="800" y="2070" text-anchor="middle" class="box-body">
 <tspan x="800" dy="0">src/extract_threads.py</tspan>
-<tspan x="800" dy="46">Provide the source-data folder, output XML,</tspan>
+<tspan x="800" dy="46">Inputs: source-data folder, output XML,</tspan>
 <tspan x="800" dy="46">and selected question IDs.</tspan>
 </text>
 <rect x="125" y="2235" width="1350" height="260" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
@@ -177,20 +178,20 @@
 </text>
 <rect x="1725" y="1725" width="1350" height="205" rx="28" fill="#f5f0fa" stroke="#9a7bbb" stroke-width="6" filter="url(#shadow)"/>
 <text x="2400" y="1781" text-anchor="middle" class="box-title">
-<tspan x="2400" dy="0">Select questions and fields</tspan>
+<tspan x="2400" dy="0">Question and field selection</tspan>
 </text>
 <text x="2400" y="1830" text-anchor="middle" class="box-body">
-<tspan x="2400" dy="0">Choose question post IDs and use</tspan>
+<tspan x="2400" dy="0">Inputs: question post IDs and</tspan>
 <tspan x="2400" dy="46">config/summary_fields.tsv or a copied selection.</tspan>
 </text>
 <rect x="1725" y="1965" width="1350" height="235" rx="28" fill="#ffffff" stroke="#9a7bbb" stroke-width="6" filter="url(#shadow)"/>
 <text x="2400" y="2021" text-anchor="middle" class="box-title">
-<tspan x="2400" dy="0">Run the summary extractor</tspan>
+<tspan x="2400" dy="0">Summary extraction</tspan>
 </text>
 <text x="2400" y="2070" text-anchor="middle" class="box-body">
 <tspan x="2400" dy="0">src/extract_request_summary.py</tspan>
-<tspan x="2400" dy="46">Provide the source-data folder, output XML,</tspan>
-<tspan x="2400" dy="46">IDs, and field selection when customized.</tspan>
+<tspan x="2400" dy="46">Inputs: source-data folder, output XML,</tspan>
+<tspan x="2400" dy="46">IDs, and an optional field selection.</tspan>
 </text>
 <rect x="1725" y="2235" width="1350" height="260" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
 <text x="2400" y="2291" text-anchor="middle" class="box-title">
@@ -223,16 +224,16 @@
 </text>
 <rect x="3325" y="1725" width="1350" height="225" rx="28" fill="#fbf1eb" stroke="#c47c54" stroke-width="6" filter="url(#shadow)"/>
 <text x="4000" y="1781" text-anchor="middle" class="box-title">
-<tspan x="4000" dy="0">Select the analysis settings</tspan>
+<tspan x="4000" dy="0">Analysis settings</tspan>
 </text>
 <text x="4000" y="1830" text-anchor="middle" class="box-body">
-<tspan x="4000" dy="0">Choose community host, dump snapshot date,</tspan>
+<tspan x="4000" dy="0">Inputs: community host, dump snapshot date,</tspan>
 <tspan x="4000" dy="46">question period, and output folder.</tspan>
 <tspan x="4000" dy="46">A row limit and schema are optional.</tspan>
 </text>
 <rect x="3325" y="1985" width="1350" height="220" rx="28" fill="#ffffff" stroke="#c47c54" stroke-width="6" filter="url(#shadow)"/>
 <text x="4000" y="2041" text-anchor="middle" class="box-title">
-<tspan x="4000" dy="0">Build the characteristic table</tspan>
+<tspan x="4000" dy="0">Characteristic-table construction</tspan>
 </text>
 <text x="4000" y="2090" text-anchor="middle" class="box-body">
 <tspan x="4000" dy="0">src/build_characteristics.py</tspan>
@@ -250,12 +251,12 @@
 </text>
 <rect x="3325" y="2480" width="1350" height="220" rx="28" fill="#fff8e1" stroke="#c79b2d" stroke-width="6" filter="url(#shadow)"/>
 <text x="4000" y="2536" text-anchor="middle" class="box-title">
-<tspan x="4000" dy="0">Validate and analyse</tspan>
+<tspan x="4000" dy="0">Validation and analysis</tspan>
 </text>
 <text x="4000" y="2585" text-anchor="middle" class="box-body">
-<tspan x="4000" dy="0">Confirm no FAIL, review WARN, check metadata.</tspan>
-<tspan x="4000" dy="46">Open notebooks/stackexchange_eda.ipynb, set DATA_FILE,</tspan>
-<tspan x="4000" dy="46">and run every cell from a clean kernel.</tspan>
+<tspan x="4000" dy="0">Required state: no FAIL; WARN reviewed; metadata checked.</tspan>
+<tspan x="4000" dy="46">The notebook receives DATA_FILE and executes</tspan>
+<tspan x="4000" dy="46">every cell from a clean kernel.</tspan>
 </text>
 <path class="arrow" d="M4000,1950 L4000,1970"/>
 <polygon points="3982,1946 4018,1946 4000,1976" fill="#35506b"/>
@@ -268,15 +269,15 @@
 <tspan x="130" dy="0">4</tspan>
 </text>
 <text x="285" y="2866" text-anchor="start" class="phase">
-<tspan x="285" dy="0">Verify the result and keep the evidence needed to reproduce it</tspan>
+<tspan x="285" dy="0">Result verification and retained reproduction evidence</tspan>
 </text>
 <rect x="165" y="2940" width="1420" height="290" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
 <text x="875" y="2996" text-anchor="middle" class="box-title">
 <tspan x="875" dy="0">Successful XML routes</tspan>
 </text>
 <text x="875" y="3045" text-anchor="middle" class="box-body">
-<tspan x="875" dy="0">The XML opens, requested question IDs are</tspan>
-<tspan x="875" dy="46">present, and its contents match the selected</tspan>
+<tspan x="875" dy="0">Each XML result opens and contains the requested</tspan>
+<tspan x="875" dy="46">question IDs. Its contents match the selected</tspan>
 <tspan x="875" dy="46">route and summary field configuration.</tspan>
 </text>
 <rect x="1690" y="2940" width="1420" height="290" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
@@ -290,12 +291,12 @@
 </text>
 <rect x="3215" y="2940" width="1420" height="290" rx="28" fill="#fff0ef" stroke="#ba5b55" stroke-width="6" filter="url(#shadow)"/>
 <text x="3925" y="2996" text-anchor="middle" class="box-title">
-<tspan x="3925" dy="0">When a check fails</tspan>
+<tspan x="3925" dy="0">Failed completion check</tspan>
 </text>
 <text x="3925" y="3045" text-anchor="middle" class="box-body">
-<tspan x="3925" dy="0">Correct the community, input files, question IDs,</tspan>
-<tspan x="3925" dy="46">field selection, dates, or output location, then</tspan>
-<tspan x="3925" dy="46">run the affected route again.</tspan>
+<tspan x="3925" dy="0">Configuration or input corrections cover the community,</tspan>
+<tspan x="3925" dy="46">input files, question IDs, field selection, dates,</tspan>
+<tspan x="3925" dy="46">or output location. The affected route is then rerun.</tspan>
 </text>
 <text x="2400" y="3340" text-anchor="middle" class="small">
 <tspan x="2400" dy="0">Source dump files are read without modification. Input and output locations are selected for each run.</tspan>

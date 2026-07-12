@@ -4,14 +4,14 @@ This repository supports a documented research workflow. Changes should remain
 small, understandable, reproducible, and compatible with Stack Exchange dumps
 that follow the expected XML structure.
 
-## Before making a change
+## Change preparation
 
-1. Read the README [quick orientation](README.md#quick-orientation) and
-   [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md). Use the README contents and
-   reference index to open the section affected by the change.
-2. Create a short-lived branch from `main`, using a descriptive prefix such as
-   `feature/`, `fix/`, or `docs/`.
-3. Create and activate a virtual environment, then install the development
+1. The README [quick orientation](README.md#quick-orientation) and
+   [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md) establish the applicable
+   scope. The README contents and reference index identify the affected section.
+2. Each change uses a short-lived branch from `main` with a descriptive prefix
+   such as `feature/`, `fix/`, or `docs/`.
+3. Development uses an activated virtual environment containing the declared
    requirements:
 
    ```bash
@@ -20,23 +20,27 @@ that follow the expected XML structure.
    python -m pip install -r requirements-dev.txt
    ```
 
-## Project rules
+## Project requirements
 
-- Keep paths, communities, dates, question IDs, field selections, and output
-  locations configurable.
-- Keep authored material in English and preserve source content in its original
+- Paths, communities, dates, question IDs, field selections, and output
+  locations remain configurable.
+- Authored material remains in English, and source content retains its original
   form.
-- Keep one generic, self-contained EDA notebook.
-- Update schemas, the data dictionary, examples, and documentation together
-  when a field contract changes.
-- Keep raw dumps, credentials, local environments, caches, and regenerated
-  annual outputs outside Git.
-- Never commit a secret. Revoke it immediately if it enters Git history.
+- Authored project prose remains impersonal and descriptive. First- and
+  second-person project voice, conversational prompts, and direct imperatives
+  remain absent.
+- One generic, self-contained EDA notebook remains canonical.
+- A field-contract change includes corresponding schema, data-dictionary,
+  example, and documentation updates.
+- Raw dumps, credentials, local environments, caches, and regenerated annual
+  outputs remain outside Git.
+- Secrets remain outside Git. Any exposed secret is revoked at its source and
+  removed from repository history.
 
-## Validate the change
+## Change validation
 
-Run commands from the project root. Select the checks that cover the changed
-behavior. The minimum source checks are:
+Validation commands run from the project root. The selected checks cover the
+changed behavior. The minimum source checks are:
 
 ```bash
 python -m compileall -q src
@@ -49,7 +53,7 @@ npx --yes markdownlint-cli2@0.23.0 \
 git diff --check
 ```
 
-For notebook changes, execute a copy from a clean kernel:
+A notebook change requires execution of a copy from a clean kernel:
 
 ```bash
 python -m nbconvert \
@@ -60,14 +64,14 @@ python -m nbconvert \
   --ExecutePreprocessor.timeout=600
 ```
 
-For extraction, schema, or calculation changes, also run the
-[controlled pilot](README.md#tutorial-run-the-bundled-analysis) and inspect its
-validation and metadata files.
-Record release-level evidence in `docs/reference/release-verification.tsv` and
-update `PROJECT_CHECKLIST.md` when a verified completion claim changes.
+Extraction, schema, and calculation changes also require the
+[controlled pilot](README.md#bundled-analysis-tutorial) plus inspection of its
+validation and metadata files. Release-level evidence is recorded in
+`docs/reference/release-verification.tsv`, and a verified completion-status
+change is reflected in `PROJECT_CHECKLIST.md`.
 
-## Submit the change
+## Change submission
 
-Open a pull request with a concise explanation of the purpose, affected
-contracts, validation commands and results, and any data or documentation
-impact. Keep unrelated changes in separate pull requests.
+Each pull request contains a concise explanation of its purpose, affected
+contracts, validation commands and results, and data or documentation impact.
+Unrelated changes remain in separate pull requests.

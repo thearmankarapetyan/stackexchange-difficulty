@@ -17,11 +17,11 @@ material retain their original form.
 - Verified release tag: `verified-release-2026-07-11`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Evidence matrix: **91 PASS, 0 FAIL** — **69 current-release** rows and
+- Evidence matrix: **92 PASS, 0 FAIL** — **70 current-release** rows and
   **22 historical-transition** rows.
 - Thirteen-task completion audit: **14 PASS, 0 FAIL**.
 
-## Task 1 — Maintain the main project documentation
+## Task 1 — Main project documentation
 
 Status: **Complete**
 
@@ -38,11 +38,14 @@ Status: **Complete**
 - [x] The first screen presents the project purpose, direct action links, current
   outputs, clickable result routes, and the workflow before the detailed
   reference index. The index is grouped by task, interface, and evidence.
+- [x] Maintained authored surfaces use an impersonal, descriptive tone.
+  First- and second-person project voice, conversational prompts, and direct
+  instructions are absent; source data and quoted material remain unchanged.
 
 Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08`, `README-01`–`README-08`,
-`HANDOVER-01`–`HANDOVER-03`, and `T13-01` in the release evidence.
+`HANDOVER-01`–`HANDOVER-03`, `T13-01`, and `TONE-01` in the release evidence.
 
-## Task 2 — Document the project structure and architecture
+## Task 2 — Project structure and architecture
 
 Status: **Complete**
 
@@ -63,7 +66,7 @@ Evidence: `README.md#repository-structure`,
 `docs/project-workflow-overview.svg`, `docs/project-workflow-overview.png`,
 checks `FLOW-01`–`FLOW-03`, and `T13-02`.
 
-## Task 3 — Provide a complete getting-started guide
+## Task 3 — Getting-started guide
 
 Status: **Complete**
 
@@ -82,11 +85,11 @@ Status: **Complete**
   date, place extracted XML, and find a question ID in its page address.
 
 Evidence: `README.md#environment-and-installation`,
-`README.md#access-and-prepare-a-data-dump`,
-`README.md#tutorial-run-the-bundled-analysis`, `HANDOVER-03`, `HANDOVER-06`, and
+`README.md#data-dump-access-and-preparation`,
+`README.md#bundled-analysis-tutorial`, `HANDOVER-03`, `HANDOVER-06`, and
 `T13-03`.
 
-## Task 4 — Document every script and notebook
+## Task 4 — Script and notebook reference
 
 Status: **Complete**
 
@@ -104,7 +107,7 @@ Evidence: `README.md#component-reference` through
 `README.md#validation-and-errors`, the three current `--help` outputs, and
 `T13-04`.
 
-## Task 5 — Keep useful introductions in every Python module
+## Task 5 — Python module introductions
 
 Status: **Complete**
 
@@ -118,7 +121,7 @@ Status: **Complete**
 
 Evidence: `src/*.py`, the module-docstring audit, and `T13-05`.
 
-## Task 6 — Document important functions and classes
+## Task 6 — Function and class documentation
 
 Status: **Complete**
 
@@ -136,7 +139,7 @@ Status: **Complete**
 Evidence: `src/*.py`, AST documentation audit, compile and Ruff checks, and
 `T13-06`.
 
-## Task 7 — Maintain process diagrams for important workflows
+## Task 7 — Process diagrams
 
 Status: **Complete**
 
@@ -153,7 +156,7 @@ Evidence: `docs/project-workflow-overview.svg`,
 `docs/project-workflow-overview.png`, `README.md#workflow-overview`, checks
 `FLOW-01`–`FLOW-03`, and `T13-07`.
 
-## Task 8 — Keep notebook code organized for this project
+## Task 8 — Notebook code organization
 
 Status: **Complete**
 
@@ -173,7 +176,7 @@ Status: **Complete**
 Evidence: `notebooks/stackexchange_eda.ipynb`, `src/`, checks `NB-01`,
 `SRC-06`, `HANDOVER-05`, and `T13-08`.
 
-## Task 9 — Keep scripts generic and configurable
+## Task 9 — Script generalization and configuration
 
 Status: **Complete**
 
@@ -191,7 +194,7 @@ Status: **Complete**
 Evidence: `src/`, `config/`, `notebooks/stackexchange_eda.ipynb`, cross-site
 checks `BUILD-02`–`BUILD-04`, `SRC-03`, and `T13-09`.
 
-## Task 10 — Maintain reusability and code quality
+## Task 10 — Reusability and code quality
 
 Status: **Complete**
 
@@ -215,7 +218,7 @@ Evidence: `src/`, `config/`, `AGENTS.md`, `CONTRIBUTING.md`, `.github/`, the
 repeatable gate below, checks `SRC-01`–`SRC-06`, `AUDIT-01`, `GH-01`–`GH-07`,
 `HANDOVER-01`–`HANDOVER-07`, and `T13-10`.
 
-## Task 11 — Provide a complete practical example
+## Task 11 — Practical example
 
 Status: **Complete**
 
@@ -237,10 +240,10 @@ Status: **Complete**
 Evidence: `data/examples/pilot_dump/`,
 `data/examples/characteristics_pilot.tsv`,
 `data/examples/characteristics_pilot_validation.tsv`,
-`README.md#tutorial-run-the-bundled-analysis`, `HANDOVER-04`, `HANDOVER-06`, and
+`README.md#bundled-analysis-tutorial`, `HANDOVER-04`, `HANDOVER-06`, and
 `T13-11`.
 
-## Task 12 — Maintain a complete deliverables register
+## Task 12 — Deliverables register
 
 Status: **Complete**
 
@@ -259,7 +262,7 @@ Status: **Complete**
 Evidence: `README.md#deliverables-register`, `.gitignore`, canonical-location
 checks `PATH-01`, and `T13-12`.
 
-## Task 13 — Maintain installation and dependency files
+## Task 13 — Installation and dependency files
 
 Status: **Complete**
 
@@ -282,17 +285,19 @@ Evidence: `requirements.txt`, `requirements-dev.txt`,
 
 ## Repeatable change verification gate
 
-Apply this gate to later changes and update the evidence file when release
-behavior changes.
+The gate applies to later changes, with an evidence-file update whenever
+release behavior changes.
 
-- [x] Compile changed Python modules outside the project tree.
-- [x] Run a controlled extraction for each affected extractor.
-- [x] Run a small characteristic build after calculation or schema changes.
-- [x] Compare generated columns with `config/characteristics.tsv`.
-- [x] Confirm validation has no FAIL and review every WARN.
-- [x] Execute the notebook from a clean kernel.
-- [x] Inspect changed Markdown, XLSX, SVG, PNG, XML, TSV, and notebook figures.
-- [x] Use temporary tests for risky behavior and remove them after verification.
-- [x] Remove previews, caches, bytecode, office locks, and checkpoints.
-- [x] Run `git diff --check`, review the complete change list, and update this
-  checklist and the release evidence.
+- [x] Changed Python modules compile outside the project tree.
+- [x] Every affected extractor receives a controlled extraction.
+- [x] Calculation or schema changes receive a small characteristic build.
+- [x] Generated columns match `config/characteristics.tsv`.
+- [x] Validation contains no FAIL, and every WARN receives review.
+- [x] The notebook executes from a clean kernel.
+- [x] Changed Markdown, XLSX, SVG, PNG, XML, TSV, and notebook figures receive
+  inspection.
+- [x] Risky behavior receives temporary tests that are removed after
+  verification.
+- [x] Previews, caches, bytecode, office locks, and checkpoints are absent.
+- [x] `git diff --check`, complete-change review, checklist synchronization,
+  and release-evidence synchronization complete the gate.

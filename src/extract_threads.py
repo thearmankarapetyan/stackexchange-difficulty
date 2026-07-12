@@ -1,4 +1,4 @@
-"""Reconstruct complete Stack Exchange question threads in one XML file.
+"""This module reconstructs complete Stack Exchange question threads in one XML file.
 
 For every requested question ID, the result contains the original question
 attributes, comments attached directly to that question, and all its answers.
@@ -38,7 +38,7 @@ def build_thread_tree(
     comments: dict[str, list[dict[str, str]]],
     answers: dict[str, list[dict[str, str]]],
 ) -> etree._ElementTree:
-    """Build ``threads/thread/question/comments+answers`` in request order.
+    """Builds ``threads/thread/question/comments+answers`` in request order.
 
     The input dictionaries must already contain every requested question, and
     related rows must already be chronologically ordered.  Empty ``comments``
@@ -60,7 +60,7 @@ def build_thread_tree(
 def extract_threads(
     dump_dir: Path, question_ids: Sequence[str], output_path: Path
 ) -> Path:
-    """Extract one or more requested question threads into one XML file.
+    """Extracts one or more requested question threads into one XML file.
 
     IDs are validated and deduplicated in request order.  The function reads
     ``Posts.xml`` and ``Comments.xml``, protects both source paths, and
@@ -81,14 +81,14 @@ def extract_threads(
 
 
 def main(arguments: Sequence[str] | None = None) -> int:
-    """Run the command-line interface and return its process exit code.
+    """Runs the command-line interface and returns its process exit code.
 
     Success prints the destination and returns ``0``.  Handled input,
     validation, XML, and filesystem errors print one contextual message to
     standard error and return ``1``.
     """
     parser = argparse.ArgumentParser(
-        description="Reconstruct complete Stack Exchange question threads."
+        description="Complete Stack Exchange question-thread reconstruction."
     )
     parser.add_argument(
         "--dump-dir",

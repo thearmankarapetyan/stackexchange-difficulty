@@ -1,7 +1,7 @@
-# Keep authored text consistent across operating systems.
+# Authored-text consistency across operating systems.
 * text=auto eol=lf
 
-# Declare binary deliverables explicitly so Git does not attempt text merges.
+# Explicit binary-deliverable declarations prevent Git text merges.
 *.xlsx binary
 *.pdf binary
 *.png binary

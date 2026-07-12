@@ -4,11 +4,11 @@
 > threads, configurable summaries, and validated evidence for studying
 > question difficulty.**
 
-[**Run the bundled analysis**](#tutorial-run-the-bundled-analysis) ·
-[**Choose a result**](#quick-orientation) ·
-[**See the workflow**](#workflow-overview) ·
-[**Find an exact answer**](#find-an-answer) ·
-[**Review verified results**](#verified-results)
+[**Bundled analysis tutorial**](#bundled-analysis-tutorial) ·
+[**Result routes**](#quick-orientation) ·
+[**Workflow**](#workflow-overview) ·
+[**Reference index**](#reference-index) ·
+[**Verified results**](#verified-results)
 
 | Research focus | Source evidence | Maintained results |
 |---|---|---|
@@ -25,98 +25,102 @@ their appropriate formats.
 
 ## Contents
 
-| Read first | Learn by doing | Complete a task | Look up or understand |
+| Orientation | Tutorial | Procedures | Reference and explanation |
 |---|---|---|---|
-| [Quick orientation](#quick-orientation) · [Workflow](#workflow-overview) · [Project overview](#project-overview) | [Bundled analysis tutorial](#tutorial-run-the-bundled-analysis) | [How-to guides](#how-to-guides) · [Verify a change](#verify-and-record-a-change) | [Find an answer](#find-an-answer) · [System reference](#system-reference) · [Scientific explanation](#scientific-and-design-explanation) · [Glossary](#glossary) · [Canonical locations](#canonical-locations) |
+| [Quick orientation](#quick-orientation) · [Workflow](#workflow-overview) · [Project overview](#project-overview) | [Bundled analysis tutorial](#bundled-analysis-tutorial) | [How-to guides](#how-to-guides) · [Change verification](#change-verification-and-recording) | [Reference index](#reference-index) · [System reference](#system-reference) · [Scientific explanation](#scientific-and-design-explanation) · [Glossary](#glossary) · [Canonical locations](#canonical-locations) |
 
 ## Quick orientation
 
-### Choose what to produce
+### Available result routes
 
-Routine use keeps the Python source unchanged. Select the required result,
-provide the corresponding run values, and inspect its completion check.
+Routine use leaves the Python source unchanged. Each route identifies its
+required run values and completion evidence.
 
-| Path | Choose it when | Values selected for the run | Result to inspect |
+| Path | Use case | Values selected for the run | Result to inspect |
 |---|---|---|---|
-| [**First complete run**](#tutorial-run-the-bundled-analysis) | You want to see the implemented analysis sequence once | Use the fixed bundled pilot values | A validated 20-question table and an executed notebook |
-| [**Complete threads**](#create-complete-thread-xml) | You need the complete available discussion for selected questions | Source folder, output file, and one or more question IDs | One XML file containing each question, its direct comments, and all available answers |
-| [**Selected summary**](#create-selected-field-summary-xml) | You need a compact XML report with chosen fields | Source folder, output file, question IDs, and an optional copied field selection | One XML file containing the enabled fields in the selected order |
-| [**Characteristics and EDA**](#build-a-validated-characteristic-table) | You need question-level measurements, checks, figures, and interpretations | Source folder, community host, dump date, question period, output folder, and optional limit | A 47-column TSV, validation report, run metadata, and notebook results |
+| [**First complete run**](#bundled-analysis-tutorial) | Demonstration of the complete implemented analysis sequence | Fixed bundled pilot values | A validated 20-question table and an executed notebook |
+| [**Complete threads**](#complete-thread-xml-creation) | Preservation of the complete available discussion for selected questions | Source folder, output file, and one or more question IDs | One XML file containing each question, its direct comments, and all available answers |
+| [**Selected summary**](#selected-field-summary-xml-creation) | Compact XML reporting with selected fields | Source folder, output file, question IDs, and an optional copied field selection | One XML file containing the enabled fields in the selected order |
+| [**Characteristics and EDA**](#validated-characteristic-table-construction) | Question-level measurements, checks, figures, and interpretations | Source folder, community host, dump date, question period, output folder, and optional limit | A 47-column TSV, validation report, run metadata, and notebook results |
 
 > [!TIP]
-> **Recommended starting point:** Run the
-> [bundled analysis tutorial](#tutorial-run-the-bundled-analysis). Its small,
-> tracked input verifies the environment, characteristic build, validation,
-> and notebook before a larger dump is processed.
+> **Recommended starting point:** The
+> [bundled analysis tutorial](#bundled-analysis-tutorial) uses a small, tracked
+> input to verify the environment, characteristic build, validation, and
+> notebook before larger-dump processing.
 
-### Change only the run values
+### Routine run values
 
-- Run commands from the [project root](#project-root), which contains this
+- Commands run from the [project root](#project-root), which contains this
   README.
-- Replace uppercase placeholders such as `DUMP_DIR` and `QUESTION_ID` with
-  values from the intended run. Omit the brackets and ellipsis that describe
-  optional or repeated values. See the
-  [command-line interface example](#command-line-interface).
-- For a routine run, change command arguments, a copied summary-field TSV, or
-  the notebook's **Editable settings** cell. Keep the Python modules and
-  `config/characteristics.tsv` unchanged unless the documented output contract
-  itself is being revised.
+- Uppercase placeholders such as `DUMP_DIR` and `QUESTION_ID` receive values
+  from the intended run. Brackets and an ellipsis denote optional or repeated
+  values and are omitted from literal commands. The
+  [command-line interface example](#command-line-interface) demonstrates this
+  notation.
+- Routine runs change command arguments, a copied summary-field TSV, or the
+  notebook's **Editable settings** cell. Python modules and
+  `config/characteristics.tsv` remain unchanged unless the documented output
+  contract itself changes.
 
 [Back to contents](#contents)
 
 ## Workflow overview
 
-**Purpose:** Follow the complete implemented sequence from Stack Exchange
-access to inspected and retained results.
+**Purpose:** The diagram presents the complete implemented sequence from Stack
+Exchange access to inspected and retained results.
 
 ![Stack Exchange project workflow](docs/project-workflow-overview.png)
 
-[Open the full-size PNG](docs/project-workflow-overview.png) ·
-[Open the editable SVG](docs/project-workflow-overview.svg) ·
-[Go to the how-to guides](#how-to-guides)
+[Full-size PNG](docs/project-workflow-overview.png) ·
+[Editable SVG](docs/project-workflow-overview.svg) ·
+[How-to guides](#how-to-guides)
 
 The implemented sequence is:
 
-1. Select a compatible [Stack Exchange community](#stack-exchange-community).
-2. Create an account or sign in on that community.
-3. Open profile settings, open data-dump access, and affirm the displayed
+1. A compatible [Stack Exchange community](#stack-exchange-community) is
+   selected.
+2. Account creation or sign-in provides access to that community.
+3. Profile settings provide data-dump access after affirmation of the displayed
    declaration.
-4. Download and extract the official [data dump](#data-dump).
-5. Create a Python environment and install the declared dependencies.
-6. Choose one of the three implemented result routes.
-7. Supply run-specific paths, identifiers, dates, or field selections through
-   the documented interfaces.
-8. Inspect the generated XML or the TSV, validation, and metadata files.
-9. Run the generic notebook when exploratory results are required.
-10. Retain the source provenance, run settings, validation evidence, and
-    generated result together.
+4. The official [data dump](#data-dump) is downloaded and extracted.
+5. A Python environment contains the declared dependencies.
+6. One or more of the three implemented result routes are selected.
+7. Run-specific paths, identifiers, dates, or field selections enter through the
+   documented interfaces.
+8. Generated XML or TSV, validation, and metadata files receive inspection.
+9. The generic notebook provides exploratory results when that route is
+   required.
+10. Source provenance, run settings, validation evidence, and generated results
+    remain together.
 
 Each route has a completion check in the [how-to guides](#how-to-guides). Exact
 arguments and file contracts are in the [system reference](#system-reference).
 
 [Back to contents](#contents)
 
-## Find an answer
+## Reference index
 
-Select the description that matches the current question. Every destination is
-on this page unless its file format requires a separate artifact.
+The index maps common project needs to their exact documentation destination.
+Every destination is on this page unless its format requires a separate
+artifact.
 
-### Start, run, or inspect a result
+### Result procedures and inspection
 
 | Need | Direct destination |
 |---|---|
-| Understand the project in a few minutes | [Project overview](#project-overview) |
-| Know what may be changed for a normal run | [Quick orientation](#quick-orientation) |
-| See the complete sequence from Stack Exchange access to results | [Workflow overview](#workflow-overview) |
-| Run a first working example | [Bundled analysis tutorial](#tutorial-run-the-bundled-analysis) |
-| Register, sign in, and access an official dump | [Access and prepare a data dump](#access-and-prepare-a-data-dump) |
-| Reconstruct questions, comments, and answers | [Create complete-thread XML](#create-complete-thread-xml) |
-| Select and order summary fields | [Create selected-field summary XML](#create-selected-field-summary-xml) |
-| Produce the 47-column analytical table | [Build a validated characteristic table](#build-a-validated-characteristic-table) |
-| Produce tables, figures, and interpretations | [Run the exploratory notebook](#run-the-exploratory-notebook) |
-| Check what has been verified | [Verified results](#verified-results) |
+| Project summary | [Project overview](#project-overview) |
+| Routine changeable values | [Quick orientation](#quick-orientation) |
+| Complete sequence from Stack Exchange access to results | [Workflow overview](#workflow-overview) |
+| First working example | [Bundled analysis tutorial](#bundled-analysis-tutorial) |
+| Official dump registration, sign-in, and access | [Data-dump access and preparation](#data-dump-access-and-preparation) |
+| Question, comment, and answer reconstruction | [Complete-thread XML creation](#complete-thread-xml-creation) |
+| Summary-field selection and ordering | [Selected-field summary XML creation](#selected-field-summary-xml-creation) |
+| 47-column analytical table | [Validated characteristic-table construction](#validated-characteristic-table-construction) |
+| Tables, figures, and interpretations | [Exploratory notebook execution](#exploratory-notebook-execution) |
+| Verified project state | [Verified results](#verified-results) |
 
-### Understand an interface or term
+### Interfaces and terms
 
 | Need or term | Direct destination |
 |---|---|
@@ -128,7 +132,7 @@ on this page unless its file format requires a separate artifact.
 | A notebook setting or figure | [Notebook interface](#notebook-interface) |
 | A PASS, WARN, FAIL, or error message | [Validation and errors](#validation-and-errors) |
 | An accepted answer | [Accepted answer](#accepted-answer) |
-| Which comments form a thread | [Direct question comment](#direct-question-comment) |
+| Comments included in a thread | [Direct question comment](#direct-question-comment) |
 | The 47-field schema | [Characteristic specification](#characteristic-specification) |
 | Configurable summary selection | [Summary field selection](#summary-field-selection) |
 | Run provenance | [Run metadata](#run-metadata) |
@@ -136,7 +140,7 @@ on this page unless its file format requires a separate artifact.
 | XML, TSV, JSON, or IPYNB files | [XML](#xml) · [TSV](#tsv) · [JSON](#json) · [Jupyter notebook](#jupyter-notebook) |
 | Another technical term | [Glossary](#glossary) |
 
-### Find supporting evidence
+### Supporting evidence
 
 | Need | Direct destination |
 |---|---|
@@ -149,8 +153,8 @@ on this page unless its file format requires a separate artifact.
 
 ## Project overview
 
-**Purpose:** Understand the research question, the evidence prepared by the
-software, and the three currently implemented result routes.
+**Purpose:** This section summarizes the research question, the evidence
+prepared by the software, and the three currently implemented result routes.
 
 ### Research purpose
 
@@ -177,9 +181,9 @@ assessment protocols.
 
 | Route | Purpose | Required input | Entry point | Primary result |
 |---|---|---|---|---|
-| [Complete thread](#create-complete-thread-xml) | Preserve a question, its direct question comments, and every available answer | `Posts.xml`, `Comments.xml`, one or more question IDs | [`src/extract_threads.py`](src/extract_threads.py) | One complete-thread XML file |
-| [Selected summary](#create-selected-field-summary-xml) | Create a compact report with selected and ordered fields | `Posts.xml`, `Comments.xml`, question IDs, optional field-selection TSV | [`src/extract_request_summary.py`](src/extract_request_summary.py) | One configurable summary XML file |
-| [Characteristics and EDA](#build-a-validated-characteristic-table) | Build validated question-level evidence and explore it | `Posts.xml`, `Comments.xml`, `Votes.xml`, run settings, schema | [`src/build_characteristics.py`](src/build_characteristics.py), then [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) | TSV, validation, metadata, tables, figures, and interpretations |
+| [Complete thread](#complete-thread-xml-creation) | Preservation of a question, its direct question comments, and every available answer | `Posts.xml`, `Comments.xml`, one or more question IDs | [`src/extract_threads.py`](src/extract_threads.py) | One complete-thread XML file |
+| [Selected summary](#selected-field-summary-xml-creation) | Creation of a compact report with selected and ordered fields | `Posts.xml`, `Comments.xml`, question IDs, optional field-selection TSV | [`src/extract_request_summary.py`](src/extract_request_summary.py) | One configurable summary XML file |
+| [Characteristics and EDA](#validated-characteristic-table-construction) | Construction and exploration of validated question-level evidence | `Posts.xml`, `Comments.xml`, `Votes.xml`, run settings, schema | [`src/build_characteristics.py`](src/build_characteristics.py), then [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) | TSV, validation, metadata, tables, figures, and interpretations |
 
 The workflow accepts compatible Stack Exchange community dumps. Paths,
 communities, dates, question IDs, summary fields, schemas, and output locations
@@ -188,15 +192,20 @@ cross-site verification evidence.
 
 [Back to contents](#contents)
 
-## Tutorial: run the bundled analysis
+## Bundled analysis tutorial
 
-This fixed tutorial starts with a small, real subset of the official Stack Exchange XML dump, rebuilds the tracked 20-question characteristic table, and runs the generic notebook on the generated result. It demonstrates the complete implemented path from XML input to interpreted figures.
+This fixed tutorial uses a small, real subset of the official Stack Exchange XML
+dump. It rebuilds the tracked 20-question characteristic table and executes the
+generic notebook on the generated result. The sequence demonstrates the
+implemented path from XML input to interpreted figures.
 
-> **Result:** `thread_characteristics.tsv`, `validation.tsv`, `run_metadata.json`, and an executed `stackexchange_eda.ipynb` produced from the bundled XML source rows.
+> **Result:** `thread_characteristics.tsv`, `validation.tsv`,
+> `run_metadata.json`, and an executed `stackexchange_eda.ipynb` produced
+> from the bundled XML source rows.
 
-### Confirm the tutorial files
+### Tutorial input files
 
-From the project root, confirm that these files exist:
+The following files must be present under the project root:
 
 ```text
 data/examples/pilot_dump/Posts.xml
@@ -208,9 +217,13 @@ notebooks/stackexchange_eda.ipynb
 requirements.txt
 ```
 
-The pilot dump contains real rows selected from the official April 2026 Software Engineering public dump: 20 questions, their available answers, their direct question comments, and the acceptance-vote rows used by the current calculations. [`manifest.tsv`](data/examples/pilot_dump/manifest.tsv) records its source and scope.
+The pilot dump contains real rows selected from the official April 2026 Software
+Engineering public dump: 20 questions, their available answers, their direct
+question comments, and the acceptance-vote rows used by the current
+calculations. [`manifest.tsv`](data/examples/pilot_dump/manifest.tsv) records
+its source and scope.
 
-### Create the Python environment
+### Python environment
 
 ```bash
 python3 -m venv .venv
@@ -218,11 +231,12 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-The installation should complete successfully. The active POSIX terminal prompt usually begins with `(.venv)`.
+A successful installation produces no error. The active POSIX terminal prompt
+usually begins with `(.venv)`.
 
-### Build the characteristic table
+### Characteristic-table construction
 
-Run the builder from the project root:
+The builder command runs from the project root:
 
 ```bash
 python src/build_characteristics.py \
@@ -236,7 +250,8 @@ python src/build_characteristics.py \
   --overwrite
 ```
 
-The command should report 20 selected questions and `9 PASS, 0 WARN, 0 FAIL`. It creates:
+The expected report contains 20 selected questions and
+`9 PASS, 0 WARN, 0 FAIL`. The command creates:
 
 ```text
 data/processed/tutorial-run/thread_characteristics.tsv
@@ -244,68 +259,106 @@ data/processed/tutorial-run/validation.tsv
 data/processed/tutorial-run/run_metadata.json
 ```
 
-Open `validation.tsv` and confirm every status is `PASS`. Open `run_metadata.json` and confirm the community, 2026-04-20 snapshot, 2024 question period, 20-row limit, three source files, and 20-row result. The generated characteristic TSV should contain 20 rows and 47 columns. It has been verified byte for byte against [`data/examples/characteristics_pilot.tsv`](data/examples/characteristics_pilot.tsv).
+Every `validation.tsv` status is `PASS`. The `run_metadata.json` values
+identify the community, 20 April 2026 snapshot, 2024 question period, 20-row
+limit, three source files, and 20-row result. The generated characteristic TSV
+contains 20 rows and 47 columns and matches
+[`data/examples/characteristics_pilot.tsv`](data/examples/characteristics_pilot.tsv)
+byte for byte.
 
-### Open and run the notebook
+### Notebook execution
 
 ```bash
 python -m jupyter lab
 ```
 
-1. Open `notebooks/stackexchange_eda.ipynb`.
-2. In the **Editable settings** cell, set `DATA_FILE` to `../data/processed/tutorial-run/thread_characteristics.tsv`.
-3. Select **Restart Kernel and Run All Cells** from the JupyterLab Kernel menu.
-4. Read each table, figure, interpretation, and availability message in order.
+1. `notebooks/stackexchange_eda.ipynb` is opened in JupyterLab.
+2. The **Editable settings** cell assigns `DATA_FILE` the value
+   `../data/processed/tutorial-run/thread_characteristics.tsv`.
+3. **Restart Kernel and Run All Cells** is selected from the JupyterLab Kernel
+   menu.
+4. Tables, figures, interpretations, and availability messages are examined in
+   notebook order.
 
-The first summary should report one community, 20 questions, 47 source columns, a question period from 1–8 January 2024, and the 20 April 2026 dump snapshot. Every code cell should complete without a Python exception.
+The first summary reports one community, 20 questions, 47 source columns, a
+question period from 1–8 January 2024, and the 20 April 2026 dump snapshot.
+Every code cell completes without a Python exception.
 
-### Check the visible evidence
+### Expected visible evidence
 
-- Figure 1 reports 19 questions with an available answer, 12 with an accepted answer, and 2 closed questions.
-- Figure 2 shows how question, answer, acceptance, and closure totals accumulate through time.
+- Figure 1 reports 19 questions with an available answer, 12 with an accepted
+  answer, and 2 closed questions.
+- Figure 2 shows cumulative question, answer, acceptance, and closure totals.
 - Figure 3 groups numeric results into complete, readable ranges.
 - Figure 4 shows the frequent tags in this 20-question table.
-- Later sections display a figure when the pilot contains sufficient evidence and an availability message when evidence is insufficient.
-- The final inspection table identifies concrete questions and gives each selection reason.
+- Later sections display a figure when the pilot contains sufficient evidence
+  and an availability message when evidence is insufficient.
+- The final inspection table identifies concrete questions and gives each
+  selection reason.
 
-Every displayed figure should have a plain-language interpretation. The final output should provide question IDs, titles, links, and selection reasons.
+Every displayed figure has a plain-language interpretation. The final output
+provides question IDs, titles, links, and selection reasons.
 
-### Repeat the result
+### Repeatability check
 
-Run the builder command again with the same values and `--overwrite`, then select **Restart Kernel and Run All Cells** again. The characteristic and validation TSV contents, tables, figures, availability messages, and pilot totals should remain the same. Generation time, elapsed time, and absolute source paths in `run_metadata.json` describe each individual execution and can therefore change.
+A second builder execution uses the same values and `--overwrite`, followed by
+another **Restart Kernel and Run All Cells** execution. Characteristic and
+validation TSV contents, tables, figures, availability messages, and pilot
+totals remain unchanged. Generation time, elapsed time, and absolute source
+paths in `run_metadata.json` describe each individual execution and can
+therefore change.
 
-> **Tutorial complete:** Real source XML has been transformed into a validated 47-field table and interpreted through the generic notebook, and the result has been reproduced.
+> **Tutorial complete:** Real source XML has been transformed into a validated
+> 47-field table, interpreted through the generic notebook, and reproduced.
 
 [Back to contents](#contents)
 
 ## How-to guides
 
-These procedures start from a selected goal. Use the [command reference](#command-line-interfaces) when an exact argument definition is required.
+These procedures correspond to selected project goals. Exact argument
+definitions remain in the [command reference](#command-line-interfaces).
 
-### Access and prepare a data dump
+### Data-dump access and preparation
 
-> **Goal:** Place the XML files required by a selected processing route in one readable local folder.
+> **Goal:** One readable local folder containing the XML files required by a
+> selected processing route.
 
-**Before starting:** Select a community from the [Stack Exchange site directory](https://stackexchange.com/sites), provide enough storage for its archive, and have an account on that community.
+**Prerequisites:** A community from the
+[Stack Exchange site directory](https://stackexchange.com/sites), sufficient
+archive storage, and an account on that community.
 
-1. Open the selected Stack Exchange community and sign in or create an account.
-2. Open the profile page, select **Settings**, then select **Data dump access** under **Access**.
-3. Read the current declaration and affirm it only when the intended use satisfies the displayed conditions.
-4. Note the latest dump date shown on the page. The characteristic builder uses this value for `--dump-date` and records it as the observation date.
-5. Select **Download data** and wait for the archive download to finish.
-6. Extract the archive into a selected local source-data folder. Any readable folder can be used; `data/raw/<descriptive-name>/` is the ignored project-local convention.
-7. Confirm `Posts.xml` and `Comments.xml` for the complete-thread and selected-summary routes.
-8. Confirm `Posts.xml`, `Comments.xml`, and `Votes.xml` for the characteristic route.
+1. The selected Stack Exchange community is opened with account creation or
+   sign-in.
+2. The profile path **Settings** → **Access** → **Data dump access** opens the
+   dump-access page.
+3. Access requires review of the current declaration and affirmation that the
+   intended use satisfies its displayed conditions.
+4. The latest displayed dump date supplies `--dump-date` and becomes the
+   characteristic builder's observation date.
+5. **Download data** starts the archive download.
+6. The archive is extracted into a selected local source-data folder. Any
+   readable folder is valid; `data/raw/<descriptive-name>/` is the ignored
+   project-local convention.
+7. `Posts.xml` and `Comments.xml` are required by the complete-thread and
+   selected-summary routes.
+8. `Posts.xml`, `Comments.xml`, and `Votes.xml` are required by the
+   characteristic route.
 
-Authoritative access instructions: [Stack Exchange Help Center — How do I access a data dump?](https://stackoverflow.com/help/data-dumps).
+Authoritative access instructions: [Stack Exchange Help Center — Data-dump
+access](https://stackoverflow.com/help/data-dumps).
 
-> **Completion check:** The source-data folder contains the XML files required by the selected route, and the files can be opened for reading.
+> **Completion check:** The source-data folder contains the XML files required
+> by the selected route, and each file is readable.
 
-### Create complete-thread XML
+### Complete-thread XML creation
 
-> **Goal:** Create one XML file containing one or more questions, each question's direct comments, and every available answer.
+> **Goal:** One XML file containing one or more questions, each question's
+> direct comments, and every available answer.
 
-**Before starting:** Prepare `Posts.xml` and `Comments.xml`, then collect one or more [question IDs](#question-id) from the same community. On a question page, the ID is the positive number immediately after `/questions/` in the web address: `/questions/123456/example-title` has question ID `123456`.
+**Prerequisites:** `Posts.xml`, `Comments.xml`, and one or more
+[question IDs](#question-id) from the same community. A question page address
+contains the positive ID immediately after `/questions/`; for example,
+`/questions/123456/example-title` contains question ID `123456`.
 
 ```bash
 python src/extract_threads.py \
@@ -314,20 +367,26 @@ python src/extract_threads.py \
   QUESTION_ID [QUESTION_ID ...]
 ```
 
-1. Select a destination XML path outside the source dump folder.
-2. Run the extractor with the dump folder, destination, and question IDs in the required order.
-3. Open the result and inspect the `threads` root and one `thread` element for every distinct selected ID.
-4. Confirm each thread contains its `question`, `comments`, and `answers` elements.
+1. The destination XML path is outside the source dump folder.
+2. The extractor receives the dump folder, destination, and question IDs in the
+   required order.
+3. The result contains a `threads` root and one `thread` element for every
+   distinct selected ID.
+4. Every thread contains `question`, `comments`, and `answers` elements.
 
-> **Completion check:** The command succeeds, the destination is well-formed XML, and every selected question contains its direct question comments and all available answers.
+> **Completion check:** The command succeeds, the destination is well-formed
+> XML, and every selected question contains its direct question comments and all
+> available answers.
 
-### Create selected-field summary XML
+### Selected-field summary XML creation
 
-> **Goal:** Create one XML file whose child fields and order match a selected summary-field TSV.
+> **Goal:** One XML file whose child fields and order match a selected
+> summary-field TSV.
 
-**Before starting:** Prepare `Posts.xml` and `Comments.xml`, collect question IDs, and decide whether the default 12 fields or another supported selection is required.
+**Prerequisites:** `Posts.xml`, `Comments.xml`, question IDs, and either the
+default 12 fields or another supported selection.
 
-Use the default selection:
+Default-selection command:
 
 ```bash
 python src/extract_request_summary.py \
@@ -336,12 +395,15 @@ python src/extract_request_summary.py \
   QUESTION_ID [QUESTION_ID ...]
 ```
 
-Use another supported selection:
+Alternative-selection preparation:
 
-1. Copy [`config/summary_fields.tsv`](config/summary_fields.tsv) to a run-specific TSV file.
-2. Keep `TRUE` in the `include` column for required elements and use `FALSE` for omitted elements.
-3. Arrange the rows in the required XML child order.
-4. Preserve each supported `field`, `source_record`, and `source_attribute` mapping.
+1. A run-specific TSV copy is created from
+   [`config/summary_fields.tsv`](config/summary_fields.tsv).
+2. `TRUE` remains in `include` for required elements; `FALSE` identifies
+   omitted elements.
+3. Row order defines the required XML child order.
+4. Every supported `field`, `source_record`, and `source_attribute`
+   mapping remains unchanged.
 
 ```bash
 python src/extract_request_summary.py \
@@ -351,15 +413,19 @@ python src/extract_request_summary.py \
   QUESTION_ID [QUESTION_ID ...]
 ```
 
-> **Completion check:** The command succeeds, the XML contains one `request` per distinct selected question, and each request follows the selected TSV field order. Selected unavailable values appear as empty elements.
+> **Completion check:** The command succeeds, the XML contains one `request`
+> per distinct selected question, and each request follows the selected TSV
+> field order. Selected unavailable values appear as empty elements.
 
-### Build a validated characteristic table
+### Validated characteristic-table construction
 
-> **Goal:** Generate the canonical question-level TSV, validation TSV, and run metadata JSON for a selected creation-date period.
+> **Goal:** The canonical question-level TSV, validation TSV, and run metadata
+> JSON for a selected creation-date period.
 
-**Before starting:** Prepare `Posts.xml`, `Comments.xml`, and `Votes.xml`, then select a community host, dump snapshot date, inclusive question dates, and an empty output folder.
+**Prerequisites:** `Posts.xml`, `Comments.xml`, `Votes.xml`, a community
+host, dump snapshot date, inclusive question dates, and an empty output folder.
 
-Run a small controlled pilot first:
+A small controlled pilot precedes complete-period processing:
 
 ```bash
 python src/build_characteristics.py \
@@ -372,41 +438,68 @@ python src/build_characteristics.py \
   --output-dir /path/to/results/pilot-run
 ```
 
-1. Open `validation.tsv`. Confirm every row avoids `FAIL` and review every `WARN` with its observed value.
-2. Open `run_metadata.json`. Confirm the community, snapshot, question period, source files, row limit, and row count.
-3. Inspect the TSV header. Confirm `thread_characteristics.tsv` follows [`config/characteristics.tsv`](config/characteristics.tsv) and contains 47 columns.
-4. After the pilot passes, repeat the command with a new output folder and omit `--limit` for the selected complete period.
-5. Use `--overwrite` only after reviewing the canonical files already present in the destination.
+1. `validation.tsv` must contain no `FAIL`. Each `WARN` is reviewed together
+   with its observed value.
+2. `run_metadata.json` identifies the community, snapshot, question period,
+   source files, row limit, and row count.
+3. The `thread_characteristics.tsv` header follows
+   [`config/characteristics.tsv`](config/characteristics.tsv) and contains 47
+   columns.
+4. Complete-period processing follows a successful pilot, uses a new output
+   folder, and omits `--limit`.
+5. Existing canonical files in the destination are reviewed before
+   `--overwrite` is used.
 
-> **Completion check:** The destination contains `thread_characteristics.tsv`, `validation.tsv`, and `run_metadata.json`. Validation has no `FAIL`, every `WARN` has been reviewed, and metadata matches the intended execution.
+> **Completion check:** The destination contains
+> `thread_characteristics.tsv`, `validation.tsv`, and
+> `run_metadata.json`. Validation has no `FAIL`, every `WARN` has been
+> reviewed, and metadata matches the intended execution.
 
-### Run the exploratory notebook
+### Exploratory notebook execution
 
-> **Goal:** Run the generic notebook on a selected characteristic TSV and obtain readable descriptive results.
+> **Goal:** Readable descriptive results from the generic notebook and a
+> selected characteristic TSV.
 
-**Before starting:** Use a table produced by the current characteristic builder and keep its validation and metadata beside it.
+**Prerequisites:** A table produced by the current characteristic builder, with
+its validation and metadata files retained beside it.
 
-1. Open [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) in JupyterLab.
-2. In the **Editable settings** cell, set `DATA_FILE` to the selected `thread_characteristics.tsv`.
-3. Adjust tag eligibility, tag count, correlation strength, false-discovery rate, and final case count only when the analytical need requires a change.
-4. Select **Restart Kernel and Run All Cells**.
-5. Read the dataset summary, every table, every figure or availability message, every interpretation, and the final selected cases.
+1. [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb)
+   opens in JupyterLab.
+2. The **Editable settings** cell assigns `DATA_FILE` the selected
+   `thread_characteristics.tsv`.
+3. Tag eligibility, tag count, correlation strength, false-discovery rate, and
+   final case count change only when required by the analytical purpose.
+4. **Restart Kernel and Run All Cells** starts a clean execution.
+5. The dataset summary, tables, figures or availability messages,
+   interpretations, and final selected cases are reviewed.
 
-> **Completion check:** Every cell completes, the summary identifies the intended community and snapshot, available figures are readable, unavailable analyses state the evidence limitation, and each result has a plain-language interpretation.
+> **Completion check:** Every cell completes, the summary identifies the
+> intended community and snapshot, available figures are readable, unavailable
+> analyses state the evidence limitation, and each result has a plain-language
+> interpretation.
 
-### Verify and record a change
+### Change verification and recording
 
-> **Goal:** Publish a change after its affected behavior and artifacts have been checked.
+> **Goal:** Publication after verification of affected behavior and artifacts.
 
-1. Read [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md) and identify affected routes and deliverables.
-2. Compile changed Python modules outside the project tree and run the project's Ruff checks.
-3. Exercise each affected extractor. Build a small characteristic table after calculation or schema changes.
-4. Compare generated headers with the schema, confirm validation has no `FAIL`, review every `WARN`, and inspect metadata.
-5. Execute the notebook from a clean kernel when it is affected. Render and inspect changed structured or visual artifacts at normal reading size.
-6. Remove temporary tests, previews, caches, bytecode, office locks, and checkpoints.
-7. Run `git diff --check`, review the complete change list, update [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv) and the checklist, and record the change in Git.
+1. [`PROJECT_CHECKLIST.md`](PROJECT_CHECKLIST.md) identifies affected routes
+   and deliverables.
+2. Changed Python modules are compiled outside the project tree, and the
+   project's Ruff checks pass.
+3. A controlled execution covers each affected extractor. Calculation or schema
+   changes also include a small characteristic build.
+4. Generated headers are compared with the schema; validation contains no
+   `FAIL`; each `WARN` and metadata value is reviewed.
+5. An affected notebook is executed from a clean kernel. Changed structured or
+   visual artifacts are inspected at normal reading size.
+6. Temporary tests, previews, caches, bytecode, office locks, and checkpoints
+   are removed.
+7. Verification concludes with `git diff --check`, a complete-diff review,
+   release-evidence and checklist updates, and a Git record.
 
-> **Completion check:** The affected behavior is reproduced, all recorded checks pass, visual artifacts are readable, temporary material is absent, and the repository records the verified change.
+> **Completion check:** Affected behavior is reproduced, recorded checks pass,
+> visual artifacts are readable, temporary material is absent, and the
+> repository records the verified change.
 
 [Back to contents](#contents)
 
@@ -435,11 +528,11 @@ Shared source semantics—IDs, timestamps, ordering, question-comment selection,
 
 #### Complete-thread extractor
 
-[`src/extract_threads.py`](src/extract_threads.py) exists to reconstruct source-rich question threads. It requires `Posts.xml`, `Comments.xml`, one or more positive question IDs, and an output path. Its `extract_threads` function and command produce one XML file in request order. Missing or non-question IDs, malformed selected rows, protected output paths, unreadable XML, and filesystem failures stop the operation with a contextual error. See the [procedure](#create-complete-thread-xml), [command](#complete-thread-extractor-command), and [output contract](#complete-thread-xml-contract).
+[`src/extract_threads.py`](src/extract_threads.py) exists to reconstruct source-rich question threads. It requires `Posts.xml`, `Comments.xml`, one or more positive question IDs, and an output path. Its `extract_threads` function and command produce one XML file in request order. Missing or non-question IDs, malformed selected rows, protected output paths, unreadable XML, and filesystem failures stop the operation with a contextual error. Related documentation: [procedure](#complete-thread-xml-creation), [command](#complete-thread-extractor-command), and [output contract](#complete-thread-xml-contract).
 
 #### Summary extractor
 
-[`src/extract_request_summary.py`](src/extract_request_summary.py) exists to create a compact, configurable question report. It requires `Posts.xml`, `Comments.xml`, question IDs, an output path, and either the default or a copied field-selection TSV. Its `extract_request_summaries` function and command produce one ordered `request` element per distinct selected question. Invalid mappings or selection flags, missing questions, malformed rows, protected paths, and filesystem failures stop publication. See the [procedure](#create-selected-field-summary-xml), [command](#selected-summary-extractor-command), and [configuration contract](#summary-field-selection-contract).
+[`src/extract_request_summary.py`](src/extract_request_summary.py) exists to create a compact, configurable question report. It requires `Posts.xml`, `Comments.xml`, question IDs, an output path, and either the default or a copied field-selection TSV. Its `extract_request_summaries` function and command produce one ordered `request` element per distinct selected question. Invalid mappings or selection flags, missing questions, malformed rows, protected paths, and filesystem failures stop publication. Related documentation: [procedure](#selected-field-summary-xml-creation), [command](#selected-summary-extractor-command), and [configuration contract](#summary-field-selection-contract).
 
 #### Characteristic calculations
 
@@ -447,11 +540,11 @@ Shared source semantics—IDs, timestamps, ordering, question-comment selection,
 
 #### Characteristic builder
 
-[`src/build_characteristics.py`](src/build_characteristics.py) selects questions, reads related rows, calls the calculation library, validates every result, and publishes one run. It requires three source XML files plus community, snapshot, period, output, and optional schema or limit settings. Its `run` function and command create `thread_characteristics.tsv`, `validation.tsv`, and `run_metadata.json`. Missing inputs, invalid settings or schema, inconsistent source values, internal validation failures, and protected existing outputs stop the run before writing begins. Each result file replaces its destination only after that file is complete. See the [procedure](#build-a-validated-characteristic-table), [command](#characteristic-builder-command), and [output contracts](#characteristic-output-contracts).
+[`src/build_characteristics.py`](src/build_characteristics.py) selects questions, reads related rows, calls the calculation library, validates every result, and publishes one run. It requires three source XML files plus community, snapshot, period, output, and optional schema or limit settings. Its `run` function and command create `thread_characteristics.tsv`, `validation.tsv`, and `run_metadata.json`. Missing inputs, invalid settings or schema, inconsistent source values, internal validation failures, and protected existing outputs stop the run before writing begins. Each result file replaces its destination only after that file is complete. Related documentation: [procedure](#validated-characteristic-table-construction), [command](#characteristic-builder-command), and [output contracts](#characteristic-output-contracts).
 
 #### EDA notebook
 
-[`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) performs the generic exploratory analysis. It accepts one compatible 47-column characteristic TSV through the visible `DATA_FILE` setting. Direct pandas, Matplotlib, and SciPy cells validate the table and produce summaries, figures, interpretations, and selected cases. Missing or incompatible data raises a clear exception; insufficient evidence for an optional analysis produces an availability message. See the [tutorial](#tutorial-run-the-bundled-analysis), [procedure](#run-the-exploratory-notebook), and [notebook interface](#notebook-interface).
+[`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) performs the generic exploratory analysis. It accepts one compatible 47-column characteristic TSV through the visible `DATA_FILE` setting. Direct pandas, Matplotlib, and SciPy cells validate the table and produce summaries, figures, interpretations, and selected cases. Missing or incompatible data raises a clear exception; insufficient evidence for an optional analysis produces an availability message. Related documentation: [tutorial](#bundled-analysis-tutorial), [procedure](#exploratory-notebook-execution), and [notebook interface](#notebook-interface).
 
 ### Environment and installation
 
@@ -459,10 +552,10 @@ The project supports Python 3.10 or newer.
 
 | Requirement | Compatible range | Role |
 |---|---|---|
-| Git | Current supported release | Obtain the repository and record reviewed changes |
-| Archive extraction tool | Operating-system tool or 7-Zip equivalent | Extract the downloaded community archive |
+| Git | Current supported release | Repository acquisition and reviewed-change recording |
+| Archive extraction tool | Operating-system tool or 7-Zip equivalent | Downloaded community-archive extraction |
 | Python | `>=3.10` | Source modules and notebook runtime |
-| Node.js and npm | Current long-term-support release; development only | Run the Markdown check through `npx` |
+| Node.js and npm | Current long-term-support release; development only | Markdown checking through `npx` |
 | lxml | `>=5.2, <6` | XML processing |
 | beautifulsoup4 | `>=4.12, <5` | Rendered HTML text processing |
 | NumPy | `>=1.26, <3` | Numerical notebook operations |
@@ -475,14 +568,14 @@ The project supports Python 3.10 or newer.
 | nbconvert | `>=6.5, <8` | Automated notebook execution and conversion |
 | Ruff | `>=0.15, <1` | Repository source checks |
 
-Clone the private repository after access has been granted:
+Repository acquisition after access approval:
 
 ```bash
 git clone https://github.com/thearmankarapetyan/stackexchange-difficulty.git
 cd stackexchange-difficulty
 ```
 
-Create the runtime environment:
+Runtime-environment creation:
 
 ```bash
 python3 -m venv .venv
@@ -551,17 +644,17 @@ Contribution rules are in [`CONTRIBUTING.md`](CONTRIBUTING.md). Security and dat
 
 ### Command-line interfaces
 
-Run these commands from the project root. Replace each uppercase placeholder
-with one value from the intended run. For example, this notation:
+The commands below run from the project root. Each uppercase placeholder
+represents one value from the intended run. For example, this notation:
 
 ```text
 QUESTION_ID [QUESTION_ID ...]
 ```
 
-means “supply one or more question numbers.” A real ending can therefore be
-`123456` or `123456 234567`; enter only the numbers and spaces.
+means “one or more question numbers.” Valid literal endings include
+`123456` and `123456 234567`, containing only the numbers and spaces.
 Paths may be relative to the project root or absolute. File and folder names
-containing spaces need the normal quoting required by the selected shell.
+containing spaces require the normal quoting of the selected shell.
 
 #### Complete-thread extractor command
 
@@ -577,7 +670,7 @@ python src/extract_threads.py \
 | `--dump-dir DUMP_DIR` | Required | Folder containing `Posts.xml` and `Comments.xml` |
 | `--output OUTPUT` | Required | Destination XML file |
 | `QUESTION_ID` | One or more | Positive decimal question post IDs; request order is preserved and repeated IDs are written once |
-| `-h`, `--help` | Optional | Display command help and exit |
+| `-h`, `--help` | Optional | Command-help display and exit |
 
 #### Selected-summary extractor command
 
@@ -595,7 +688,7 @@ python src/extract_request_summary.py \
 | `--output OUTPUT` | Required | Destination XML file |
 | `--fields FIELDS` | Optional | Summary-field TSV; default: `config/summary_fields.tsv` |
 | `QUESTION_ID` | One or more | Positive decimal question post IDs; request order is preserved and repeated IDs are written once |
-| `-h`, `--help` | Optional | Display command help and exit |
+| `-h`, `--help` | Optional | Command-help display and exit |
 
 #### Characteristic builder command
 
@@ -613,15 +706,15 @@ python src/build_characteristics.py \
 | Argument | Requirement | Meaning |
 |---|---|---|
 | `--dump-dir DUMP_DIR` | Required | Folder containing `Posts.xml`, `Comments.xml`, and `Votes.xml` |
-| `--site SITE` | Required | Community host used for URLs and provenance; copy only the host from the community address, without `https://` or a following path |
+| `--site SITE` | Required | Plain community host used for URLs and provenance, without `https://` or a following path |
 | `--dump-date DUMP_DATE` | Required | Snapshot date represented by the dump in `YYYY-MM-DD` form |
 | `--start-date START_DATE` | Required | First included question creation date, inclusive, in `YYYY-MM-DD` form |
 | `--end-date END_DATE` | Required | Last included question creation date, inclusive, in `YYYY-MM-DD` form |
 | `--output-dir OUTPUT_DIR` | Required | Folder receiving the canonical TSV, validation, and metadata files |
 | `--schema SCHEMA` | Optional | Characteristic specification TSV; default: `config/characteristics.tsv` |
 | `--limit LIMIT` | Optional | Positive chronological question-row limit for a controlled run |
-| `--overwrite` | Optional | Permit replacement of existing canonical outputs in `OUTPUT_DIR` |
-| `-h`, `--help` | Optional | Display command help and exit |
+| `--overwrite` | Optional | Permission to replace existing canonical outputs in `OUTPUT_DIR` |
+| `-h`, `--help` | Optional | Command-help display and exit |
 
 All three entry points return `0` after successful completion and `1` for handled file, value, validation, or XML errors. Argument-parsing errors follow `argparse` behavior and return a nonzero status.
 
@@ -687,7 +780,7 @@ The default catalogue enables these twelve fields:
 | `validation.tsv` | One structural or source-comparison check per row with status `PASS`, `WARN`, or `FAIL` and an observed value |
 | `run_metadata.json` | Schema version and path, community, snapshot, period, limit, row count, generation time, elapsed time, Python version, absolute source-file details, and validation totals |
 
-The [plain-language data dictionary](docs/reference/data-dictionary.xlsx) explains what every characteristic is, how it works, how to read it, and what an empty value means. Its 47 rows follow the names and order in [`config/characteristics.tsv`](config/characteristics.tsv).
+The [plain-language data dictionary](docs/reference/data-dictionary.xlsx) records every characteristic's definition, operation, interpretation, and empty-value meaning. Its 47 rows follow the names and order in [`config/characteristics.tsv`](config/characteristics.tsv).
 
 ### Configuration contracts
 
@@ -698,7 +791,7 @@ The [plain-language data dictionary](docs/reference/data-dictionary.xlsx) explai
 Its calculation groups are:
 
 - **Calculated by Stack Exchange** — a value maintained by the platform and copied or represented by the project;
-- **Calculated by us** — a value derived by the characteristic pipeline from source records;
+- **Calculated by project** — a value derived by the characteristic pipeline from source records;
 - **Non-calculated** — an identifier, provenance field, source text, URL, date, category, or other value that is selected or assembled directly.
 
 #### Summary-field selection contract
@@ -745,21 +838,21 @@ The notebook validates file existence, nonempty input, required columns, dates, 
 | Figure 6 | Spearman pairs meeting false-discovery-rate control and the practical strength setting |
 | Final table | Concrete question cases with identifiers, titles, URLs, and selection reasons |
 
-Every plot is followed by an explanation of what it shows, how to read it, its main observation, and why the result matters. An availability message explains when the selected data cannot support a particular figure.
+Every plot is followed by its displayed content, interpretation, main observation, and analytical relevance. An availability message explains when the selected data cannot support a particular figure.
 
 ### Validation and errors
 
-| Status | Meaning | Required response |
+| Status | Meaning | Required state or action |
 |---|---|---|
-| `PASS` | The observed result meets the stated check | Accept the checked condition |
-| `WARN` | A documented source difference or unavailable event was observed | Read and retain the observed value in reporting |
-| `FAIL` | A structural requirement is violated | Correct the input or implementation and rerun |
+| `PASS` | The observed result meets the stated check | Checked condition accepted |
+| `WARN` | A documented source difference or unavailable event was observed | Observed value retained and reported |
+| `FAIL` | A structural requirement is violated | Input or implementation correction followed by a rerun |
 
 | Component | Filesystem behavior | Handled failure behavior |
 |---|---|---|
-| Thread and summary extractors | Create parent folders and atomically replace the selected destination XML | Print an English contextual error, return `1`, preserve source XML, and preserve a prior output until publication completes |
-| Characteristic builder | Create three canonical files in the selected output folder; publish each file after its content is complete | Refuse existing outputs unless `--overwrite` is supplied, stop before writing for internal `FAIL`, print a contextual error, and return `1`; after a filesystem interruption, review the folder and rerun the complete build |
-| EDA notebook | Update saved notebook outputs when executed in place | Raise a clear exception for missing or incompatible input, invalid values, mixed communities or snapshots, duplicate IDs, and inconsistent dates |
+| Thread and summary extractors | Creates parent folders and atomically replaces the selected destination XML | Prints an English contextual error, returns `1`, preserves source XML, and retains a prior output until publication completes |
+| Characteristic builder | Creates three canonical files in the selected output folder; publishes each file after its content is complete | Refuses existing outputs unless `--overwrite` is supplied, stops before writing for internal `FAIL`, prints a contextual error, and returns `1`; a filesystem interruption requires folder inspection and a complete rerun |
+| EDA notebook | Updates saved notebook outputs when executed in place | Raises a clear exception for missing or incompatible input, invalid values, mixed communities or snapshots, duplicate IDs, and inconsistent dates |
 
 | Message fragment | Meaning |
 |---|---|
@@ -777,34 +870,34 @@ Every plot is followed by an explanation of what it shows, how to read it, its m
 
 #### Maintained project deliverables
 
-| Deliverable and location | Format and purpose | Maintained or produced by | How to open and version-control status |
+| Deliverable and location | Format and purpose | Maintained or produced by | Access method and version-control status |
 |---|---|---|---|
-| [`README.md`](README.md) | Markdown; complete project documentation | Maintained with every affected interface | Read on GitHub; tracked |
-| [`src/`](src/) | Python; five production modules | Maintained source code | Open in a text editor or IDE; tracked |
-| [`requirements.txt`](requirements.txt), [`requirements-dev.txt`](requirements-dev.txt) | Text; runtime and development dependency contracts | Maintained with environment changes | Install with `python -m pip install -r ...`; tracked |
-| [`config/characteristics.tsv`](config/characteristics.tsv) | TSV; 47 characteristic names, order, and contracts | Maintained with calculations and dictionary | Open as tab-separated text or a spreadsheet; tracked |
-| [`config/summary_fields.tsv`](config/summary_fields.tsv) | TSV; 27 supported summary fields and default selection | Maintained with the summary extractor | Copy and edit `include` or row order in a text editor or spreadsheet; tracked |
-| [`docs/project-workflow-overview.svg`](docs/project-workflow-overview.svg), [`PNG`](docs/project-workflow-overview.png) | SVG and PNG; editable workflow and publication image | Maintained with workflow changes | Open in a browser or SVG/image editor; tracked |
-| [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) | IPYNB; generic self-contained EDA | Maintained with the 47-field table and analysis requirements | Open in JupyterLab; tracked |
-| [`docs/reference/data-dictionary.xlsx`](docs/reference/data-dictionary.xlsx) | XLSX; plain-language definitions for 47 characteristics | Maintained with `config/characteristics.tsv` | Open in spreadsheet software; tracked |
-| [`docs/reference/stackexchange-published-statistics.xlsx`](docs/reference/stackexchange-published-statistics.xlsx) | XLSX; dated snapshot of published network and tag statistics with sources | Maintained from cited published values; retrieval time is on the **Read me** sheet | Open in spreadsheet software; tracked |
-| [`docs/explanation/state-of-the-art-qpp-ppp-rag.pdf`](docs/explanation/state-of-the-art-qpp-ppp-rag.pdf) | PDF; scientific QPP, PPP, and RAG context | Maintained as the scientific review | Open in a PDF reader; tracked |
-| [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv) | TSV; recorded verification matrix | Updated after verified changes | Open as tab-separated text or a spreadsheet; tracked |
+| [`README.md`](README.md) | Markdown; complete project documentation | Maintained with every affected interface | GitHub rendering; tracked |
+| [`src/`](src/) | Python; five production modules | Maintained source code | Text editor or IDE; tracked |
+| [`requirements.txt`](requirements.txt), [`requirements-dev.txt`](requirements-dev.txt) | Text; runtime and development dependency contracts | Maintained with environment changes | `python -m pip install -r ...`; tracked |
+| [`config/characteristics.tsv`](config/characteristics.tsv) | TSV; 47 characteristic names, order, and contracts | Maintained with calculations and dictionary | Tab-separated text or spreadsheet; tracked |
+| [`config/summary_fields.tsv`](config/summary_fields.tsv) | TSV; 27 supported summary fields and default selection | Maintained with the summary extractor | Run-specific copy in a text editor or spreadsheet; tracked |
+| [`docs/project-workflow-overview.svg`](docs/project-workflow-overview.svg), [`PNG`](docs/project-workflow-overview.png) | SVG and PNG; editable workflow and publication image | Maintained with workflow changes | Browser or SVG/image editor; tracked |
+| [`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) | IPYNB; generic self-contained EDA | Maintained with the 47-field table and analysis requirements | JupyterLab; tracked |
+| [`docs/reference/data-dictionary.xlsx`](docs/reference/data-dictionary.xlsx) | XLSX; plain-language definitions for 47 characteristics | Maintained with `config/characteristics.tsv` | Spreadsheet software; tracked |
+| [`docs/reference/stackexchange-published-statistics.xlsx`](docs/reference/stackexchange-published-statistics.xlsx) | XLSX; dated snapshot of published network and tag statistics with sources | Maintained from cited published values; retrieval time is on the **Overview** sheet | Spreadsheet software; tracked |
+| [`docs/explanation/state-of-the-art-qpp-ppp-rag.pdf`](docs/explanation/state-of-the-art-qpp-ppp-rag.pdf) | PDF; scientific QPP, PPP, and RAG context | Maintained as the scientific review | PDF reader; tracked |
+| [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv) | TSV; recorded verification matrix | Updated after verified changes | Tab-separated text or spreadsheet; tracked |
 
 #### Input, example, and generated deliverables
 
-| Deliverable and location | Required input | Generator | How to open and version-control status |
+| Deliverable and location | Required input | Generator | Access method and version-control status |
 |---|---|---|---|
-| [`data/examples/pilot_dump/`](data/examples/pilot_dump/) | Official April 2026 Software Engineering dump | Verified one-time real-row subset extraction | Open XML and manifest as text; tracked tutorial input |
-| [`data/examples/complete_thread_example.xml`](data/examples/complete_thread_example.xml) | `Posts.xml`, `Comments.xml`, question ID | `src/extract_threads.py` | Open in an XML viewer or text editor; tracked regeneration target |
-| Default and configurable [`request summary examples`](data/examples/) | `Posts.xml`, `Comments.xml`, question ID, optional field TSV | `src/extract_request_summary.py` | Open in an XML viewer or text editor; tracked regeneration targets |
-| [`data/examples/characteristics_pilot.tsv`](data/examples/characteristics_pilot.tsv) and [validation](data/examples/characteristics_pilot_validation.tsv) | Bundled pilot XML, schema, fixed tutorial settings | `src/build_characteristics.py` | Open as tab-separated text or a spreadsheet; tracked first-run targets |
-| Complete-thread result chosen at runtime | `Posts.xml`, `Comments.xml`, question IDs | `src/extract_threads.py` | Open as XML; generated at a selected path and tracked only when adopted as an example |
-| Selected-summary result chosen at runtime | `Posts.xml`, `Comments.xml`, question IDs, field TSV | `src/extract_request_summary.py` | Open as XML; generated at a selected path and tracked only when adopted as an example |
-| `data/processed/<run-name>/thread_characteristics.tsv` | Three source XML files, schema, run settings | `src/build_characteristics.py` | Open as TSV or analyze with the notebook; regenerated runs are ignored |
-| `data/processed/<run-name>/validation.tsv` | Calculated characteristic rows | `src/build_characteristics.py` | Open as TSV and review every status; regenerated runs are ignored |
-| `data/processed/<run-name>/run_metadata.json` | Source paths, settings, environment, validation totals | `src/build_characteristics.py` | Open as JSON text and retain beside its TSV; regenerated runs are ignored |
-| Selected external source-data folder | Official downloaded community archive | Stack Exchange download and local archive extraction | Open XML as text when needed; raw dumps remain external or ignored |
+| [`data/examples/pilot_dump/`](data/examples/pilot_dump/) | Official April 2026 Software Engineering dump | Verified one-time real-row subset extraction | XML and manifest text; tracked tutorial input |
+| [`data/examples/complete_thread_example.xml`](data/examples/complete_thread_example.xml) | `Posts.xml`, `Comments.xml`, question ID | `src/extract_threads.py` | XML viewer or text editor; tracked regeneration target |
+| Default and configurable [`request summary examples`](data/examples/) | `Posts.xml`, `Comments.xml`, question ID, optional field TSV | `src/extract_request_summary.py` | XML viewer or text editor; tracked regeneration targets |
+| [`data/examples/characteristics_pilot.tsv`](data/examples/characteristics_pilot.tsv) and [validation](data/examples/characteristics_pilot_validation.tsv) | Bundled pilot XML, schema, fixed tutorial settings | `src/build_characteristics.py` | Tab-separated text or spreadsheet; tracked first-run targets |
+| Complete-thread result chosen at runtime | `Posts.xml`, `Comments.xml`, question IDs | `src/extract_threads.py` | XML; generated at a selected path and tracked only when adopted as an example |
+| Selected-summary result chosen at runtime | `Posts.xml`, `Comments.xml`, question IDs, field TSV | `src/extract_request_summary.py` | XML; generated at a selected path and tracked only when adopted as an example |
+| `data/processed/<run-name>/thread_characteristics.tsv` | Three source XML files, schema, run settings | `src/build_characteristics.py` | TSV or notebook input; regenerated runs are ignored |
+| `data/processed/<run-name>/validation.tsv` | Calculated characteristic rows | `src/build_characteristics.py` | TSV with status review; regenerated runs are ignored |
+| `data/processed/<run-name>/run_metadata.json` | Source paths, settings, environment, validation totals | `src/build_characteristics.py` | JSON text retained beside its TSV; regenerated runs are ignored |
+| Selected external source-data folder | Official downloaded community archive | Stack Exchange download and local archive extraction | XML text when required; raw dumps remain external or ignored |
 
 Tracked XML regeneration targets are:
 
@@ -827,7 +920,7 @@ The tracked examples make every implemented route inspectable while the large so
 - [`characteristics_pilot.tsv`](data/examples/characteristics_pilot.tsv) contains the first 20 Software Engineering questions selected chronologically from 1–8 January 2024 by the current 47-field builder.
 - [`characteristics_pilot_validation.tsv`](data/examples/characteristics_pilot_validation.tsv) records nine `PASS`, zero `WARN`, and zero `FAIL` checks for that pilot.
 
-The examples contain public Stack Exchange content, source URLs, available author identifiers, and content-licence fields. Preserve this provenance when sharing or reusing them.
+The examples contain public Stack Exchange content, source URLs, available author identifiers, and content-licence fields. This provenance remains attached during sharing or reuse.
 
 ### Verified results
 
@@ -841,7 +934,7 @@ package versions are recorded in row `ENV-02` of the release evidence.
 - The verified annual Super User run contains 11,578 questions, no validation failure, and documented count-difference warnings for eight answer counts and two comment counts.
 - The generic notebook executes every code cell from a clean kernel.
 
-Detailed evidence is in [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv). Use rows marked `current release` for the present repository state. Rows marked `historical transition` preserve evidence from earlier consolidation and documentation stages. The verified release tag is `verified-release-2026-07-11`.
+Detailed evidence is in [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv). Rows marked `current release` describe the present repository state. Rows marked `historical transition` preserve evidence from earlier consolidation and documentation stages. The verified release tag is `verified-release-2026-07-11`.
 
 [Back to contents](#contents)
 
@@ -858,7 +951,7 @@ Detailed evidence is in [`docs/reference/release-verification.tsv`](docs/referen
 
 The characteristic table keeps provenance, platform-maintained values, project calculations, and assessment outcomes conceptually distinct. This separation supports traceability and keeps each analytical signal in its documented role.
 
-### Why the project has three routes
+### Rationale for the three routes
 
 Complete-thread XML preserves the richest source representation for reading and sharing. Selected-summary XML creates a compact file aligned with a reporting request. The characteristic route transforms source records into a stable analytical table and presents aggregate patterns and concrete cases through one notebook.
 
@@ -906,9 +999,9 @@ The [scientific state-of-the-art report](docs/explanation/state-of-the-art-qpp-p
 Complete-thread XML preserves the available source attributes, including
 author and `ContentLicense` values. The characteristic table records question
 and accepted-answer attribution fields. A selected summary can omit provenance
-fields through its field selection, so retain it with its source community and
-dump information. Preserve the available attribution and follow the recorded
-licence when sharing or reusing Stack Exchange content.
+fields through its field selection. Its source community and dump information
+therefore remain attached. Available attribution and the recorded licence govern
+sharing and reuse of Stack Exchange content.
 
 The private repository currently has no software `LICENSE` file. External reuse
 or redistribution of the project code and authored documentation therefore
@@ -918,7 +1011,7 @@ requires explicit permission from the project owner or responsible institution.
 
 ## Glossary
 
-The links in the [reference index](#find-an-answer) and throughout this README point to these definitions.
+The [reference index](#reference-index) and inline glossary links target these definitions.
 
 ### Accepted answer
 
@@ -945,8 +1038,8 @@ python src/extract_threads.py \
   123456
 ```
 
-Here `--dump-dir` selects the source folder, `--output` selects the result file,
-and `123456` is the question ID. The full argument contracts are in
+The example assigns the source folder to `--dump-dir`, the result file to
+`--output`, and the question ID to `123456`. The full argument contracts are in
 [Command-line interfaces](#command-line-interfaces).
 
 ### Data dump
@@ -974,8 +1067,8 @@ and source-file details can be read by people and software.
 ### Jupyter notebook
 
 An interactive document stored in an `.ipynb` file. It combines Markdown
-explanations, executable Python cells, tables, figures, and saved results. Open
-the project's notebook in JupyterLab and run its cells from top to bottom.
+explanations, executable Python cells, tables, figures, and saved results. The
+notebook execution in JupyterLab proceeds from top to bottom.
 
 ### Project root
 
@@ -1019,7 +1112,7 @@ One question, comments attached directly to that question, and all available ans
 
 Tab-separated values, a plain-text table in which tab characters separate
 columns. Spreadsheet software can open a TSV, and Python reads it with
-`sep="\t"`. Preserve the tab-separated format when editing a configuration TSV.
+`sep="\t"`. Configuration TSV edits retain the tab-separated format.
 
 ### Validation report
 

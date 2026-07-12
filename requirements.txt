@@ -9,7 +9,7 @@ matplotlib>=3.6,<4
 scipy>=1.11,<2
 IPython>=8.20,<10
 
-# Open and execute the notebook
+# Notebook opening and execution
 ipykernel>=6.29,<7
 jupyterlab>=4.2,<5
 nbconvert>=6.5,<8
