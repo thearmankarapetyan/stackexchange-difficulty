@@ -17,7 +17,7 @@ material retain their original form.
 - Verified release tag: `verified-release-2026-07-11`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Evidence matrix: **92 PASS, 0 FAIL** — **70 current-release** rows and
+- Evidence matrix: **93 PASS, 0 FAIL** — **71 current-release** rows and
   **22 historical-transition** rows.
 - Thirteen-task completion audit: **14 PASS, 0 FAIL**.
 
@@ -26,8 +26,8 @@ material retain their original form.
 Status: **Complete**
 
 - [x] `README.md` is the single technical documentation and handover page.
-- [x] It explains the research objective, addressed problem, implemented scope,
-  three result routes, components, inputs, outputs, workflow, current evidence,
+- [x] It explains the implemented scope, three result routes, components,
+  inputs, outputs, workflow, current evidence, scientific and design context,
   and scope boundaries.
 - [x] Its contents, task index, inline cross-references, and glossary links lead
   directly to the relevant same-page heading.
@@ -35,14 +35,14 @@ Status: **Complete**
   material remain linked in their appropriate formats.
 - [x] The quick orientation identifies the normal run choices, explains command
   notation, and links directly to plain-language file-format definitions.
-- [x] The first screen presents the project purpose, direct action links, current
-  outputs, clickable result routes, and the workflow before the detailed
-  reference index. The index is grouped by task, interface, and evidence.
+- [x] The opening presents a concise data-workflow statement and direct action
+  links before the result routes, workflow, and detailed reference index. The
+  index is grouped by task, interface, and evidence.
 - [x] Maintained authored surfaces use an impersonal, descriptive tone.
   First- and second-person project voice, conversational prompts, and direct
   instructions are absent; source data and quoted material remain unchanged.
 
-Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08`, `README-01`–`README-08`,
+Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08`, `README-01`–`README-09`,
 `HANDOVER-01`–`HANDOVER-03`, `T13-01`, and `TONE-01` in the release evidence.
 
 ## Task 2 — Project structure and architecture
