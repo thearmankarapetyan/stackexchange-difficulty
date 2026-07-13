@@ -133,6 +133,7 @@ The index maps common project needs to their exact documentation destination.
 | Need | Direct destination |
 |---|---|
 | Definitions and implementation status for all 138 catalogue characteristics | [Data dictionary](docs/reference/data-dictionary.xlsx) |
+| Procedure for refreshing published network and tag statistics | [Published-statistics workbook refresh](#published-statistics-workbook-refresh) |
 | A source, result, or supporting artifact | [Canonical locations](#canonical-locations) |
 | Reuse and attribution requirements | [Reuse and attribution](#reuse-and-attribution) |
 | Recorded release checks | [Release verification](docs/reference/release-verification.tsv) |
@@ -441,6 +442,41 @@ its validation and metadata files retained beside it.
 > analyses state the evidence limitation, and each result has a plain-language
 > interpretation.
 
+### Published-statistics workbook refresh
+
+> **Goal:** A dated workbook containing published Stack Exchange network and
+> tag statistics without downloading or processing complete XML dumps.
+
+**Canonical result:**
+[`docs/reference/stackexchange-published-statistics.xlsx`](docs/reference/stackexchange-published-statistics.xlsx).
+The workbook's **Overview** sheet records its sources and retrieval timestamp.
+
+1. The **All sites** sheet receives the site names, addresses, categories,
+   descriptions, and published question, answer, user, answered-percentage,
+   activity, and site-age values from the official
+   [Stack Exchange sites list](https://stackexchange.com/sites?view=list).
+2. The **Summary** sheet receives the site-dataset total and the concise
+   published question, answer, and answered-percentage values for the sites
+   selected for summary reporting.
+3. A tag-detail sheet receives published popular-tag names and question totals
+   from the source recorded on that sheet. The reusable source pattern is
+   `https://<community-host>/tags?tab=popular`.
+4. The **Overview** retrieval timestamp is replaced with the UTC time of the
+   refresh. Source URLs remain attached to their corresponding values.
+5. Published values are copied as published. Local XML dumps are excluded from
+   this procedure, and no question or answer total is recalculated locally.
+6. Workbook validation confirms that the six maintained sheets, headers,
+   filters, frozen panes, links, numeric values, and source references remain
+   present.
+7. Visual inspection uses the maintained A3 landscape print layout and checks
+   every sheet for clipped columns, broken links, and unreadable values.
+8. The retrieval date, source coverage, and inspection result are recorded in
+   `docs/reference/release-verification.tsv` under the `STATS` checks.
+
+> **Completion check:** Every workbook value has an identifiable published
+> source, the **Overview** timestamp represents the refresh, and all six sheets
+> remain readable without processing a local dump.
+
 ### Change verification and recording
 
 > **Goal:** Publication after verification of affected behavior and artifacts.
@@ -560,12 +596,19 @@ python -m pip install -r requirements.txt
 
 A virtual environment is an isolated folder containing the Python packages for
 this project. It prevents these packages from changing another Python project
-on the same computer. `requirements.txt` defines the source and notebook
-environment. `requirements-dev.txt` adds Ruff for repository checks. Official
-dump access uses a Stack Exchange account; the processing scripts require no
-Stack Exchange credential. The project needs enough storage for the selected
-archive, read access to source XML, and write access to selected output
-locations. It uses no project-specific environment variable.
+on the same computer. `requirements.txt` defines the processing and notebook
+environment. `requirements-dev.txt` includes that environment and adds
+openpyxl for data-dictionary generation plus Ruff for repository checks.
+Official dump access uses a Stack Exchange account; the processing scripts
+require no Stack Exchange credential. The project needs enough storage for the
+selected archive, read access to source XML, and write access to selected
+output locations. It uses no project-specific environment variable.
+
+Repository-maintenance environment installation:
+
+```bash
+python -m pip install -r requirements-dev.txt
+```
 
 | Shell | Environment activation command |
 |---|---|
@@ -698,6 +741,7 @@ TSV files. Workbook maintenance uses the dependencies in
 `requirements-dev.txt`.
 
 ```bash
+python -m pip install -r requirements-dev.txt
 python src/build_data_dictionary.py
 ```
 
@@ -997,7 +1041,7 @@ package versions are recorded in row `ENV-02` of the release evidence.
   question-comment-count differences, and 1 unavailable acceptance date.
 - The generic notebook executes every code cell from a clean kernel.
 
-Detailed evidence is in [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv). Rows marked `current release` describe the present repository state. Rows marked `historical transition` preserve evidence from earlier consolidation and documentation stages. The verified release tag is `verified-release-2026-07-11`.
+Detailed evidence is in [`docs/reference/release-verification.tsv`](docs/reference/release-verification.tsv). Rows marked `current release` describe the present repository state. Rows marked `historical transition` preserve evidence from earlier consolidation and documentation stages. The verified release tag is `verified-release-2026-07-13`.
 
 [Back to contents](#contents)
 

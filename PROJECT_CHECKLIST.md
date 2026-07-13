@@ -14,10 +14,13 @@ material retain their original form.
 - Repository-comprehension pull request: `#8`, merged as
   `c8577ce7a436be2ffa96e89f81fd3be1fcc4b2ce`.
 - Post-merge GitHub Actions run: `29164761612` (**2 jobs passed**).
-- Dictionary v5 synthesis: draft pull request `#13`, implementation commit
-  `3f754ece4e49efbb48c8605587abd02bc13446d8`, and GitHub Actions run
-  `29204567935` (**2 jobs passed**).
-- Verified release tag: `verified-release-2026-07-11`.
+- Dictionary v5 synthesis: pull request `#13`, merged as
+  `701f717dc940ba1bf47bbf53a76fc21897dc44a4`; GitHub Actions run
+  `29204567935` passed both jobs.
+- Workflow-role clarification: pull request `#14`, merged as
+  `0e70264cdc9d90757f460a90580ad558a46cc545`; GitHub Actions run
+  `29238650511` passed both jobs.
+- Verified release tag: `verified-release-2026-07-13`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
 - Evidence matrix: **101 PASS, 0 FAIL** — **70 current-release** rows and
@@ -271,6 +274,9 @@ Status: **Complete**
 - [x] Every registered deliverable states its canonical location, format,
   purpose, maintainer or generator, required input, opening or use method, and
   version-control status where applicable.
+- [x] The published-statistics workbook has a directly linked refresh procedure
+  covering published sources, retrieval time, maintained sheets, validation,
+  visual inspection, and release-evidence updates.
 - [x] Source, configuration, documentation, workflow, XML examples, pilot XML,
   complete characteristic catalogue, current characteristic tables,
   validation, metadata, notebook, generated dictionary workbook, statistics,
@@ -291,6 +297,9 @@ Status: **Complete**
   dictionary generation plus Ruff for repository checks.
 - [x] The README documents Python 3.10 or newer, environment creation,
   installation, shell activation, permissions, storage, and external tools.
+- [x] Runtime installation through `requirements.txt` and repository
+  maintenance through `requirements-dev.txt` are distinguished, including the
+  openpyxl requirement for data-dictionary generation.
 - [x] Installation and execution were verified in a clean Python 3.12.3
   environment, and the exact observed package versions remain recorded.
 - [x] Development-only Node.js and npm requirements for the Markdown check are
