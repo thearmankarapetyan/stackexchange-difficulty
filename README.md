@@ -248,16 +248,23 @@ Every code cell completes without a Python exception.
 - Figure 1 reports 19 questions with an available answer, 12 with an accepted
   answer, and 2 closed questions, together with field availability and source
   consistency checks.
-- Figure 2 shows cumulative answered, waiting, acceptance, and closure totals.
-- Figure 3 compares outcomes for the January 2024 question-creation cohort.
-- Figures 4–5 use readable linear ranges for 13 content, response, and
+- Figure 2 gives question, answered, unanswered, accepted, and closed counts
+  for the January 2024 posting month and year.
+- Figure 3 shows cumulative first-response, waiting, acceptance, and closure
+  totals through the selected observation end.
+- Figure 4 follows first-response acquisition for the January 2024 posting
+  cohort in its own subfigure.
+- Figures 5–6 use readable linear ranges for 13 content, response, and
   resolution measurements; every value outside a displayed range remains
   counted in the interpretation.
-- Figure 6 reports Tukey high-outlier thresholds, counts, and percentages.
-- Figure 7 states that the pilot provides insufficient evidence for a retained
+- Figure 7 reports Tukey high-outlier thresholds, counts, and percentages and
+  creates the separate question-level outlier dataset.
+- Figure 8 compares the pilot outlier subset with the full pilot and reports
+  its frequent tags and median measurements.
+- Figure 9 states that the pilot provides insufficient evidence for a retained
   correlation pair under the documented rules.
-- Figure 8 shows frequent tags and states that no tag reaches the 20-question
-  minimum required for the outcome comparison.
+- Figure 10 gives exact tag outcome counts and states that no tag reaches the
+  20-question minimum required for the percentage comparison.
 - The final inspection table identifies concrete questions and gives each
   selection reason. The run-status table records every produced or unavailable
   figure group.
@@ -433,10 +440,12 @@ its validation and metadata files retained beside it.
    opens in JupyterLab.
 2. The **Editable settings** cell assigns `DATA_FILE` the selected
    `thread_characteristics.tsv`.
-3. Tag eligibility, tag count, correlation strength, false-discovery rate, and
-   final case count change only when required by the analytical purpose.
-4. **Restart Kernel and Run All Cells** starts a clean execution.
-5. The dataset summary, tables, figures or availability messages,
+3. `PERIOD_MODE` and its matching date or year limits define the selected
+   question period. `"all"` retains every question in the TSV.
+4. The optional outlier destination, tag evidence, correlation evidence, and
+   final case settings change only when required by the analytical purpose.
+5. **Restart Kernel and Run All Cells** starts a clean execution.
+6. The dataset summary, tables, figures or availability messages,
    interpretations, and final selected cases are reviewed.
 
 > **Completion check:** Every cell completes, the summary identifies the
@@ -556,7 +565,7 @@ publishing `docs/reference/data-dictionary.xlsx`. Its four sheets are
 
 #### EDA notebook
 
-[`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) performs the generic exploratory analysis. It accepts one compatible 49-column characteristic TSV through the visible `DATA_FILE` setting. Direct pandas, Matplotlib, and SciPy cells validate the table and produce summaries, figures, interpretations, and selected cases. Missing or incompatible data raises a clear exception; insufficient evidence for an optional analysis produces an availability message. Related documentation: [tutorial](#bundled-analysis-tutorial), [procedure](#exploratory-notebook-execution), and [notebook interface](#notebook-interface).
+[`notebooks/stackexchange_eda.ipynb`](notebooks/stackexchange_eda.ipynb) performs the generic exploratory analysis. It accepts one compatible 49-column characteristic TSV through the visible `DATA_FILE` setting and selects all rows, an explicit date range, or an inclusive year range. Direct pandas, Matplotlib, and SciPy cells validate the table and produce summaries, ten figure groups, interpretations, a separate high-outlier dataset, and selected cases. The optional outlier path writes that dataset as TSV. Missing or incompatible data raises a clear exception; insufficient evidence for an optional analysis produces an availability message. Related documentation: [tutorial](#bundled-analysis-tutorial), [procedure](#exploratory-notebook-execution), and [notebook interface](#notebook-interface).
 
 ### Environment and installation
 
@@ -919,6 +928,10 @@ The notebook has one visible **Editable settings** cell. Each setting is explain
 | Editable setting | Meaning | Default |
 |---|---|---|
 | `DATA_FILE` | Characteristic TSV analyzed by the run | `../data/examples/characteristics_pilot.tsv` |
+| `PERIOD_MODE` | Row selection by `all`, `date_range`, or `year_range` | `all` |
+| `START_DATE`, `END_DATE` | Inclusive `YYYY-MM-DD` limits for `date_range` mode | `None` |
+| `START_YEAR`, `END_YEAR` | Inclusive calendar-year limits for `year_range` mode | `None` |
+| `OUTLIER_OUTPUT_FILE` | Optional TSV destination for the separate high-outlier dataset | `None` |
 | `MIN_TAG_QUESTIONS` | Minimum question count required for a tag outcome comparison | `20` |
 | `TOP_TAGS_TO_SHOW` | Maximum frequent tags displayed | `15` |
 | `MIN_CORRELATION_OBSERVATIONS` | Minimum complete rows required for one Spearman pair | `20` |
@@ -938,17 +951,19 @@ consistency before plotting.
 
 | Output | Content |
 |---|---|
-| Dataset summary | Community, question count, 49 source columns, question period, and dump snapshot |
+| Dataset summary | Community, source and selected row counts, 49 source columns, requested period, selected dates, observation end, and dump snapshot |
 | Figure 1 | Outcome totals, largest empty-value shares, and source-versus-reconstructed consistency checks |
-| Figure 2 | Cumulative answered and waiting questions, acceptance events, and closures through the dump snapshot |
-| Figure 3 | Answered, accepted, and closed percentages for each question-creation month, with the supporting cohort-size table |
-| Figure 4 | Six content and interaction distributions using equal-width linear bins |
-| Figure 5 | Seven response and resolution distributions using equal-width linear bins |
-| Figure 6 | Tukey high-outlier thresholds, counts, percentages, and a threshold table |
-| Figure 7 | Spearman pairs meeting sample-size, false-discovery-rate, and practical-strength rules |
-| Figure 8 | Frequent tags and tag outcome comparisons when the minimum evidence is available |
-| Final table | Concrete questions prioritized by Tukey flags, answer delay, and comment activity |
-| Run status | Input path, table dimensions, and all eight produced, partial, or unavailable figure groups |
+| Figure 2 | Monthly and annual question, answered, unanswered, accepted, and closed posting-cohort counts |
+| Figure 3 | Cumulative first-response, waiting, acceptance, and closure evolution through the selected observation end |
+| Figure 4 | One first-response-evolution subfigure for every question-posting month |
+| Figure 5 | Six content and interaction distributions using equal-width linear bins |
+| Figure 6 | Seven response and resolution distributions using equal-width linear bins |
+| Figure 7 | Tukey high-outlier thresholds, counts, percentages, threshold table, and separate question-level dataset |
+| Figure 8 | Outcome, median, and tag patterns in the separate high-outlier dataset |
+| Figure 9 | Spearman pairs meeting sample-size, false-discovery-rate, and practical-strength rules |
+| Figure 10 | Exact tag outcome counts and percentage comparisons when the minimum evidence is available |
+| Final table | Concrete high-outlier questions prioritized by Tukey flags, answer delay, and comment activity |
+| Run status | Input path, source and selected dimensions, period, outlier result, and all ten produced, partial, or unavailable figure groups |
 
 Every plot is followed by its displayed content, interpretation, main observation, and analytical relevance. Numeric interpretations account for values below and above the displayed range. An availability message explains when the selected data cannot support a particular figure.
 

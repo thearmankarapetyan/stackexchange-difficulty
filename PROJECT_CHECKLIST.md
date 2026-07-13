@@ -195,14 +195,17 @@ Status: **Complete**
   correlation sample minimum is visible and documented.
 - [x] Code cells each perform one identifiable step; numeric plots use linear,
   data-dependent ranges and account explicitly for lower and upper extremes.
-- [x] Eight figure groups cover table quality and outcomes, cumulative evolution,
-  monthly cohorts, content distributions, response distributions, Tukey
-  high-outlier evidence, curated correlations, and tag comparisons.
-- [x] The 39-cell sequence contains 26 focused code cells; no code cell exceeds
-  48 lines.
+- [x] Ten figure groups cover table quality, monthly and annual outcome counts,
+  cumulative evolution, one first-response view per posting-month cohort,
+  content distributions, response distributions, Tukey outliers, outlier-subset
+  EDA, curated correlations, and tag outcome counts and percentages.
+- [x] The visible settings select all rows, an explicit inclusive date range, or
+  an inclusive year range and optionally export the separate outlier dataset.
+- [x] The 52-cell sequence contains 36 focused code cells; no code cell exceeds
+  46 lines.
 - [x] Saved tables and figures match a repeated clean execution of the current
-  notebook and bundled pilot; both verified annual tables produce all eight
-  figure groups without a cell error.
+  notebook and bundled pilot; current-schema Software Engineering and Super
+  User annual tables produce all ten figure groups without a cell error.
 
 Evidence: `notebooks/stackexchange_eda.ipynb`, `src/`, checks `NB-01`,
 `NB-05`, `SRC-06`, `HANDOVER-05`, and `T13-08`.
