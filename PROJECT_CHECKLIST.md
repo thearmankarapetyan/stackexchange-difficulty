@@ -194,9 +194,15 @@ Status: **Complete**
 - [x] Editable settings receive explicit validation before file loading; the
   correlation sample minimum is visible and documented.
 - [x] Code cells each perform one identifiable step; numeric plots use linear,
-  data-dependent ranges and report high extremes explicitly.
+  data-dependent ranges and account explicitly for lower and upper extremes.
+- [x] Eight figure groups cover table quality and outcomes, cumulative evolution,
+  monthly cohorts, content distributions, response distributions, Tukey
+  high-outlier evidence, curated correlations, and tag comparisons.
+- [x] The 39-cell sequence contains 26 focused code cells; no code cell exceeds
+  48 lines.
 - [x] Saved tables and figures match a repeated clean execution of the current
-  notebook and bundled pilot.
+  notebook and bundled pilot; both verified annual tables produce all eight
+  figure groups without a cell error.
 
 Evidence: `notebooks/stackexchange_eda.ipynb`, `src/`, checks `NB-01`,
 `NB-05`, `SRC-06`, `HANDOVER-05`, and `T13-08`.
