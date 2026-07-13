@@ -167,6 +167,9 @@ Status: **Complete**
 - [x] Procedure, program, notebook, configuration, result, and verification
   roles are explicitly named, including the maintained data-dictionary builder
   and workbook.
+- [x] A restrained bold hierarchy distinguishes run inputs, exact program and
+  configuration names, generated files, and verification references while
+  explanatory text remains visually secondary.
 - [x] The editable SVG and publication PNG contain matching labels and have been
   inspected at full size and in the README.
 
