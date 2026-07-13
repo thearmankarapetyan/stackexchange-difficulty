@@ -52,11 +52,6 @@
 The diagram presents the complete implemented sequence from Stack
 Exchange access to inspected and retained results.
 
-Its phase headers identify manual procedures, executable software, and the
-verification method. Phases 1, 2, and 4 name their exact README sections;
-Phase 3 names each Python program, the Jupyter notebook, their configuration
-files, and their generated results.
-
 ![Stack Exchange project workflow](docs/project-workflow-overview.png)
 
 [Full-size PNG](docs/project-workflow-overview.png) ·
