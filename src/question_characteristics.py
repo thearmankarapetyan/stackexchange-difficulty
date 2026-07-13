@@ -112,25 +112,10 @@ def non_negative_hours(later: datetime, earlier: datetime, label: str) -> float:
     return round(hours, 6)
 
 
-def build_characteristic_row(
-    question: dict[str, str],
-    answers: list[dict[str, str]],
-    comments: list[dict[str, str]],
-    acceptance_dates: dict[str, date],
-    site: str,
-    dump_date: date,
-    posts_path: Path,
-    comments_path: Path,
-) -> dict[str, Any]:
-    """Creates one documented 49-field row for one question.
-
-    Related answers and direct question comments must already be ordered.  The
-    function validates source IDs, timestamps, counts, and event order, then
-    combines source-maintained values with transparent calculations.  Invalid
-    source values or events preceding the question raise contextual
-    ``ValueError``.  Input rows remain unchanged.
-    """
-    # Question and recorded edit-or-closure timestamp validation.
+def validated_question(
+    question: dict[str, str], posts_path: Path
+) -> tuple[str, str, datetime]:
+    """Validates one question and returns its context, ID, and creation time."""
     context = describe_row(posts_path, question)
     question_id = positive_id(question.get("Id"), context)
     question_created = parse_stack_datetime(
@@ -140,110 +125,25 @@ def build_characteristic_row(
         event_time = optional_stack_datetime(question.get(field), context, field)
         if event_time is not None:
             non_negative_hours(event_time, question_created, field)
+    return context, question_id, question_created
 
-    # Earliest-answer and accepted-answer selection.
-    first_answer = answers[0] if answers else None
-    first_answer_created = (
-        parse_stack_datetime(
-            first_answer.get("CreationDate"),
-            describe_row(posts_path, first_answer),
-            "CreationDate",
-        )
-        if first_answer
-        else None
-    )
 
-    accepted_answer_id = question.get("AcceptedAnswerId")
-    if accepted_answer_id:
-        accepted_answer_id = positive_id(
-            accepted_answer_id, context, "AcceptedAnswerId"
-        )
-    accepted_answer = next(
-        (answer for answer in answers if answer.get("Id") == accepted_answer_id), None
-    )
-    accepted_answer_created = (
-        parse_stack_datetime(
-            accepted_answer.get("CreationDate"),
-            describe_row(posts_path, accepted_answer),
-            "CreationDate",
-        )
-        if accepted_answer
-        else None
-    )
-
-    # Response-delay and score calculation across every available answer.
-    answer_times = [
-        non_negative_hours(
-            parse_stack_datetime(
-                answer.get("CreationDate"),
-                describe_row(posts_path, answer),
-                "CreationDate",
-            ),
-            question_created,
-            "answer response time",
-        )
-        for answer in answers
-    ]
-    answer_scores = [
-        optional_integer(
-            answer.get("Score"), describe_row(posts_path, answer), "Score"
-        )
-        for answer in answers
-    ]
-    available_scores = [score for score in answer_scores if score is not None]
-    accepted_score = (
-        optional_integer(
-            accepted_answer.get("Score"),
-            describe_row(posts_path, accepted_answer),
-            "Score",
-        )
-        if accepted_answer
-        else None
-    )
-
-    # Separation of answer-posting and acceptance-event times.
-    acceptance_date = acceptance_dates.get(accepted_answer_id or "")
-    days_to_acceptance = (
-        (acceptance_date - question_created.date()).days
-        if acceptance_date is not None
-        else None
-    )
-    if days_to_acceptance is not None and days_to_acceptance < 0:
-        raise ValueError(f"{context}: acceptance date precedes question creation date")
-    if (
-        acceptance_date is not None
-        and accepted_answer_created is not None
-        and acceptance_date < accepted_answer_created.date()
-    ):
-        raise ValueError(
-            f"{context}: acceptance date precedes accepted-answer post date"
-        )
-
-    # Direct question-discussion count before the first answer.
-    comment_times = [
-        parse_stack_datetime(
-            comment.get("CreationDate"),
-            describe_row(comments_path, comment),
-            "CreationDate",
-        )
-        for comment in comments
-    ]
-    for comment_time in comment_times:
-        non_negative_hours(comment_time, question_created, "question-comment time")
-    comments_before_first = (
-        sum(created < first_answer_created for created in comment_times)
-        if first_answer_created is not None
-        else None
-    )
-
-    # Field assembly; the TSV writer later applies the documented schema order.
+def question_fields(
+    question: dict[str, str],
+    context: str,
+    question_id: str,
+    question_created: datetime,
+    site: str,
+    dump_date: date,
+) -> dict[str, Any]:
+    """Returns source fields and content measurements for one question."""
     tags = tag_names(question.get("Tags"))
     measurements = content_measurements(question.get("Body"))
     measurements["tag_count"] = len(tags)
     stackexchange_answer_count = optional_count(
         question.get("AnswerCount"), context, "AnswerCount"
     )
-    row: dict[str, Any] = {
+    fields: dict[str, Any] = {
         "site": site,
         "dump_snapshot_date": dump_date.isoformat(),
         "question_id": question_id,
@@ -270,24 +170,137 @@ def build_characteristic_row(
         "stackexchange_comment_count": optional_count(
             question.get("CommentCount"), context, "CommentCount"
         ),
-        "accepted_answer_id": accepted_answer_id,
         "closed_datetime": question.get("ClosedDate"),
+        "observation_days_at_dump": (dump_date - question_created.date()).days,
+    }
+    fields.update(measurements)
+    return fields
+
+
+def answer_response_fields(
+    answers: list[dict[str, str]],
+    question_created: datetime,
+    posts_path: Path,
+) -> tuple[dict[str, Any], datetime | None, list[int]]:
+    """Returns response fields plus values needed by later calculations."""
+    answer_times: list[float] = []
+    answer_scores: list[int | None] = []
+    answer_creation_times: list[datetime] = []
+
+    for answer in answers:
+        answer_context = describe_row(posts_path, answer)
+        answer_created = parse_stack_datetime(
+            answer.get("CreationDate"), answer_context, "CreationDate"
+        )
+        answer_creation_times.append(answer_created)
+        answer_times.append(
+            non_negative_hours(
+                answer_created, question_created, "answer response time"
+            )
+        )
+        answer_scores.append(optional_integer(answer.get("Score"), answer_context, "Score"))
+
+    first_answer = answers[0] if answers else None
+    first_answer_created = answer_creation_times[0] if answer_creation_times else None
+    available_scores = [score for score in answer_scores if score is not None]
+    fields = {
         "available_answer_count": len(answers),
         "has_available_answer": bool(answers),
         "first_answer_id": first_answer.get("Id") if first_answer else None,
         "first_answer_creation_datetime": (
             first_answer.get("CreationDate") if first_answer else None
         ),
-        "time_to_first_answer_hours": (
-            non_negative_hours(
-                first_answer_created, question_created, "first-answer response time"
-            )
-            if first_answer_created is not None
-            else None
-        ),
+        "time_to_first_answer_hours": answer_times[0] if answer_times else None,
         "median_answer_response_hours": (
             round(median(answer_times), 6) if answer_times else None
         ),
+        "answer_score_spread": (
+            max(available_scores) - min(available_scores)
+            if available_scores
+            else None
+        ),
+    }
+    return fields, first_answer_created, available_scores
+
+
+def find_accepted_answer(
+    question: dict[str, str],
+    answers: list[dict[str, str]],
+    context: str,
+) -> tuple[str | None, dict[str, str] | None]:
+    """Returns the accepted-answer ID and its available answer row."""
+    accepted_answer_id = question.get("AcceptedAnswerId")
+    if accepted_answer_id:
+        accepted_answer_id = positive_id(
+            accepted_answer_id, context, "AcceptedAnswerId"
+        )
+    accepted_answer = next(
+        (answer for answer in answers if answer.get("Id") == accepted_answer_id), None
+    )
+    return accepted_answer_id, accepted_answer
+
+
+def acceptance_event_fields(
+    accepted_answer_id: str | None,
+    accepted_answer_created: datetime | None,
+    acceptance_dates: dict[str, date],
+    question_created: datetime,
+    context: str,
+) -> dict[str, str | int | None]:
+    """Returns the acceptance date and validates its order."""
+    acceptance_date = acceptance_dates.get(accepted_answer_id or "")
+    days_to_acceptance = (
+        (acceptance_date - question_created.date()).days
+        if acceptance_date is not None
+        else None
+    )
+    if days_to_acceptance is not None and days_to_acceptance < 0:
+        raise ValueError(f"{context}: acceptance date precedes question creation date")
+    if (
+        acceptance_date is not None
+        and accepted_answer_created is not None
+        and acceptance_date < accepted_answer_created.date()
+    ):
+        raise ValueError(
+            f"{context}: acceptance date precedes accepted-answer post date"
+        )
+    return {
+        "acceptance_date": acceptance_date.isoformat() if acceptance_date else None,
+        "days_to_acceptance": days_to_acceptance,
+    }
+
+
+def accepted_answer_fields(
+    question: dict[str, str],
+    answers: list[dict[str, str]],
+    acceptance_dates: dict[str, date],
+    available_scores: list[int],
+    question_created: datetime,
+    context: str,
+    site: str,
+    posts_path: Path,
+) -> dict[str, Any]:
+    """Returns fields describing the selected answer and its acceptance event."""
+    accepted_answer_id, accepted_answer = find_accepted_answer(
+        question, answers, context
+    )
+    accepted_context = (
+        describe_row(posts_path, accepted_answer) if accepted_answer else ""
+    )
+    accepted_answer_created = (
+        parse_stack_datetime(
+            accepted_answer.get("CreationDate"), accepted_context, "CreationDate"
+        )
+        if accepted_answer
+        else None
+    )
+    accepted_score = (
+        optional_integer(accepted_answer.get("Score"), accepted_context, "Score")
+        if accepted_answer
+        else None
+    )
+    fields: dict[str, Any] = {
+        "accepted_answer_id": accepted_answer_id,
         "accepted_answer_available": accepted_answer is not None,
         "accepted_answer_creation_datetime": (
             accepted_answer.get("CreationDate") if accepted_answer else None
@@ -315,25 +328,102 @@ def build_characteristic_row(
             if accepted_answer_created is not None
             else None
         ),
-        "acceptance_date": acceptance_date.isoformat() if acceptance_date else None,
-        "days_to_acceptance": days_to_acceptance,
         "accepted_answer_score": accepted_score,
         "accepted_answer_body_text": (
             readable_text(accepted_answer.get("Body")) if accepted_answer else None
-        ),
-        "answer_score_spread": (
-            max(available_scores) - min(available_scores)
-            if available_scores
-            else None
         ),
         "accepted_answer_score_rank": (
             1 + sum(score > accepted_score for score in available_scores)
             if accepted_score is not None
             else None
         ),
+    }
+    fields.update(
+        acceptance_event_fields(
+            accepted_answer_id,
+            accepted_answer_created,
+            acceptance_dates,
+            question_created,
+            context,
+        )
+    )
+    return fields
+
+
+def question_comment_fields(
+    comments: list[dict[str, str]],
+    question_created: datetime,
+    first_answer_created: datetime | None,
+    comments_path: Path,
+) -> dict[str, int | None]:
+    """Returns direct-question comment counts and validates their timestamps."""
+    comment_times = [
+        parse_stack_datetime(
+            comment.get("CreationDate"),
+            describe_row(comments_path, comment),
+            "CreationDate",
+        )
+        for comment in comments
+    ]
+    for comment_time in comment_times:
+        non_negative_hours(comment_time, question_created, "question-comment time")
+    comments_before_first = (
+        sum(created < first_answer_created for created in comment_times)
+        if first_answer_created is not None
+        else None
+    )
+    return {
         "available_question_comment_count": len(comments),
         "comments_before_first_answer": comments_before_first,
-        "observation_days_at_dump": (dump_date - question_created.date()).days,
     }
-    row.update(measurements)
+
+
+def build_characteristic_row(
+    question: dict[str, str],
+    answers: list[dict[str, str]],
+    comments: list[dict[str, str]],
+    acceptance_dates: dict[str, date],
+    site: str,
+    dump_date: date,
+    posts_path: Path,
+    comments_path: Path,
+) -> dict[str, Any]:
+    """Creates one documented 49-field row for one question.
+
+    Related answers and direct question comments must already be ordered.  Each
+    helper below handles one understandable part of the row.  Invalid source
+    values or events preceding the question raise contextual ``ValueError``.
+    Input rows remain unchanged.
+    """
+    context, question_id, question_created = validated_question(question, posts_path)
+    response_fields, first_answer_created, available_scores = answer_response_fields(
+        answers, question_created, posts_path
+    )
+
+    row = question_fields(
+        question,
+        context,
+        question_id,
+        question_created,
+        site,
+        dump_date,
+    )
+    row.update(response_fields)
+    row.update(
+        accepted_answer_fields(
+            question,
+            answers,
+            acceptance_dates,
+            available_scores,
+            question_created,
+            context,
+            site,
+            posts_path,
+        )
+    )
+    row.update(
+        question_comment_fields(
+            comments, question_created, first_answer_created, comments_path
+        )
+    )
     return row

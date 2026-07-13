@@ -261,23 +261,81 @@ def load_schema(path: Path) -> list[str]:
     return columns
 
 
-def validation_rows(
+def structure_validation_checks(
     rows: list[dict[str, Any]], columns: list[str]
-) -> list[dict[str, str]]:
-    """Returns structural checks and explicit source-difference warnings.
-
-    Each returned row has a check name, ``PASS``/``WARN``/``FAIL`` status,
-    observed value, and interpretation.  Platform counters can differ from
-    available XML rows, so those differences are warnings while broken output
-    structure is a failure.  Input rows remain unchanged.
-    """
+) -> list[tuple[str, str, str, str]]:
+    """Checks row presence, schema consistency, and question identifiers."""
     expected_keys = set(columns)
     ids = [str(row.get("question_id") or "") for row in rows]
+    mismatched_rows = sum(set(row) != expected_keys for row in rows)
+    return [
+        ("rows produced", "PASS" if rows else "FAIL", str(len(rows)), "more than zero"),
+        (
+            "schema matches every row",
+            "PASS" if mismatched_rows == 0 else "FAIL",
+            str(mismatched_rows),
+            "zero mismatched rows",
+        ),
+        (
+            "question identifiers are present and unique",
+            "PASS" if all(ids) and len(ids) == len(set(ids)) else "FAIL",
+            f"rows={len(ids)}; unique={len(set(ids))}",
+            "all present and unique",
+        ),
+    ]
+
+
+def answer_validation_checks(
+    rows: list[dict[str, Any]],
+) -> list[tuple[str, str, str, str]]:
+    """Checks the two answer flags and compares the two answer counts."""
+    available_flag_mismatches = sum(
+        bool(row["available_answer_count"]) != row["has_available_answer"]
+        for row in rows
+    )
+    stackexchange_answer_flag_mismatches = sum(
+        (
+            row.get("stackexchange_answer_count") is None
+            and row.get("has_stackexchange_answer") is not None
+        )
+        or (
+            row.get("stackexchange_answer_count") is not None
+            and row.get("has_stackexchange_answer")
+            != (row["stackexchange_answer_count"] > 0)
+        )
+        for row in rows
+    )
     answer_differences = sum(
         row.get("stackexchange_answer_count") is not None
         and row["stackexchange_answer_count"] != row["available_answer_count"]
         for row in rows
     )
+    return [
+        (
+            "available-answer flag matches available count",
+            "PASS" if available_flag_mismatches == 0 else "FAIL",
+            str(available_flag_mismatches),
+            "zero mismatches",
+        ),
+        (
+            "Stack Exchange answer flag matches Stack Exchange count",
+            "PASS" if stackexchange_answer_flag_mismatches == 0 else "FAIL",
+            str(stackexchange_answer_flag_mismatches),
+            "zero mismatches",
+        ),
+        (
+            "Stack Exchange and available answer counts differ",
+            "WARN" if answer_differences else "PASS",
+            str(answer_differences),
+            "reported explicitly because unavailable or removed rows can create differences",
+        ),
+    ]
+
+
+def comment_and_acceptance_validation_checks(
+    rows: list[dict[str, Any]],
+) -> list[tuple[str, str, str, str]]:
+    """Checks question-comment counts and accepted-answer availability."""
     comment_differences = sum(
         row.get("stackexchange_comment_count") is not None
         and row["stackexchange_comment_count"]
@@ -293,64 +351,7 @@ def validation_rows(
         bool(row.get("accepted_answer_id")) and not row.get("acceptance_date")
         for row in rows
     )
-    stackexchange_answer_flag_mismatches = sum(
-        (
-            row.get("stackexchange_answer_count") is None
-            and row.get("has_stackexchange_answer") is not None
-        )
-        or (
-            row.get("stackexchange_answer_count") is not None
-            and row.get("has_stackexchange_answer")
-            != (row["stackexchange_answer_count"] > 0)
-        )
-        for row in rows
-    )
-
-    checks: list[tuple[str, str, str, str]] = [
-        ("rows produced", "PASS" if rows else "FAIL", str(len(rows)), "more than zero"),
-        (
-            "schema matches every row",
-            "PASS"
-            if all(set(row) == expected_keys for row in rows)
-            else "FAIL",
-            str(sum(set(row) != expected_keys for row in rows)),
-            "zero mismatched rows",
-        ),
-        (
-            "question identifiers are present and unique",
-            "PASS" if all(ids) and len(ids) == len(set(ids)) else "FAIL",
-            f"rows={len(ids)}; unique={len(set(ids))}",
-            "all present and unique",
-        ),
-        (
-            "available-answer flag matches available count",
-            "PASS"
-            if all(
-                bool(row["available_answer_count"]) == row["has_available_answer"]
-                for row in rows
-            )
-            else "FAIL",
-            str(
-                sum(
-                    bool(row["available_answer_count"])
-                    != row["has_available_answer"]
-                    for row in rows
-                )
-            ),
-            "zero mismatches",
-        ),
-        (
-            "Stack Exchange answer flag matches Stack Exchange count",
-            "PASS" if stackexchange_answer_flag_mismatches == 0 else "FAIL",
-            str(stackexchange_answer_flag_mismatches),
-            "zero mismatches",
-        ),
-        (
-            "Stack Exchange and available answer counts differ",
-            "WARN" if answer_differences else "PASS",
-            str(answer_differences),
-            "reported explicitly because unavailable or removed rows can create differences",
-        ),
+    return [
         (
             "Stack Exchange and available question-comment counts differ",
             "WARN" if comment_differences else "PASS",
@@ -369,15 +370,36 @@ def validation_rows(
             str(missing_acceptance_dates),
             "reported explicitly because Votes.xml may omit an event",
         ),
+    ]
+
+
+def observation_validation_checks(
+    rows: list[dict[str, Any]],
+) -> list[tuple[str, str, str, str]]:
+    """Checks that every dump observation period is zero or greater."""
+    negative_periods = sum(row["observation_days_at_dump"] < 0 for row in rows)
+    return [
         (
             "observation periods are non-negative",
-            "PASS"
-            if all(row["observation_days_at_dump"] >= 0 for row in rows)
-            else "FAIL",
-            str(sum(row["observation_days_at_dump"] < 0 for row in rows)),
+            "PASS" if negative_periods == 0 else "FAIL",
+            str(negative_periods),
             "zero negative values",
         ),
     ]
+
+
+def validation_rows(
+    rows: list[dict[str, Any]], columns: list[str]
+) -> list[dict[str, str]]:
+    """Returns structural checks and explicit source-difference warnings.
+
+    Platform counters can differ from available XML rows.  Those differences
+    produce warnings, while broken output structure produces a failure.
+    """
+    checks = structure_validation_checks(rows, columns)
+    checks.extend(answer_validation_checks(rows))
+    checks.extend(comment_and_acceptance_validation_checks(rows))
+    checks.extend(observation_validation_checks(rows))
     return [
         {
             "check": name,

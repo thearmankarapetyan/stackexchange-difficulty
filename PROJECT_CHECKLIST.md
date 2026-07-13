@@ -191,11 +191,15 @@ Status: **Complete**
   used only to explain the one notebook remains visible in that notebook.
 - [x] A clean-kernel execution verifies cell order and independence from hidden
   state.
+- [x] Editable settings receive explicit validation before file loading; the
+  correlation sample minimum is visible and documented.
+- [x] Code cells each perform one identifiable step; numeric plots use linear,
+  data-dependent ranges and report high extremes explicitly.
 - [x] Saved tables and figures match a repeated clean execution of the current
   notebook and bundled pilot.
 
 Evidence: `notebooks/stackexchange_eda.ipynb`, `src/`, checks `NB-01`,
-`SRC-06`, `HANDOVER-05`, and `T13-08`.
+`NB-05`, `SRC-06`, `HANDOVER-05`, and `T13-08`.
 
 ## Task 9 — Script generalization and configuration
 
@@ -226,6 +230,9 @@ Status: **Complete**
 - [x] Names and errors are descriptive, inputs are validated, configuration is
   separated from processing, source XML is protected, and canonical files are
   written atomically.
+- [x] Question calculations and output validation are divided into short,
+  concept-named functions; both XML commands report their current scan or write
+  stage during long executions.
 - [x] The workbook builder verifies catalogue identifiers and uniqueness, the
   implemented subset, schema order, and pilot columns before publication.
 - [x] Duplicate logic, stale helpers, notebook generators, previews, caches,
@@ -239,7 +246,7 @@ Status: **Complete**
   transition records, and the documented path succeeds from a fresh clone.
 
 Evidence: `src/`, `config/`, `AGENTS.md`, `CONTRIBUTING.md`, `.github/`, the
-repeatable gate below, checks `SRC-01`–`SRC-06`, `AUDIT-01`, `GH-01`–`GH-08`,
+repeatable gate below, checks `SRC-01`–`SRC-07`, `AUDIT-01`, `GH-01`–`GH-08`,
 `HANDOVER-01`–`HANDOVER-07`, `CAT-01`–`CAT-02`, `FIELD-01`, `DICT-03`, and
 `T13-10`.
 

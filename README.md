@@ -253,12 +253,14 @@ Every code cell completes without a Python exception.
 - Figure 1 reports 19 questions with an available answer, 12 with an accepted
   answer, and 2 closed questions.
 - Figure 2 shows cumulative question, answer, acceptance, and closure totals.
-- Figure 3 groups numeric results into complete, readable ranges.
+- Figure 3 uses linear numeric ranges and reports the count and maximum of
+  values above each displayed range.
 - Figure 4 shows the frequent tags in this 20-question table.
 - Later sections display a figure when the pilot contains sufficient evidence
   and an availability message when evidence is insufficient.
 - The final inspection table identifies concrete questions and gives each
-  selection reason.
+  selection reason. The run-status table records every produced or unavailable
+  figure group.
 
 Every displayed figure has a plain-language interpretation. The final output
 provides question IDs, titles, links, and selection reasons.
@@ -528,11 +530,11 @@ Shared source semantics—IDs, timestamps, ordering, question-comment selection,
 
 #### Complete-thread extractor
 
-[`src/extract_threads.py`](src/extract_threads.py) exists to reconstruct source-rich question threads. It requires `Posts.xml`, `Comments.xml`, one or more positive question IDs, and an output path. Its `extract_threads` function and command produce one XML file in request order. Missing or non-question IDs, malformed selected rows, protected output paths, unreadable XML, and filesystem failures stop the operation with a contextual error. Related documentation: [procedure](#complete-thread-xml-creation), [command](#complete-thread-extractor-command), and [output contract](#complete-thread-xml-contract).
+[`src/extract_threads.py`](src/extract_threads.py) exists to reconstruct source-rich question threads. It requires `Posts.xml`, `Comments.xml`, one or more positive question IDs, and an output path. Its `extract_threads` function and command produce one XML file in request order. The command reports the post scan, comment scan, and XML-writing stages. Missing or non-question IDs, malformed selected rows, protected output paths, unreadable XML, and filesystem failures stop the operation with a contextual error. Related documentation: [procedure](#complete-thread-xml-creation), [command](#complete-thread-extractor-command), and [output contract](#complete-thread-xml-contract).
 
 #### Summary extractor
 
-[`src/extract_request_summary.py`](src/extract_request_summary.py) exists to create a compact, configurable question report. It requires `Posts.xml`, `Comments.xml`, question IDs, an output path, and either the default or a copied field-selection TSV. Its `extract_request_summaries` function and command produce one ordered `request` element per distinct selected question. Invalid mappings or selection flags, missing questions, malformed rows, protected paths, and filesystem failures stop publication. Related documentation: [procedure](#selected-field-summary-xml-creation), [command](#selected-summary-extractor-command), and [configuration contract](#summary-field-selection-contract).
+[`src/extract_request_summary.py`](src/extract_request_summary.py) exists to create a compact, configurable question report. It requires `Posts.xml`, `Comments.xml`, question IDs, an output path, and either the default or a copied field-selection TSV. Its `extract_request_summaries` function and command produce one ordered `request` element per distinct selected question. The command reports field loading, the post scan, the comment scan, and XML writing. Invalid mappings or selection flags, missing questions, malformed rows, protected paths, and filesystem failures stop publication. Related documentation: [procedure](#selected-field-summary-xml-creation), [command](#selected-summary-extractor-command), and [configuration contract](#summary-field-selection-contract).
 
 #### Characteristic calculations
 
@@ -919,6 +921,7 @@ The notebook has one visible **Editable settings** cell. Each setting is explain
 | `DATA_FILE` | Characteristic TSV analyzed by the run | `../data/examples/characteristics_pilot.tsv` |
 | `MIN_TAG_QUESTIONS` | Minimum question count required for a tag outcome comparison | `20` |
 | `TOP_TAGS_TO_SHOW` | Maximum frequent tags displayed | `15` |
+| `MIN_CORRELATION_OBSERVATIONS` | Minimum complete rows required for one Spearman pair | `20` |
 | `MIN_ABSOLUTE_RHO` | Minimum displayed absolute Spearman rank correlation | `0.30` |
 | `FDR_ALPHA` | Benjamini–Hochberg false-discovery-rate limit | `0.05` |
 | `MAX_CASES_TO_SHOW` | Maximum questions displayed in the final inspection table | `8` |
@@ -928,17 +931,21 @@ after ranking their values; it ranges from `-1` to `1`. False-discovery-rate
 control limits the expected share of chance findings among the displayed
 correlation pairs when many pairs are tested.
 
-The notebook validates file existence, nonempty input, required columns, dates, numeric values, `TRUE`/`FALSE` fields, one community, one snapshot, unique question IDs, and temporal consistency before plotting.
+The notebook validates every editable setting, file existence, nonempty input,
+required columns, dates, numeric values, `TRUE`/`FALSE` fields, one community,
+one snapshot, unique question IDs, non-negative elapsed values, and temporal
+consistency before plotting.
 
 | Output | Content |
 |---|---|
 | Dataset summary | Community, question count, 49 source columns, question period, and dump snapshot |
 | Figure 1 | Question outcome totals for answered, accepted, and closed questions |
 | Figure 2 | Cumulative question, answer, acceptance, and closure event evolution |
-| Figure 3 | Numeric distributions in complete labelled ranges, including open-ended extreme categories |
+| Figure 3 | Linear numeric distributions ending at the 95th percentile, or the 90th percentile for the strongly long-tailed first-answer delay; interpretations report excluded high values and the observed maximum |
 | Figures 4–5 | Frequent tags and tag outcome comparisons when the minimum evidence is available |
 | Figure 6 | Spearman pairs meeting false-discovery-rate control and the practical strength setting |
 | Final table | Concrete question cases with identifiers, titles, URLs, and selection reasons |
+| Run status | Input path, table dimensions, and every produced or unavailable figure group |
 
 Every plot is followed by its displayed content, interpretation, main observation, and analytical relevance. An availability message explains when the selected data cannot support a particular figure.
 
