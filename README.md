@@ -52,6 +52,11 @@
 The diagram presents the complete implemented sequence from Stack
 Exchange access to inspected and retained results.
 
+Its phase headers identify manual procedures, executable software, and the
+verification method. Phases 1, 2, and 4 name their exact README sections;
+Phase 3 names each Python program, the Jupyter notebook, their configuration
+files, and their generated results.
+
 ![Stack Exchange project workflow](docs/project-workflow-overview.png)
 
 [Full-size PNG](docs/project-workflow-overview.png) ·
@@ -70,10 +75,12 @@ The implemented sequence is:
 6. One or more of the three implemented result routes are selected.
 7. Run-specific paths, identifiers, dates, or field selections enter through the
    documented interfaces.
-8. Generated XML or TSV, validation, and metadata files receive inspection.
-9. The generic notebook provides exploratory results when that route is
+8. Each selected Python program performs its built-in checks.
+9. Generated XML or TSV, validation, metadata, and notebook results receive the
+   documented inspection procedure.
+10. The generic notebook provides exploratory results when that route is
    required.
-10. Source provenance, run settings, validation evidence, and generated results
+11. Source provenance, run settings, validation evidence, and generated results
     remain together.
 
 Each route has a completion check in the [how-to guides](#how-to-guides). Exact

@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="4800" height="3400" viewBox="0 0 4800 3400" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" width="4800" height="3900" viewBox="0 0 4800 3900" role="img" aria-labelledby="title description">
 <title id="title">From Stack Exchange access to verified project results</title>
-<desc id="description">Step-by-step flowchart for accessing a Stack Exchange data dump and using the three implemented project routes.</desc>
+<desc id="description">Four-phase flowchart identifying the documented manual procedures, Python programs, Jupyter notebook, input files, generated results, and verification method used by the three implemented project routes.</desc>
 <defs>
       <marker id="arrow" markerWidth="18" markerHeight="18" refX="13" refY="6"
               orient="auto" markerUnits="strokeWidth">
@@ -16,19 +16,23 @@
         .box-title { font-size: 42px; font-weight: 700; }
         .box-body { font-size: 36px; font-weight: 400; font-style: normal; }
         .route-title { font-size: 42px; font-weight: 700; fill: white; }
+        .phase-meta { font-size: 32px; font-weight: 600; fill: #eef6fa; }
         .small { font-size: 34px; font-style: normal; }
         .arrow { stroke: #35506b; stroke-width: 11; fill: none;
                  marker-end: url(#arrow); stroke-linecap: round;
                  stroke-linejoin: round; }
       </style>
     </defs>
-<rect width="4800" height="3400" fill="#f5f8fb"/>
+<rect width="4800" height="3900" fill="#f5f8fb"/>
 <rect x="70" y="55" width="4660" height="82" rx="24" fill="#315f85"/>
 <text x="130" y="111" text-anchor="start" class="phase">
 <tspan x="130" dy="0">1</tspan>
 </text>
 <text x="285" y="111" text-anchor="start" class="phase">
 <tspan x="285" dy="0">Stack Exchange community-data access</tspan>
+</text>
+<text x="4670" y="108" text-anchor="end" class="phase-meta">
+<tspan x="4670" dy="0">MANUAL WEBSITE PROCEDURE · README.md: Data-dump access and preparation</tspan>
 </text>
 <rect x="110" y="180" width="1070" height="250" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="645" y="236" text-anchor="middle" class="box-title">
@@ -61,6 +65,7 @@
 <text x="4155" y="285" text-anchor="middle" class="box-body">
 <tspan x="4155" dy="0">The permitted-use declaration precedes</tspan>
 <tspan x="4155" dy="46">the current dump download.</tspan>
+<tspan x="4155" dy="46">Result: official compressed dump archive.</tspan>
 </text>
 <path class="arrow" d="M1180,305 L1265,305"/>
 <polygon points="1241,287 1241,323 1271,305" fill="#35506b"/>
@@ -75,6 +80,9 @@
 <text x="285" y="556" text-anchor="start" class="phase">
 <tspan x="285" dy="0">Local-input and project-environment preparation</tspan>
 </text>
+<text x="4670" y="553" text-anchor="end" class="phase-meta">
+<tspan x="4670" dy="0">MANUAL LOCAL SETUP · README.md: Environment and installation</tspan>
+</text>
 <rect x="170" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="850" y="681" text-anchor="middle" class="box-title">
 <tspan x="850" dy="0">Archive extraction</tspan>
@@ -82,23 +90,25 @@
 <text x="850" y="730" text-anchor="middle" class="box-body">
 <tspan x="850" dy="0">The downloaded archive is extracted into</tspan>
 <tspan x="850" dy="46">the source-data folder selected for the run.</tspan>
+<tspan x="850" dy="46">Result: prepared local source-data folder.</tspan>
 </text>
 <rect x="1720" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="2400" y="681" text-anchor="middle" class="box-title">
-<tspan x="2400" dy="0">Required XML files</tspan>
+<tspan x="2400" dy="0">XML source files</tspan>
 </text>
 <text x="2400" y="730" text-anchor="middle" class="box-body">
-<tspan x="2400" dy="0">Posts.xml and Comments.xml support</tspan>
-<tspan x="2400" dy="46">Routes A and B. Route C also uses Votes.xml.</tspan>
+<tspan x="2400" dy="0">Input files: Posts.xml and Comments.xml</tspan>
+<tspan x="2400" dy="46">support Routes A and B.</tspan>
+<tspan x="2400" dy="46">Route C also uses Votes.xml.</tspan>
 </text>
 <rect x="3270" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="3950" y="681" text-anchor="middle" class="box-title">
 <tspan x="3950" dy="0">Project environment</tspan>
 </text>
 <text x="3950" y="730" text-anchor="middle" class="box-body">
-<tspan x="3950" dy="0">Python 3.10 or newer provides the runtime.</tspan>
-<tspan x="3950" dy="46">Dependencies are installed from requirements.txt</tspan>
-<tspan x="3950" dy="46">at the project root.</tspan>
+<tspan x="3950" dy="0">Setup file: requirements.txt</tspan>
+<tspan x="3950" dy="46">Runtime: Python 3.10 or newer.</tspan>
+<tspan x="3950" dy="46">Result: ready environment and results folder.</tspan>
 </text>
 <path class="arrow" d="M1530,768 L1705,768"/>
 <polygon points="1681,750 1681,786 1711,768" fill="#35506b"/>
@@ -110,6 +120,9 @@
 </text>
 <text x="285" y="1036" text-anchor="start" class="phase">
 <tspan x="285" dy="0">Implemented result routes</tspan>
+</text>
+<text x="4670" y="1033" text-anchor="end" class="phase-meta">
+<tspan x="4670" dy="0">PYTHON PROGRAMS + JUPYTER NOTEBOOK · README.md: Command-line interfaces</tspan>
 </text>
 <path d="M2400,1110 L2820,1285 L2400,1460 L1980,1285 Z" fill="#fff4cc" stroke="#b88900" stroke-width="7" filter="url(#shadow)"/>
 <text x="2400" y="1269" text-anchor="middle" class="box-title">
@@ -140,16 +153,16 @@
 </text>
 <rect x="125" y="1965" width="1350" height="235" rx="28" fill="#ffffff" stroke="#6e9bc5" stroke-width="6" filter="url(#shadow)"/>
 <text x="800" y="2021" text-anchor="middle" class="box-title">
-<tspan x="800" dy="0">Complete-thread extraction</tspan>
+<tspan x="800" dy="0">Extract complete threads</tspan>
 </text>
 <text x="800" y="2070" text-anchor="middle" class="box-body">
-<tspan x="800" dy="0">src/extract_threads.py</tspan>
+<tspan x="800" dy="0">Python program: src/extract_threads.py</tspan>
 <tspan x="800" dy="46">Inputs: source-data folder, output XML,</tspan>
 <tspan x="800" dy="46">and selected question IDs.</tspan>
 </text>
 <rect x="125" y="2235" width="1350" height="260" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
 <text x="800" y="2291" text-anchor="middle" class="box-title">
-<tspan x="800" dy="0">Result</tspan>
+<tspan x="800" dy="0">Generated XML file</tspan>
 </text>
 <text x="800" y="2340" text-anchor="middle" class="box-body">
 <tspan x="800" dy="0">One XML file. Each thread contains the</tspan>
@@ -186,16 +199,16 @@
 </text>
 <rect x="1725" y="1965" width="1350" height="235" rx="28" fill="#ffffff" stroke="#9a7bbb" stroke-width="6" filter="url(#shadow)"/>
 <text x="2400" y="2021" text-anchor="middle" class="box-title">
-<tspan x="2400" dy="0">Summary extraction</tspan>
+<tspan x="2400" dy="0">Extract configurable summaries</tspan>
 </text>
 <text x="2400" y="2070" text-anchor="middle" class="box-body">
-<tspan x="2400" dy="0">src/extract_request_summary.py</tspan>
+<tspan x="2400" dy="0">Python program: src/extract_request_summary.py</tspan>
 <tspan x="2400" dy="46">Inputs: source-data folder, output XML,</tspan>
 <tspan x="2400" dy="46">IDs, and an optional field selection.</tspan>
 </text>
 <rect x="1725" y="2235" width="1350" height="260" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
 <text x="2400" y="2291" text-anchor="middle" class="box-title">
-<tspan x="2400" dy="0">Result</tspan>
+<tspan x="2400" dy="0">Generated XML file</tspan>
 </text>
 <text x="2400" y="2340" text-anchor="middle" class="box-body">
 <tspan x="2400" dy="0">One XML file with one request per question.</tspan>
@@ -233,12 +246,12 @@
 </text>
 <rect x="3325" y="1985" width="1350" height="220" rx="28" fill="#ffffff" stroke="#c47c54" stroke-width="6" filter="url(#shadow)"/>
 <text x="4000" y="2041" text-anchor="middle" class="box-title">
-<tspan x="4000" dy="0">Characteristic-table construction</tspan>
+<tspan x="4000" dy="0">Build question characteristics</tspan>
 </text>
 <text x="4000" y="2090" text-anchor="middle" class="box-body">
-<tspan x="4000" dy="0">src/build_characteristics.py</tspan>
-<tspan x="4000" dy="46">The builder reads Posts.xml, Comments.xml,</tspan>
-<tspan x="4000" dy="46">Votes.xml, and the characteristic schema.</tspan>
+<tspan x="4000" dy="0">Python program: src/build_characteristics.py</tspan>
+<tspan x="4000" dy="46">Inputs: three XML files and</tspan>
+<tspan x="4000" dy="46">config/characteristics.tsv.</tspan>
 </text>
 <rect x="3325" y="2240" width="1350" height="215" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
 <text x="4000" y="2296" text-anchor="middle" class="box-title">
@@ -251,12 +264,12 @@
 </text>
 <rect x="3325" y="2480" width="1350" height="220" rx="28" fill="#fff8e1" stroke="#c79b2d" stroke-width="6" filter="url(#shadow)"/>
 <text x="4000" y="2536" text-anchor="middle" class="box-title">
-<tspan x="4000" dy="0">Validation and analysis</tspan>
+<tspan x="4000" dy="0">Explore the characteristic table</tspan>
 </text>
 <text x="4000" y="2585" text-anchor="middle" class="box-body">
-<tspan x="4000" dy="0">Required state: no FAIL; WARN reviewed; metadata checked.</tspan>
-<tspan x="4000" dy="46">The notebook receives DATA_FILE and executes</tspan>
-<tspan x="4000" dy="46">every cell from a clean kernel.</tspan>
+<tspan x="4000" dy="0">Jupyter notebook: notebooks/stackexchange_eda.ipynb</tspan>
+<tspan x="4000" dy="46">Input: thread_characteristics.tsv</tspan>
+<tspan x="4000" dy="46">Result: tables, figures, statistics, and interpretations.</tspan>
 </text>
 <path class="arrow" d="M4000,1950 L4000,1970"/>
 <polygon points="3982,1946 4018,1946 4000,1976" fill="#35506b"/>
@@ -269,36 +282,73 @@
 <tspan x="130" dy="0">4</tspan>
 </text>
 <text x="285" y="2866" text-anchor="start" class="phase">
-<tspan x="285" dy="0">Result verification and retained reproduction evidence</tspan>
+<tspan x="285" dy="0">Result verification and retained evidence</tspan>
 </text>
-<rect x="165" y="2940" width="1420" height="290" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
-<text x="875" y="2996" text-anchor="middle" class="box-title">
-<tspan x="875" dy="0">Successful XML routes</tspan>
+<text x="4670" y="2863" text-anchor="end" class="phase-meta">
+<tspan x="4670" dy="0">VERIFICATION METHOD · README.md: Change verification and recording</tspan>
 </text>
-<text x="875" y="3045" text-anchor="middle" class="box-body">
-<tspan x="875" dy="0">Each XML result opens and contains the requested</tspan>
-<tspan x="875" dy="46">question IDs. Its contents match the selected</tspan>
-<tspan x="875" dy="46">route and summary field configuration.</tspan>
+<rect x="165" y="2940" width="2160" height="300" rx="28" fill="#eef5fb" stroke="#6e9bc5" stroke-width="6" filter="url(#shadow)"/>
+<text x="1245" y="2996" text-anchor="middle" class="box-title">
+<tspan x="1245" dy="0">Built-in automatic checks</tspan>
 </text>
-<rect x="1690" y="2940" width="1420" height="290" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
-<text x="2400" y="2996" text-anchor="middle" class="box-title">
-<tspan x="2400" dy="0">Successful characteristic route</tspan>
+<text x="1245" y="3045" text-anchor="middle" class="box-body">
+<tspan x="1245" dy="0">Performed by: the selected Python program.</tspan>
+<tspan x="1245" dy="46">Every route validates its inputs and output publication.</tspan>
+<tspan x="1245" dy="46">The characteristic builder also creates validation.tsv</tspan>
+<tspan x="1245" dy="46">and run_metadata.json.</tspan>
 </text>
-<text x="2400" y="3045" text-anchor="middle" class="box-body">
-<tspan x="2400" dy="0">Validation contains no FAIL, metadata matches</tspan>
-<tspan x="2400" dy="46">the run settings, and the notebook completes</tspan>
-<tspan x="2400" dy="46">with readable tables, figures, and interpretations.</tspan>
+<rect x="2475" y="2940" width="2160" height="300" rx="28" fill="#fff8e1" stroke="#c79b2d" stroke-width="6" filter="url(#shadow)"/>
+<text x="3555" y="2996" text-anchor="middle" class="box-title">
+<tspan x="3555" dy="0">Documented result inspection</tspan>
 </text>
-<rect x="3215" y="2940" width="1420" height="290" rx="28" fill="#fff0ef" stroke="#ba5b55" stroke-width="6" filter="url(#shadow)"/>
-<text x="3925" y="2996" text-anchor="middle" class="box-title">
-<tspan x="3925" dy="0">Failed completion check</tspan>
+<text x="3555" y="3045" text-anchor="middle" class="box-body">
+<tspan x="3555" dy="0">Procedure: README.md → Change verification and recording</tspan>
+<tspan x="3555" dy="46">XML contents, validation statuses, metadata,</tspan>
+<tspan x="3555" dy="46">and clean-kernel notebook execution are inspected.</tspan>
 </text>
-<text x="3925" y="3045" text-anchor="middle" class="box-body">
-<tspan x="3925" dy="0">Configuration or input corrections cover the community,</tspan>
-<tspan x="3925" dy="46">input files, question IDs, field selection, dates,</tspan>
-<tspan x="3925" dy="46">or output location. The affected route is then rerun.</tspan>
+<path class="arrow" d="M2325,3090 L2460,3090"/>
+<polygon points="2436,3072 2436,3108 2466,3090" fill="#35506b"/>
+<path class="arrow" d="M3555,3240 L3555,3290 L2585,3290 L2585,3340"/>
+<polygon points="2567,3316 2603,3316 2585,3346" fill="#35506b"/>
+<path d="M2400,3325 L2780,3480 L2400,3635 L2020,3480 Z" fill="#fff4cc" stroke="#b88900" stroke-width="7" filter="url(#shadow)"/>
+<text x="2400" y="3464" text-anchor="middle" class="box-title">
+<tspan x="2400" dy="0">All checks</tspan>
+<tspan x="2400" dy="43">complete?</tspan>
 </text>
-<text x="2400" y="3340" text-anchor="middle" class="small">
-<tspan x="2400" dy="0">Source dump files are read without modification. Input and output locations are selected for each run.</tspan>
+<rect x="165" y="3335" width="1450" height="300" rx="28" fill="#fff0ef" stroke="#ba5b55" stroke-width="6" filter="url(#shadow)"/>
+<text x="890" y="3391" text-anchor="middle" class="box-title">
+<tspan x="890" dy="0">Correction and rerun</tspan>
+</text>
+<text x="890" y="3440" text-anchor="middle" class="box-body">
+<tspan x="890" dy="0">Documented corrective procedure.</tspan>
+<tspan x="890" dy="46">Affected inputs or settings are corrected.</tspan>
+<tspan x="890" dy="46">The selected Phase 3 program or notebook is rerun.</tspan>
+</text>
+<rect x="3185" y="3335" width="1450" height="300" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
+<text x="3910" y="3391" text-anchor="middle" class="box-title">
+<tspan x="3910" dy="0">Verified retained results</tspan>
+</text>
+<text x="3910" y="3440" text-anchor="middle" class="box-body">
+<tspan x="3910" dy="0">Generated XML, TSV, and JSON files;</tspan>
+<tspan x="3910" dy="46">notebook tables, figures, and interpretations;</tspan>
+<tspan x="3910" dy="46">run settings and validation evidence.</tspan>
+</text>
+<path class="arrow" d="M2020,3480 L1630,3480"/>
+<polygon points="1654,3462 1654,3498 1624,3480" fill="#35506b"/>
+<text x="1805" y="3445" text-anchor="middle" class="small">
+<tspan x="1805" dy="0">NO</tspan>
+</text>
+<path class="arrow" d="M2780,3480 L3170,3480"/>
+<polygon points="3146,3462 3146,3498 3176,3480" fill="#35506b"/>
+<text x="2995" y="3445" text-anchor="middle" class="small">
+<tspan x="2995" dy="0">YES</tspan>
+</text>
+<rect x="165" y="3700" width="4470" height="120" rx="24" fill="#edf1f4" stroke="#8ba6bd" stroke-width="4"/>
+<text x="2400" y="3750" text-anchor="middle" class="small">
+<tspan x="2400" dy="0">Maintained reference document: docs/reference/data-dictionary.xlsx · Python program: src/build_data_dictionary.py</tspan>
+<tspan x="2400" dy="42">Inputs: config/characteristic_catalogue.tsv and config/characteristics.tsv</tspan>
+</text>
+<text x="2400" y="3870" text-anchor="middle" class="small">
+<tspan x="2400" dy="0">Source dump files remain unchanged. Input and output locations are selected for each run.</tspan>
 </text>
 </svg>
