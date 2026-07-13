@@ -18,6 +18,7 @@
         .route-title { font-size: 42px; font-weight: 700; fill: white; }
         .phase-meta { font-size: 32px; font-weight: 600; fill: #eef6fa; }
         .small { font-size: 34px; font-style: normal; }
+        .emphasis { font-weight: 700; }
         .arrow { stroke: #35506b; stroke-width: 11; fill: none;
                  marker-end: url(#arrow); stroke-linecap: round;
                  stroke-linejoin: round; }
@@ -65,7 +66,7 @@
 <text x="4155" y="285" text-anchor="middle" class="box-body">
 <tspan x="4155" dy="0">The permitted-use declaration precedes</tspan>
 <tspan x="4155" dy="46">the current dump download.</tspan>
-<tspan x="4155" dy="46">Result: official compressed dump archive.</tspan>
+<tspan x="4155" dy="46" class="emphasis">Result: official compressed dump archive.</tspan>
 </text>
 <path class="arrow" d="M1180,305 L1265,305"/>
 <polygon points="1241,287 1241,323 1271,305" fill="#35506b"/>
@@ -90,25 +91,25 @@
 <text x="850" y="730" text-anchor="middle" class="box-body">
 <tspan x="850" dy="0">The downloaded archive is extracted into</tspan>
 <tspan x="850" dy="46">the source-data folder selected for the run.</tspan>
-<tspan x="850" dy="46">Result: prepared local source-data folder.</tspan>
+<tspan x="850" dy="46" class="emphasis">Result: prepared local source-data folder.</tspan>
 </text>
 <rect x="1720" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="2400" y="681" text-anchor="middle" class="box-title">
 <tspan x="2400" dy="0">XML source files</tspan>
 </text>
 <text x="2400" y="730" text-anchor="middle" class="box-body">
-<tspan x="2400" dy="0">Input files: Posts.xml and Comments.xml</tspan>
+<tspan x="2400" dy="0" class="emphasis">Input files: Posts.xml and Comments.xml</tspan>
 <tspan x="2400" dy="46">support Routes A and B.</tspan>
-<tspan x="2400" dy="46">Route C also uses Votes.xml.</tspan>
+<tspan x="2400" dy="46" class="emphasis">Route C also uses Votes.xml.</tspan>
 </text>
 <rect x="3270" y="625" width="1360" height="285" rx="28" fill="#ffffff" stroke="#8ba6bd" stroke-width="6" filter="url(#shadow)"/>
 <text x="3950" y="681" text-anchor="middle" class="box-title">
 <tspan x="3950" dy="0">Project environment</tspan>
 </text>
 <text x="3950" y="730" text-anchor="middle" class="box-body">
-<tspan x="3950" dy="0">Setup file: requirements.txt</tspan>
-<tspan x="3950" dy="46">Runtime: Python 3.10 or newer.</tspan>
-<tspan x="3950" dy="46">Result: ready environment and results folder.</tspan>
+<tspan x="3950" dy="0" class="emphasis">Setup file: requirements.txt</tspan>
+<tspan x="3950" dy="46" class="emphasis">Runtime: Python 3.10 or newer.</tspan>
+<tspan x="3950" dy="46" class="emphasis">Result: ready environment and results folder.</tspan>
 </text>
 <path class="arrow" d="M1530,768 L1705,768"/>
 <polygon points="1681,750 1681,786 1711,768" fill="#35506b"/>
@@ -148,7 +149,7 @@
 <tspan x="800" dy="0">Question selection</tspan>
 </text>
 <text x="800" y="1830" text-anchor="middle" class="box-body">
-<tspan x="800" dy="0">Input: one or more question post IDs</tspan>
+<tspan x="800" dy="0" class="emphasis">Input: one or more question post IDs</tspan>
 <tspan x="800" dy="46">from the selected community.</tspan>
 </text>
 <rect x="125" y="1965" width="1350" height="235" rx="28" fill="#ffffff" stroke="#6e9bc5" stroke-width="6" filter="url(#shadow)"/>
@@ -156,8 +157,8 @@
 <tspan x="800" dy="0">Extract complete threads</tspan>
 </text>
 <text x="800" y="2070" text-anchor="middle" class="box-body">
-<tspan x="800" dy="0">Python program: src/extract_threads.py</tspan>
-<tspan x="800" dy="46">Inputs: source-data folder, output XML,</tspan>
+<tspan x="800" dy="0" class="emphasis">Python program: src/extract_threads.py</tspan>
+<tspan x="800" dy="46" class="emphasis">Inputs: source-data folder, output XML,</tspan>
 <tspan x="800" dy="46">and selected question IDs.</tspan>
 </text>
 <rect x="125" y="2235" width="1350" height="260" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
@@ -194,16 +195,16 @@
 <tspan x="2400" dy="0">Question and field selection</tspan>
 </text>
 <text x="2400" y="1830" text-anchor="middle" class="box-body">
-<tspan x="2400" dy="0">Inputs: question post IDs and</tspan>
-<tspan x="2400" dy="46">config/summary_fields.tsv or a copied selection.</tspan>
+<tspan x="2400" dy="0" class="emphasis">Inputs: question post IDs and</tspan>
+<tspan x="2400" dy="46" class="emphasis">config/summary_fields.tsv or a copied selection.</tspan>
 </text>
 <rect x="1725" y="1965" width="1350" height="235" rx="28" fill="#ffffff" stroke="#9a7bbb" stroke-width="6" filter="url(#shadow)"/>
 <text x="2400" y="2021" text-anchor="middle" class="box-title">
 <tspan x="2400" dy="0">Extract configurable summaries</tspan>
 </text>
 <text x="2400" y="2070" text-anchor="middle" class="box-body">
-<tspan x="2400" dy="0">Python program: src/extract_request_summary.py</tspan>
-<tspan x="2400" dy="46">Inputs: source-data folder, output XML,</tspan>
+<tspan x="2400" dy="0" class="emphasis">Python program: src/extract_request_summary.py</tspan>
+<tspan x="2400" dy="46" class="emphasis">Inputs: source-data folder, output XML,</tspan>
 <tspan x="2400" dy="46">IDs, and an optional field selection.</tspan>
 </text>
 <rect x="1725" y="2235" width="1350" height="260" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
@@ -240,8 +241,8 @@
 <tspan x="4000" dy="0">Analysis settings</tspan>
 </text>
 <text x="4000" y="1830" text-anchor="middle" class="box-body">
-<tspan x="4000" dy="0">Inputs: community host, dump snapshot date,</tspan>
-<tspan x="4000" dy="46">question period, and output folder.</tspan>
+<tspan x="4000" dy="0" class="emphasis">Inputs: community host, dump snapshot date,</tspan>
+<tspan x="4000" dy="46" class="emphasis">question period, and output folder.</tspan>
 <tspan x="4000" dy="46">A row limit and schema are optional.</tspan>
 </text>
 <rect x="3325" y="1985" width="1350" height="220" rx="28" fill="#ffffff" stroke="#c47c54" stroke-width="6" filter="url(#shadow)"/>
@@ -249,27 +250,27 @@
 <tspan x="4000" dy="0">Build question characteristics</tspan>
 </text>
 <text x="4000" y="2090" text-anchor="middle" class="box-body">
-<tspan x="4000" dy="0">Python program: src/build_characteristics.py</tspan>
-<tspan x="4000" dy="46">Inputs: three XML files and</tspan>
-<tspan x="4000" dy="46">config/characteristics.tsv.</tspan>
+<tspan x="4000" dy="0" class="emphasis">Python program: src/build_characteristics.py</tspan>
+<tspan x="4000" dy="46" class="emphasis">Inputs: three XML files and</tspan>
+<tspan x="4000" dy="46" class="emphasis">config/characteristics.tsv.</tspan>
 </text>
 <rect x="3325" y="2240" width="1350" height="215" rx="28" fill="#eaf7ed" stroke="#5a9a67" stroke-width="6" filter="url(#shadow)"/>
 <text x="4000" y="2296" text-anchor="middle" class="box-title">
 <tspan x="4000" dy="0">Generated files</tspan>
 </text>
 <text x="4000" y="2345" text-anchor="middle" class="box-body">
-<tspan x="4000" dy="0">thread_characteristics.tsv</tspan>
-<tspan x="4000" dy="46">validation.tsv</tspan>
-<tspan x="4000" dy="46">run_metadata.json</tspan>
+<tspan x="4000" dy="0" class="emphasis">thread_characteristics.tsv</tspan>
+<tspan x="4000" dy="46" class="emphasis">validation.tsv</tspan>
+<tspan x="4000" dy="46" class="emphasis">run_metadata.json</tspan>
 </text>
 <rect x="3325" y="2480" width="1350" height="220" rx="28" fill="#fff8e1" stroke="#c79b2d" stroke-width="6" filter="url(#shadow)"/>
 <text x="4000" y="2536" text-anchor="middle" class="box-title">
 <tspan x="4000" dy="0">Explore the characteristic table</tspan>
 </text>
 <text x="4000" y="2585" text-anchor="middle" class="box-body">
-<tspan x="4000" dy="0">Jupyter notebook: notebooks/stackexchange_eda.ipynb</tspan>
-<tspan x="4000" dy="46">Input: thread_characteristics.tsv</tspan>
-<tspan x="4000" dy="46">Result: tables, figures, statistics, and interpretations.</tspan>
+<tspan x="4000" dy="0" class="emphasis">Jupyter notebook: notebooks/stackexchange_eda.ipynb</tspan>
+<tspan x="4000" dy="46" class="emphasis">Input: thread_characteristics.tsv</tspan>
+<tspan x="4000" dy="46" class="emphasis">Result: tables, figures, statistics, and interpretations.</tspan>
 </text>
 <path class="arrow" d="M4000,1950 L4000,1970"/>
 <polygon points="3982,1946 4018,1946 4000,1976" fill="#35506b"/>
@@ -292,17 +293,17 @@
 <tspan x="1245" dy="0">Built-in automatic checks</tspan>
 </text>
 <text x="1245" y="3045" text-anchor="middle" class="box-body">
-<tspan x="1245" dy="0">Performed by: the selected Python program.</tspan>
+<tspan x="1245" dy="0" class="emphasis">Performed by: the selected Python program.</tspan>
 <tspan x="1245" dy="46">Every route validates its inputs and output publication.</tspan>
-<tspan x="1245" dy="46">The characteristic builder also creates validation.tsv</tspan>
-<tspan x="1245" dy="46">and run_metadata.json.</tspan>
+<tspan x="1245" dy="46" class="emphasis">The characteristic builder also creates validation.tsv</tspan>
+<tspan x="1245" dy="46" class="emphasis">and run_metadata.json.</tspan>
 </text>
 <rect x="2475" y="2940" width="2160" height="300" rx="28" fill="#fff8e1" stroke="#c79b2d" stroke-width="6" filter="url(#shadow)"/>
 <text x="3555" y="2996" text-anchor="middle" class="box-title">
 <tspan x="3555" dy="0">Documented result inspection</tspan>
 </text>
 <text x="3555" y="3045" text-anchor="middle" class="box-body">
-<tspan x="3555" dy="0">Procedure: README.md → Change verification and recording</tspan>
+<tspan x="3555" dy="0" class="emphasis">Procedure: README.md → Change verification and recording</tspan>
 <tspan x="3555" dy="46">XML contents, validation statuses, metadata,</tspan>
 <tspan x="3555" dy="46">and clean-kernel notebook execution are inspected.</tspan>
 </text>
@@ -329,7 +330,7 @@
 <tspan x="3910" dy="0">Verified retained results</tspan>
 </text>
 <text x="3910" y="3440" text-anchor="middle" class="box-body">
-<tspan x="3910" dy="0">Generated XML, TSV, and JSON files;</tspan>
+<tspan x="3910" dy="0" class="emphasis">Generated XML, TSV, and JSON files;</tspan>
 <tspan x="3910" dy="46">notebook tables, figures, and interpretations;</tspan>
 <tspan x="3910" dy="46">run settings and validation evidence.</tspan>
 </text>
@@ -345,8 +346,8 @@
 </text>
 <rect x="165" y="3700" width="4470" height="120" rx="24" fill="#edf1f4" stroke="#8ba6bd" stroke-width="4"/>
 <text x="2400" y="3750" text-anchor="middle" class="small">
-<tspan x="2400" dy="0">Maintained reference document: docs/reference/data-dictionary.xlsx · Python program: src/build_data_dictionary.py</tspan>
-<tspan x="2400" dy="42">Inputs: config/characteristic_catalogue.tsv and config/characteristics.tsv</tspan>
+<tspan x="2400" dy="0" class="emphasis">Maintained reference document: docs/reference/data-dictionary.xlsx · Python program: src/build_data_dictionary.py</tspan>
+<tspan x="2400" dy="42" class="emphasis">Inputs: config/characteristic_catalogue.tsv and config/characteristics.tsv</tspan>
 </text>
 <text x="2400" y="3870" text-anchor="middle" class="small">
 <tspan x="2400" dy="0">Source dump files remain unchanged. Input and output locations are selected for each run.</tspan>
