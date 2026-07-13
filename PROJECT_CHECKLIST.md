@@ -1,6 +1,6 @@
 # Stack Exchange Difficulty Project Checklist
 
-Last reviewed: **2026-07-12**
+Last reviewed: **2026-07-13**
 
 This is the canonical project roadmap and completion record. A checked item has
 an evidence path, validation command, or recorded result. Authored project
@@ -16,7 +16,7 @@ material retain their original form.
 - Post-merge GitHub Actions run: `29164761612` (**2 jobs passed**).
 - Dictionary v5 synthesis: draft pull request `#13`, implementation commit
   `3f754ece4e49efbb48c8605587abd02bc13446d8`, and GitHub Actions run
-  `29204483469` (**2 jobs passed**).
+  `29204567935` (**2 jobs passed**).
 - Verified release tag: `verified-release-2026-07-11`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
@@ -59,11 +59,15 @@ Status: **Complete**
   notebook, documentation, dependency, contribution, and security location.
 - [x] The architecture and component tables explain all six Python modules and
   the generic notebook, including their relationships.
-- [x] One editable SVG and one 4800×3400 PNG show the sequence from Stack
+- [x] One editable SVG and one 4800×3900 PNG show the sequence from Stack
   Exchange access through environment preparation, the three implemented
   routes, validation, EDA, and final results.
 - [x] The diagram contains route decisions, data-flow arrows, execution order,
   completion checks, and the corrective path after a failed check.
+- [x] The diagram identifies the manual website and local-setup procedures,
+  their exact README sections, every route's Python program or Jupyter
+  notebook, configuration and generated files, and Phase 4's combination of
+  built-in checks with documented result inspection.
 - [x] Diagram labels use configurable concepts and contain no personal path,
   fixed production community, fixed period, or fixed question ID.
 
@@ -157,6 +161,9 @@ Status: **Complete**
   EDA, outputs, and error recovery.
 - [x] Inputs, processing stages, decisions, outputs, completion conditions, and
   principal failure corrections are visible in one non-repetitive diagram.
+- [x] Procedure, program, notebook, configuration, result, and verification
+  roles are explicitly named, including the maintained data-dictionary builder
+  and workbook.
 - [x] The editable SVG and publication PNG contain matching labels and have been
   inspected at full size and in the README.
 
