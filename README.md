@@ -251,13 +251,18 @@ Every code cell completes without a Python exception.
 ### Expected visible evidence
 
 - Figure 1 reports 19 questions with an available answer, 12 with an accepted
-  answer, and 2 closed questions.
-- Figure 2 shows cumulative question, answer, acceptance, and closure totals.
-- Figure 3 uses linear numeric ranges and reports the count and maximum of
-  values above each displayed range.
-- Figure 4 shows the frequent tags in this 20-question table.
-- Later sections display a figure when the pilot contains sufficient evidence
-  and an availability message when evidence is insufficient.
+  answer, and 2 closed questions, together with field availability and source
+  consistency checks.
+- Figure 2 shows cumulative answered, waiting, acceptance, and closure totals.
+- Figure 3 compares outcomes for the January 2024 question-creation cohort.
+- Figures 4–5 use readable linear ranges for 13 content, response, and
+  resolution measurements; every value outside a displayed range remains
+  counted in the interpretation.
+- Figure 6 reports Tukey high-outlier thresholds, counts, and percentages.
+- Figure 7 states that the pilot provides insufficient evidence for a retained
+  correlation pair under the documented rules.
+- Figure 8 shows frequent tags and states that no tag reaches the 20-question
+  minimum required for the outcome comparison.
 - The final inspection table identifies concrete questions and gives each
   selection reason. The run-status table records every produced or unavailable
   figure group.
@@ -939,15 +944,18 @@ consistency before plotting.
 | Output | Content |
 |---|---|
 | Dataset summary | Community, question count, 49 source columns, question period, and dump snapshot |
-| Figure 1 | Question outcome totals for answered, accepted, and closed questions |
-| Figure 2 | Cumulative question, answer, acceptance, and closure event evolution |
-| Figure 3 | Linear numeric distributions ending at the 95th percentile, or the 90th percentile for the strongly long-tailed first-answer delay; interpretations report excluded high values and the observed maximum |
-| Figures 4–5 | Frequent tags and tag outcome comparisons when the minimum evidence is available |
-| Figure 6 | Spearman pairs meeting false-discovery-rate control and the practical strength setting |
-| Final table | Concrete question cases with identifiers, titles, URLs, and selection reasons |
-| Run status | Input path, table dimensions, and every produced or unavailable figure group |
+| Figure 1 | Outcome totals, largest empty-value shares, and source-versus-reconstructed consistency checks |
+| Figure 2 | Cumulative answered and waiting questions, acceptance events, and closures through the dump snapshot |
+| Figure 3 | Answered, accepted, and closed percentages for each question-creation month, with the supporting cohort-size table |
+| Figure 4 | Six content and interaction distributions using equal-width linear bins |
+| Figure 5 | Seven response and resolution distributions using equal-width linear bins |
+| Figure 6 | Tukey high-outlier thresholds, counts, percentages, and a threshold table |
+| Figure 7 | Spearman pairs meeting sample-size, false-discovery-rate, and practical-strength rules |
+| Figure 8 | Frequent tags and tag outcome comparisons when the minimum evidence is available |
+| Final table | Concrete questions prioritized by Tukey flags, answer delay, and comment activity |
+| Run status | Input path, table dimensions, and all eight produced, partial, or unavailable figure groups |
 
-Every plot is followed by its displayed content, interpretation, main observation, and analytical relevance. An availability message explains when the selected data cannot support a particular figure.
+Every plot is followed by its displayed content, interpretation, main observation, and analytical relevance. Numeric interpretations account for values below and above the displayed range. An availability message explains when the selected data cannot support a particular figure.
 
 ### Validation and errors
 
