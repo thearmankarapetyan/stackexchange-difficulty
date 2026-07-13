@@ -183,13 +183,15 @@ def extract_request_summaries(
     question_ids: Sequence[str],
     output_path: Path,
     fields_path: Path = DEFAULT_FIELDS_FILE,
+    show_progress: bool = False,
 ) -> Path:
     """Writes selected summary fields for one or more question IDs.
 
     The function validates and deduplicates IDs, loads the selected field TSV,
     reads related dump rows, protects every source path, and atomically
     publishes the XML.  Input, XML, validation, and filesystem errors propagate
-    to the caller; the returned path identifies the result.
+    to the caller; the returned path identifies the result.  ``show_progress``
+    prints the four command stages when true.
     """
     requested_ids = normalize_question_ids(question_ids)
     posts_path, comments_path = source_paths(Path(dump_dir))
@@ -197,9 +199,20 @@ def extract_request_summaries(
     fields_path = Path(fields_path)
     protect_source_files(output_path, (posts_path, comments_path, fields_path))
 
+    if show_progress:
+        print("Reading the selected summary fields...")
     fields = load_summary_fields(fields_path)
+
+    if show_progress:
+        print("Reading questions and answers from Posts.xml...")
     questions, answers = read_posts(posts_path, requested_ids)
+
+    if show_progress:
+        print("Reading direct question comments from Comments.xml...")
     comments = read_question_comments(comments_path, requested_ids)
+
+    if show_progress:
+        print("Writing question-summary XML...")
     write_xml_safely(
         build_summary_tree(requested_ids, questions, comments, answers, fields),
         output_path,
@@ -210,7 +223,7 @@ def extract_request_summaries(
 def main(arguments: Sequence[str] | None = None) -> int:
     """Runs the command-line interface and returns its process exit code.
 
-    Success prints the destination and returns ``0``.  Handled input,
+    Success prints stage progress and the destination, then returns ``0``.  Handled input,
     validation, XML, and filesystem errors print one contextual message to
     standard error and return ``1``.
     """
@@ -248,6 +261,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
             values.question_ids,
             values.output,
             values.fields,
+            show_progress=True,
         )
     except (FileNotFoundError, OSError, ValueError, etree.XMLSyntaxError) as error:
         print(f"error: {error}", file=sys.stderr)

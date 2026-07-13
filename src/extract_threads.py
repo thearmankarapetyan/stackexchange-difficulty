@@ -58,7 +58,10 @@ def build_thread_tree(
 
 
 def extract_threads(
-    dump_dir: Path, question_ids: Sequence[str], output_path: Path
+    dump_dir: Path,
+    question_ids: Sequence[str],
+    output_path: Path,
+    show_progress: bool = False,
 ) -> Path:
     """Extracts one or more requested question threads into one XML file.
 
@@ -66,14 +69,23 @@ def extract_threads(
     ``Posts.xml`` and ``Comments.xml``, protects both source paths, and
     atomically publishes the result.  Input, XML, validation, and filesystem
     errors propagate to the caller; the returned path identifies the result.
+    ``show_progress`` prints the three long-running command stages when true.
     """
     requested_ids = normalize_question_ids(question_ids)
     posts_path, comments_path = source_paths(Path(dump_dir))
     output_path = Path(output_path)
     protect_source_files(output_path, (posts_path, comments_path))
 
+    if show_progress:
+        print("Reading questions and answers from Posts.xml...")
     questions, answers = read_posts(posts_path, requested_ids)
+
+    if show_progress:
+        print("Reading direct question comments from Comments.xml...")
     comments = read_question_comments(comments_path, requested_ids)
+
+    if show_progress:
+        print("Writing complete-thread XML...")
     write_xml_safely(
         build_thread_tree(requested_ids, questions, comments, answers), output_path
     )
@@ -83,7 +95,7 @@ def extract_threads(
 def main(arguments: Sequence[str] | None = None) -> int:
     """Runs the command-line interface and returns its process exit code.
 
-    Success prints the destination and returns ``0``.  Handled input,
+    Success prints stage progress and the destination, then returns ``0``.  Handled input,
     validation, XML, and filesystem errors print one contextual message to
     standard error and return ``1``.
     """
@@ -107,7 +119,9 @@ def main(arguments: Sequence[str] | None = None) -> int:
     )
     values = parser.parse_args(arguments)
     try:
-        output = extract_threads(values.dump_dir, values.question_ids, values.output)
+        output = extract_threads(
+            values.dump_dir, values.question_ids, values.output, show_progress=True
+        )
     except (FileNotFoundError, OSError, ValueError, etree.XMLSyntaxError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
