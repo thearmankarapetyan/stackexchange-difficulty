@@ -23,7 +23,7 @@ material retain their original form.
 - Verified release tag: `verified-release-2026-07-13`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Evidence matrix: **109 PASS, 0 FAIL** — **78 current-release** rows and
+- Evidence matrix: **110 PASS, 0 FAIL** — **79 current-release** rows and
   **31 historical-transition** rows.
 - Thirteen-task completion audit: **14 PASS, 0 FAIL**.
 
@@ -197,7 +197,8 @@ Status: **Complete**
 - [x] Editable settings receive explicit validation before file loading; the
   correlation sample minimum is visible and documented.
 - [x] Code cells each perform one identifiable analytical step; all figures use
-  declared chart-selection, axis, comparison, colour, and labelling rules.
+  declared chart-selection, axis, comparison, colour, and labelling rules;
+  full-year monthly figures display every applicable month label.
 - [x] Numeric plots use equal-width linear bins, measurement-specific disclosed
   central ranges, and exact accounting for every lower and upper extreme.
 - [x] Ten figure groups cover table quality, monthly and annual outcome counts,
@@ -214,7 +215,7 @@ Status: **Complete**
   compatible inputs.
 
 Evidence: `notebooks/stackexchange_eda.ipynb`, `src/eda_support.py`,
-`src/eda_figures.py`, checks `NB-01`, `NB-05`, `NB-08`, `TEST-04`, `SRC-06`,
+`src/eda_figures.py`, checks `NB-01`, `NB-05`, `NB-08`, `NB-09`, `TEST-04`, `SRC-06`,
 `HANDOVER-05`, and `T13-08`.
 
 ## Task 9 — Script generalization and configuration
