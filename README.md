@@ -646,7 +646,7 @@ stackexchange-difficulty/
 | Property | Current contract |
 |---|---|
 | Repository | [thearmankarapetyan/stackexchange-difficulty](https://github.com/thearmankarapetyan/stackexchange-difficulty) |
-| Visibility | Private during active project work |
+| Visibility | Public during active project work |
 | Default branch | `main` |
 | Change route | Short-lived branch, pull request, successful checks, squash merge |
 | Continuous integration | Python 3.10 and 3.12 source and CLI checks; Markdown checks, XML-pilot reconstruction, target comparison, dictionary synchronization, and default notebook execution on Python 3.12 |
@@ -1124,7 +1124,7 @@ fields through its field selection. Its source community and dump information
 therefore remain attached. Available attribution and the recorded licence govern
 sharing and reuse of Stack Exchange content.
 
-The private repository currently has no software `LICENSE` file. External reuse
+The public repository currently has no software `LICENSE` file. External reuse
 or redistribution of the project code and authored documentation therefore
 requires explicit permission from the project owner or responsible institution.
 
