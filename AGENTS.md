@@ -41,9 +41,10 @@
   catalogue. `config/characteristics.tsv` remains its implemented
   question-level output subset. Field changes keep both TSV files, the pilot,
   the generated data-dictionary workbook, the notebook, and README synchronized.
-- One generic, self-contained EDA notebook remains canonical. Site-specific
-  notebook copies, notebook generators, and large plotting-helper modules
-  remain excluded.
+- One generic, presentation-centred EDA notebook remains canonical. Reusable
+  preparation and plotting stay in `src/eda_support.py` and
+  `src/eda_figures.py`. Site-specific notebook copies, notebook generators,
+  hidden display fallbacks, and duplicated plotting paths remain excluded.
 - Raw dumps remain unmodified. Superseded project material is archived
   non-destructively, with its checksum recorded before canonical-copy removal.
 - A small controlled run precedes a full-period run. Completion evidence
