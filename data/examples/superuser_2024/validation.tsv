@@ -1,0 +1,11 @@
+check	status	observed	expected_or_meaning
+rows produced	PASS	11578	more than zero
+schema matches every row	PASS	0	zero mismatched rows
+question identifiers are present and unique	PASS	rows=11578; unique=11578	all present and unique
+available-answer flag matches available count	PASS	0	zero mismatches
+Stack Exchange answer flag matches Stack Exchange count	PASS	0	zero mismatches
+Stack Exchange and available answer counts differ	WARN	8	reported explicitly because unavailable or removed rows can create differences
+Stack Exchange and available question-comment counts differ	WARN	2	reported explicitly because unavailable or removed rows can create differences
+accepted-answer identifiers without an available answer row	PASS	0	reported explicitly
+accepted-answer identifiers without a recorded acceptance date	PASS	0	reported explicitly because Votes.xml may omit an event
+observation periods are non-negative	PASS	0	zero negative values

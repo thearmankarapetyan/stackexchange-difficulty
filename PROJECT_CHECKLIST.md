@@ -209,8 +209,9 @@ Status: **Complete**
 - [x] The 34-cell sequence contains 17 focused code cells; no code cell exceeds
   33 lines.
 - [x] Saved tables and figures match a repeated clean execution of the current
-  notebook and bundled pilot; current-schema Software Engineering and Super
-  User annual tables produce all ten figure groups without a cell error.
+  notebook using the tracked 11,578-question Super User 2024 table; the bundled
+  pilot and current-schema Software Engineering annual table remain verified
+  compatible inputs.
 
 Evidence: `notebooks/stackexchange_eda.ipynb`, `src/eda_support.py`,
 `src/eda_figures.py`, checks `NB-01`, `NB-05`, `NB-08`, `TEST-04`, `SRC-06`,
@@ -278,6 +279,9 @@ Status: **Complete**
   interpretation.
 - [x] Generated pilot characteristics and validation match their tracked targets
   byte for byte: 20 rows, 49 columns, 10 PASS, 0 WARN, and 0 FAIL.
+- [x] The tracked compressed Super User 2024 table contains 11,578 rows and 49
+  columns, covers 1 January through 31 December, and retains its provenance,
+  eight PASS, two documented WARN, and zero FAIL checks.
 - [x] The tutorial identifies inputs, locations, commands, intermediate outputs,
   final results, success indicators, and the expected repeatability boundary for
   metadata timestamps and paths.
@@ -287,6 +291,7 @@ Status: **Complete**
 Evidence: `data/examples/pilot_dump/`,
 `data/examples/characteristics_pilot.tsv`,
 `data/examples/characteristics_pilot_validation.tsv`,
+`data/examples/superuser_2024/`,
 `README.md#bundled-analysis-tutorial`, `HANDOVER-04`, `HANDOVER-06`,
 `TEST-03`, and `T13-11`.
 

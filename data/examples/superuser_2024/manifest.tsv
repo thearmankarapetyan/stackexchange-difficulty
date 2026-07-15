@@ -1,0 +1,17 @@
+item	value
+community	superuser.com
+source	Official Stack Exchange public data dump
+dump_snapshot_date	2026-04-20
+question_start_date	2024-01-01
+question_end_date	2024-12-31
+question_rows	11578
+columns	49
+schema_version	1.1
+generated_utc	2026-07-13T13:53:52.881460+00:00
+generator	src/build_characteristics.py
+validation	8 PASS, 2 documented WARN, 0 FAIL
+compression	deterministic gzip level 9
+uncompressed_size_bytes	39122927
+compressed_size_bytes	9505416
+uncompressed_sha256	fc5de6f7a34c88b74efa495d5f91cfcee4f3d95a10dac121c967de8c2c4b7baa
+compressed_sha256	e8905ff0a6239dad919992aaf1cdfa28558f2b30ff22251700aa7ae41f18d540

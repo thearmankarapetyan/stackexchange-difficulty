@@ -624,8 +624,9 @@ stackexchange-difficulty/
 ├── src/                              Eight focused processing, EDA, and documentation modules
 ├── config/                           Complete catalogue, current schema, and summary contract
 ├── data/
-│   ├── examples/                     Small verified inputs and outputs
-│   │   └── pilot_dump/                 Real XML input for the full tutorial
+│   ├── examples/                     Tracked verification and annual EDA data
+│   │   ├── pilot_dump/                 Real XML input for the full tutorial
+│   │   └── superuser_2024/             Validated full-year notebook input
 │   ├── raw/                          Ignored local dump location
 │   └── processed/                    Ignored regenerated run location
 ├── notebooks/
@@ -648,9 +649,8 @@ stackexchange-difficulty/
 | Visibility | Private during active project work |
 | Default branch | `main` |
 | Change route | Short-lived branch, pull request, successful checks, squash merge |
-| Continuous integration | Python 3.10 and 3.12 source and CLI checks; Markdown checks, XML-pilot reconstruction, target comparison, dictionary synchronization, and pilot notebook execution on Python 3.12 |
+| Continuous integration | Python 3.10 and 3.12 source and CLI checks; Markdown checks, XML-pilot reconstruction, target comparison, dictionary synchronization, and default notebook execution on Python 3.12 |
 | Dependency automation | Weekly GitHub Actions updates; Python vulnerability alerts and automated security fixes |
-| Historical branch | `archive/legacy-corpus-scaffold` preserves the superseded remote scaffold |
 
 Contribution rules are in [`CONTRIBUTING.md`](CONTRIBUTING.md). Security and data-handling rules are in [`SECURITY.md`](SECURITY.md). Pull-request, ownership, continuous-integration, and dependency settings are under [`.github/`](.github/).
 
@@ -910,10 +910,10 @@ The notebook has one visible **Editable settings** cell. Each setting is explain
 
 | Editable setting | Meaning | Default |
 |---|---|---|
-| `DATA_FILE` | Characteristic TSV analyzed by the run | `../data/examples/characteristics_pilot.tsv` |
-| `PERIOD_MODE` | Row selection by `all`, `date_range`, or `year_range` | `all` |
+| `DATA_FILE` | Characteristic TSV or gzip-compressed TSV analyzed by the run | `data/examples/superuser_2024/thread_characteristics.tsv.gz` |
+| `PERIOD_MODE` | Row selection by `all`, `date_range`, or `year_range` | `year_range` |
 | `START_DATE`, `END_DATE` | Inclusive `YYYY-MM-DD` limits for `date_range` mode | `None` |
-| `START_YEAR`, `END_YEAR` | Inclusive calendar-year limits for `year_range` mode | `None` |
+| `START_YEAR`, `END_YEAR` | Inclusive calendar-year limits for `year_range` mode | `2024`, `2024` |
 | `OUTLIER_OUTPUT_FILE` | Optional TSV destination for the separate high-outlier dataset | `None` |
 | `MIN_TAG_QUESTIONS` | Minimum question count required for a tag outcome comparison | `20` |
 | `TOP_TAGS_TO_SHOW` | Maximum frequent tags displayed | `15` |
@@ -932,6 +932,12 @@ The notebook validates every editable setting, file existence, nonempty input,
 required columns, dates, numeric values, `TRUE`/`FALSE` fields, one community,
 one snapshot, unique question IDs, non-negative elapsed values, and temporal
 consistency before plotting.
+
+The committed default analysis covers all **11,578 Super User questions posted
+from 1 January through 31 December 2024**. Its tracked gzip input preserves the
+49-column TSV exactly while reducing the repository copy from approximately
+38 MB to 9.1 MB. The bundled 20-question Software Engineering pilot remains the
+fixed extraction and tutorial verification input.
 
 | Output | Content |
 |---|---|
@@ -1004,6 +1010,7 @@ Every plot is followed by its displayed content, interpretation, main observatio
 | [`data/examples/complete_thread_example.xml`](data/examples/complete_thread_example.xml) | `Posts.xml`, `Comments.xml`, question ID | `src/extract_threads.py` | XML viewer or text editor; tracked regeneration target |
 | Default and configurable [`request summary examples`](data/examples/) | `Posts.xml`, `Comments.xml`, question ID, optional field TSV | `src/extract_request_summary.py` | XML viewer or text editor; tracked regeneration targets |
 | [`data/examples/characteristics_pilot.tsv`](data/examples/characteristics_pilot.tsv) and [validation](data/examples/characteristics_pilot_validation.tsv) | Bundled pilot XML, schema, fixed tutorial settings | `src/build_characteristics.py` | Tab-separated text or spreadsheet; tracked first-run targets |
+| [`data/examples/superuser_2024/`](data/examples/superuser_2024/) | Official April 2026 Super User dump, 2024 question period, current 49-field schema | `src/build_characteristics.py`, followed by deterministic gzip compression | Gzip TSV, validation TSV, and provenance manifest; tracked default EDA input |
 | Complete-thread result chosen at runtime | `Posts.xml`, `Comments.xml`, question IDs | `src/extract_threads.py` | XML; generated at a selected path and tracked only when adopted as an example |
 | Selected-summary result chosen at runtime | `Posts.xml`, `Comments.xml`, question IDs, field TSV | `src/extract_request_summary.py` | XML; generated at a selected path and tracked only when adopted as an example |
 | `data/processed/<run-name>/thread_characteristics.tsv` | Three source XML files, schema, run settings | `src/build_characteristics.py` | TSV or notebook input; regenerated runs are ignored |
@@ -1022,6 +1029,10 @@ The tracked examples make every implemented route inspectable while the large so
 - [`pilot_dump/`](data/examples/pilot_dump/) contains the real `Posts.xml`, `Comments.xml`, and `Votes.xml` subset used to reproduce the complete tutorial chain.
 - [`characteristics_pilot.tsv`](data/examples/characteristics_pilot.tsv) contains the first 20 Software Engineering questions selected chronologically from 1–8 January 2024 by the current 49-field builder.
 - [`characteristics_pilot_validation.tsv`](data/examples/characteristics_pilot_validation.tsv) records ten `PASS`, zero `WARN`, and zero `FAIL` checks for that pilot.
+- [`superuser_2024/`](data/examples/superuser_2024/) contains the validated
+  49-column input used by the notebook's saved default analysis: 11,578 Super
+  User questions posted across all twelve months of 2024, with eight `PASS`,
+  two documented `WARN`, and zero `FAIL` checks.
 
 The examples contain public Stack Exchange content, source URLs, available author identifiers, and content-licence fields. This provenance remains attached during sharing or reuse.
 

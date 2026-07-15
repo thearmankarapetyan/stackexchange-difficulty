@@ -80,7 +80,7 @@ jobs:
             data/examples/characteristics_pilot_validation.tsv
           python src/build_data_dictionary.py --check
 
-      - name: Bundled pilot notebook execution
+      - name: Default notebook execution
         if: matrix.python-version == '3.12'
         run: |
           python -m nbconvert \

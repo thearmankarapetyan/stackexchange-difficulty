@@ -5,6 +5,7 @@
 *.xlsx binary
 *.pdf binary
 *.png binary
+*.gz binary
 
 # Verified examples preserve source whitespace inside copied post bodies.
 data/examples/*.xml -diff
