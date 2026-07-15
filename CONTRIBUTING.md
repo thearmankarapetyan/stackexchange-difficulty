@@ -29,7 +29,8 @@ that follow the expected XML structure.
 - Authored project prose remains impersonal and descriptive. First- and
   second-person project voice, conversational prompts, and direct imperatives
   remain absent.
-- One generic, self-contained EDA notebook remains canonical.
+- One generic, presentation-centred EDA notebook remains canonical; reusable
+  preparation and plotting remain in the two documented EDA helper modules.
 - A field-contract change includes corresponding catalogue, schema,
   data-dictionary, example, notebook, and documentation updates.
 - Raw dumps, credentials, local environments, caches, and regenerated annual

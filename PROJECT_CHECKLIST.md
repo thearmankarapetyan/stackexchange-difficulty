@@ -1,6 +1,6 @@
 # Stack Exchange Difficulty Project Checklist
 
-Last reviewed: **2026-07-13**
+Last reviewed: **2026-07-15**
 
 This is the canonical project roadmap and completion record. A checked item has
 an evidence path, validation command, or recorded result. Authored project
@@ -23,7 +23,7 @@ material retain their original form.
 - Verified release tag: `verified-release-2026-07-13`.
 - Diátaxis guide revision tag: `diataxis-guide-2026-07-11`.
 - Detailed evidence: `docs/reference/release-verification.tsv`.
-- Evidence matrix: **101 PASS, 0 FAIL** — **70 current-release** rows and
+- Evidence matrix: **109 PASS, 0 FAIL** — **78 current-release** rows and
   **31 historical-transition** rows.
 - Thirteen-task completion audit: **14 PASS, 0 FAIL**.
 
@@ -35,22 +35,25 @@ Status: **Complete**
 - [x] It explains the implemented scope, three result routes, components,
   inputs, outputs, workflow, current evidence, scientific and design context,
   and scope boundaries.
-- [x] Its contents, task index, inline cross-references, and glossary links lead
-  directly to the relevant same-page heading.
+- [x] Its opening links, need-based reference index, inline cross-references,
+  and glossary links lead directly to the relevant same-page heading.
 - [x] Supporting figures, spreadsheets, TSV evidence, examples, and scientific
   material remain linked in their appropriate formats.
 - [x] The quick orientation identifies the normal run choices, explains command
   notation, and links directly to plain-language file-format definitions.
 - [x] The opening presents a concise data-workflow statement and direct action
   links before the result routes, workflow, and detailed reference index. The
-  index is grouped by task, interface, and evidence.
+  index is grouped by procedure, interface, and evidence.
+- [x] Repeated route tables, navigation tables, component descriptions, figure
+  descriptions, artifact lists, and return links are consolidated while each
+  unique instruction, contract, explanation, and verification result remains.
 - [x] The README and generated workbook distinguish the complete
   138-characteristic catalogue from the 49 implemented question-level fields.
 - [x] Maintained authored surfaces use an impersonal, descriptive tone.
   First- and second-person project voice, conversational prompts, and direct
   instructions are absent; source data and quoted material remain unchanged.
 
-Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08`, `README-01`–`README-09`,
+Evidence: `README.md`; checks `GUIDE-01`–`GUIDE-08`, `README-01`–`README-10`,
 `HANDOVER-01`–`HANDOVER-03`, `CAT-01`–`CAT-02`, `DOC-01`, `T13-01`, and
 `TONE-01` in the release evidence.
 
@@ -60,8 +63,8 @@ Status: **Complete**
 
 - [x] The README tree identifies every important source, configuration, data,
   notebook, documentation, dependency, contribution, and security location.
-- [x] The architecture and component tables explain all six Python modules and
-  the generic notebook, including their relationships.
+- [x] The architecture table and directly linked component sections explain all
+  eight Python modules and the generic notebook, including their relationships.
 - [x] One editable SVG and one 4800×3900 PNG show the sequence from Stack
   Exchange access through environment preparation, the three implemented
   routes, validation, EDA, and final results.
@@ -107,7 +110,7 @@ Evidence: `README.md#environment-and-installation`,
 Status: **Complete**
 
 - [x] The component reference gives a dedicated, directly linkable section to
-  each of the six Python modules and the generic notebook.
+  each of the eight Python modules and the generic notebook.
 - [x] Each executable component documents its purpose, required source files,
   accepted settings, validation, outputs, side effects, handled failures,
   command, process status, and expected result.
@@ -126,7 +129,7 @@ Evidence: `README.md#component-reference` through
 
 Status: **Complete**
 
-- [x] All six modules begin with English module docstrings.
+- [x] All eight modules begin with English module docstrings.
 - [x] Executable-module introductions state purpose, workflow role, required
   inputs, generated outputs, dependency source, a basic command, source-file
   safety, and important scope limitations.
@@ -140,8 +143,8 @@ Evidence: `src/*.py`, the module-docstring audit, and `T13-05`.
 
 Status: **Complete**
 
-- [x] All 53 current functions have complete parameter and return type
-  annotations and a concise English docstring; the project defines no classes.
+- [x] All 101 current functions and both data classes have complete parameter
+  and return type annotations and a concise English docstring.
 - [x] Non-obvious streaming, row selection, schema loading, summary mapping,
   characteristic calculation, validation, orchestration, and atomic-writing
   functions explain their assumptions, returned result, side effects, and
@@ -181,34 +184,37 @@ Evidence: `docs/project-workflow-overview.svg`,
 
 Status: **Complete**
 
-- [x] One generic, self-contained notebook contains the analysis sequence,
-  editable settings, direct pandas/Matplotlib/SciPy code, results, figures, and
-  plain-language interpretations together.
+- [x] One generic, presentation-centred notebook contains the analysis sequence,
+  editable settings, helper calls, results, figures, and plain-language
+  interpretations together.
+- [x] Reusable data preparation, validation, aggregation, statistical screening,
+  and figure construction live in `src/eda_support.py` and
+  `src/eda_figures.py` rather than long notebook cells.
 - [x] The active project contains no site-specific notebook copy, notebook
-  generator, large plotting-helper module, hidden display fallback, or stale
-  legacy analysis path.
-- [x] Logic shared by production routes lives in focused Python modules; code
-  used only to explain the one notebook remains visible in that notebook.
+  generator, hidden display fallback, or stale legacy analysis path.
 - [x] A clean-kernel execution verifies cell order and independence from hidden
   state.
 - [x] Editable settings receive explicit validation before file loading; the
   correlation sample minimum is visible and documented.
-- [x] Code cells each perform one identifiable step; numeric plots use linear,
-  data-dependent ranges and account explicitly for lower and upper extremes.
+- [x] Code cells each perform one identifiable analytical step; all figures use
+  declared chart-selection, axis, comparison, colour, and labelling rules.
+- [x] Numeric plots use equal-width linear bins, measurement-specific disclosed
+  central ranges, and exact accounting for every lower and upper extreme.
 - [x] Ten figure groups cover table quality, monthly and annual outcome counts,
   cumulative evolution, one first-response view per posting-month cohort,
   content distributions, response distributions, Tukey outliers, outlier-subset
   EDA, curated correlations, and tag outcome counts and percentages.
 - [x] The visible settings select all rows, an explicit inclusive date range, or
   an inclusive year range and optionally export the separate outlier dataset.
-- [x] The 52-cell sequence contains 36 focused code cells; no code cell exceeds
-  46 lines.
+- [x] The 34-cell sequence contains 17 focused code cells; no code cell exceeds
+  33 lines.
 - [x] Saved tables and figures match a repeated clean execution of the current
   notebook and bundled pilot; current-schema Software Engineering and Super
   User annual tables produce all ten figure groups without a cell error.
 
-Evidence: `notebooks/stackexchange_eda.ipynb`, `src/`, checks `NB-01`,
-`NB-05`, `SRC-06`, `HANDOVER-05`, and `T13-08`.
+Evidence: `notebooks/stackexchange_eda.ipynb`, `src/eda_support.py`,
+`src/eda_figures.py`, checks `NB-01`, `NB-05`, `NB-08`, `TEST-04`, `SRC-06`,
+`HANDOVER-05`, and `T13-08`.
 
 ## Task 9 — Script generalization and configuration
 
@@ -232,7 +238,7 @@ checks `BUILD-02`–`BUILD-04`, `SRC-03`, and `T13-09`.
 
 Status: **Complete**
 
-- [x] Six modules have focused responsibilities, common XML rules are shared,
+- [x] Eight modules have focused responsibilities, common XML rules are shared,
   characteristic calculations follow one 49-field specification, the complete
   research catalogue contains 138 distinct characteristics, and summary
   mappings follow one 27-field catalogue.
