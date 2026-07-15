@@ -20,16 +20,6 @@
 | [**Selected summary**](#selected-field-summary-xml-creation) | Compact XML reporting with selected fields | Source folder, output file, question IDs, and an optional copied field selection | One XML file containing the enabled fields in the selected order |
 | [**Characteristics and EDA**](#validated-characteristic-table-construction) | Question-level measurements, checks, figures, and interpretations | Source folder, community host, dump date, question period, output folder, and optional limit | A 49-column TSV, validation report, run metadata, and notebook results |
 
-The three processing routes preserve complete source threads, create
-field-selected reports, or build question-level analytical evidence. The
-bundled tutorial demonstrates the third route with a small tracked input.
-
-> [!TIP]
-> **Recommended starting point:** The
-> [bundled analysis tutorial](#bundled-analysis-tutorial) uses a small, tracked
-> input to verify the environment, characteristic build, validation, and
-> notebook before larger-dump processing.
-
 ### Routine run values
 
 - Commands run from the project root.
@@ -38,10 +28,6 @@ bundled tutorial demonstrates the third route with a small tracked input.
   values and are omitted from literal commands. The
   [command-line interface example](#command-line-interface) demonstrates this
   notation.
-- Routine runs change command arguments, a copied summary-field TSV, or the
-  notebook's **Editable settings** cell. Python modules and
-  `config/characteristic_catalogue.tsv` and `config/characteristics.tsv`
-  remain unchanged unless the documented catalogue or output contract changes.
 
 ## Workflow overview
 
