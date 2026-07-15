@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 
-import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -71,6 +70,22 @@ def _label_horizontal_bars(
     """Adds readable values to horizontal bars."""
 
     axis.bar_label(bars, labels=labels, padding=padding, fontsize=9)
+
+
+def _show_all_months(axis: plt.Axes, dates: Sequence[pd.Timestamp]) -> None:
+    """Labels every month while repeating the year only when it changes."""
+
+    months = pd.DatetimeIndex(dates)
+    labels = [
+        date.strftime("%b\n%Y")
+        if index == 0 or date.month == 1
+        else date.strftime("%b")
+        for index, date in enumerate(months)
+    ]
+    axis.set_xticks(months, labels)
+    if len(months) == 1:
+        center = months[0]
+        axis.set_xlim(center - pd.Timedelta(days=20), center + pd.Timedelta(days=20))
 
 
 def plot_overview(
@@ -141,25 +156,7 @@ def _period_axis(
 
     if frequency == "month":
         positions = table.index.to_timestamp()
-        if len(positions) == 1:
-            center = pd.Timestamp(positions[0])
-            axis.set_xticks([center], [center.strftime("%b\n%Y")])
-            axis.set_xlim(
-                center - pd.Timedelta(days=20), center + pd.Timedelta(days=20)
-            )
-        else:
-            step = max(1, int(np.ceil(len(positions) / 7)))
-            indices = list(range(0, len(positions), step))
-            if indices[-1] != len(positions) - 1:
-                indices.append(len(positions) - 1)
-            tick_dates = positions[indices]
-            labels = [
-                date.strftime("%b\n%Y")
-                if index == 0 or date.month == 1
-                else date.strftime("%b")
-                for index, date in enumerate(tick_dates)
-            ]
-            axis.set_xticks(tick_dates, labels)
+        _show_all_months(axis, positions)
     else:
         positions = np.arange(len(table))
         axis.set_xticks(positions, table.index.astype(str))
@@ -174,7 +171,7 @@ def plot_period_outcomes(
     if frequency not in {"month", "year"}:
         raise ValueError("frequency must be 'month' or 'year'")
     period_text = "posting month" if frequency == "month" else "posting year"
-    fig, axes = plt.subplots(2, 2, figsize=(13, 8), layout="constrained")
+    fig, axes = plt.subplots(2, 2, figsize=(16, 10), layout="constrained")
     y_max = max(1, int(table["questions"].max())) * 1.08
 
     panels = [
@@ -260,7 +257,7 @@ def plot_period_outcomes(
 def plot_cumulative_outcomes(table: pd.DataFrame) -> Figure:
     """Plots cumulative stocks and events as separate aligned line charts."""
 
-    fig, axes = plt.subplots(3, 1, figsize=(11, 9), sharex=True, layout="constrained")
+    fig, axes = plt.subplots(3, 1, figsize=(14, 10), sharex=True, layout="constrained")
     months = table.index
 
     axes[0].plot(
@@ -328,13 +325,7 @@ def plot_cumulative_outcomes(table: pd.DataFrame) -> Figure:
     axes[2].legend(frameon=False, loc="upper left")
     _style_axis(axes[2], numeric_axis="y", integer=True)
 
-    locator = mdates.AutoDateLocator(minticks=4, maxticks=9)
-    axes[2].xaxis.set_major_locator(locator)
-    axes[2].xaxis.set_major_formatter(mdates.ConciseDateFormatter(locator))
-    if len(months) == 1:
-        center = months[0]
-        axes[2].set_xticks([center], [center.strftime("%b\n%Y")])
-        axes[2].set_xlim(center - pd.Timedelta(days=20), center + pd.Timedelta(days=20))
+    _show_all_months(axes[2], months)
     return fig
 
 
@@ -350,7 +341,7 @@ def plot_cohort_evolution(evolution: pd.DataFrame) -> list[Figure]:
         fig, axes = plt.subplots(
             rows,
             columns,
-            figsize=(12, 3.1 * rows),
+            figsize=(6 * columns, 3.8 * rows),
             squeeze=False,
             layout="constrained",
         )
@@ -370,17 +361,7 @@ def plot_cohort_evolution(evolution: pd.DataFrame) -> list[Figure]:
             axis.set_xlabel("Observation month")
             axis.set_ylabel("Cohort answered (%)")
             axis.set_ylim(0, 100)
-            tick_count = min(4, len(dates))
-            indices = np.unique(np.linspace(0, len(dates) - 1, tick_count, dtype=int))
-            tick_dates = dates.iloc[indices]
-            axis.set_xticks(
-                tick_dates, [date.strftime("%b\n%Y") for date in tick_dates]
-            )
-            if len(dates) == 1:
-                axis.set_xlim(
-                    dates.iloc[0] - pd.Timedelta(days=20),
-                    dates.iloc[0] + pd.Timedelta(days=20),
-                )
+            _show_all_months(axis, dates)
             axis.annotate(
                 f"{percentages.iloc[-1]:.1f}%",
                 (dates.iloc[-1], percentages.iloc[-1]),
