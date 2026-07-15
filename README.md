@@ -48,13 +48,7 @@ bundled tutorial demonstrates the third route with a small tracked input.
 The diagram presents the complete implemented sequence from Stack
 Exchange access to inspected and retained results.
 
-<a href="docs/project-workflow-overview.png">
-  <img
-    src="docs/project-workflow-overview.png"
-    alt="Stack Exchange project workflow"
-    width="1600"
-  >
-</a>
+![Stack Exchange project workflow](docs/project-workflow-overview.png)
 
 [Full-size PNG](docs/project-workflow-overview.png) ·
 [Editable SVG](docs/project-workflow-overview.svg) ·
